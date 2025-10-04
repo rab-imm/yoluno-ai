@@ -223,6 +223,85 @@ serve(async (req) => {
       );
     }
 
+    // ===== NEW: Try to match with pre-written content first =====
+    console.log('🔍 Attempting to match with pre-written content...');
+    
+    try {
+      const matchResponse = await fetch(`${supabaseUrl}/functions/v1/match-content`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          childQuestion: message,
+          childAge: childAge,
+          childId: childId,
+          approvedTopics: approvedTopics
+        })
+      });
+
+      const matchResult = await matchResponse.json();
+      console.log('Match result:', JSON.stringify(matchResult));
+
+      // If we found approved pre-written content, use it directly
+      if (matchResult.matched && matchResult.approved) {
+        console.log('✅ Using pre-written approved content');
+        
+        // Save the exchange to chat history
+        await supabase.from('chat_messages').insert([
+          { child_id: childId, role: 'user', content: message },
+          { child_id: childId, role: 'assistant', content: matchResult.answer }
+        ]);
+
+        return new Response(
+          JSON.stringify({ 
+            role: 'assistant', 
+            content: matchResult.answer,
+            isPreWritten: true,
+            contentId: matchResult.content.id
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // If content exists but not approved, notify parent
+      if (matchResult.matched && !matchResult.approved) {
+        console.log('⚠️ Content found but not approved by parent');
+        
+        const pendingMessage = "That's a great question! I need to check with your parent first before I can answer. They'll be able to help you with this soon! 🤔";
+        
+        await supabase.from('chat_messages').insert([
+          { child_id: childId, role: 'user', content: message },
+          { child_id: childId, role: 'assistant', content: pendingMessage }
+        ]);
+
+        // Log for parent review
+        await supabase.from('content_moderation_logs').insert({
+          child_id: childId,
+          message_content: `PENDING APPROVAL: "${message}" - Matched content ID: ${matchResult.content.id}`,
+          flag_reason: 'Unapproved content match',
+          severity: 'medium'
+        });
+
+        return new Response(
+          JSON.stringify({ 
+            role: 'assistant', 
+            content: pendingMessage,
+            requiresApproval: true,
+            contentId: matchResult.content?.id
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      console.log('ℹ️ No matching pre-written content, using AI generation with strict guidelines');
+    } catch (matchError) {
+      console.error('Error in content matching:', matchError);
+      console.log('Falling back to AI generation');
+    }
+    // Continue with existing AI generation logic below...
+
     // Enhanced personality prompts with more detail
     const personalityPrompts: Record<string, string> = {
       curious_explorer: `You're an enthusiastic explorer who loves asking "Why?" and "What if?" questions! 
