@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { encode as encodeBase64 } from "https://deno.land/std@0.168.0/encoding/base64.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,6 +14,8 @@ serve(async (req) => {
 
   try {
     const { storyText, voice } = await req.json();
+    
+    console.log('Generating narration for text length:', storyText?.length || 0);
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
     if (!OPENAI_API_KEY) {
@@ -22,6 +25,8 @@ serve(async (req) => {
     // Validate voice is one of the supported child-friendly voices
     const supportedVoices = ['alloy', 'nova', 'shimmer'];
     const selectedVoice = supportedVoices.includes(voice) ? voice : 'alloy';
+
+    console.log('Using voice:', selectedVoice);
 
     const response = await fetch('https://api.openai.com/v1/audio/speech', {
       method: 'POST',
@@ -38,26 +43,26 @@ serve(async (req) => {
     });
 
     if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error?.message || 'Failed to generate narration');
+      const errorText = await response.text();
+      console.error('OpenAI API error:', response.status, errorText);
+      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
     }
 
-    // Convert audio to base64 in chunks to avoid stack overflow
+    // Get audio data and encode to base64 using Deno standard library
     const arrayBuffer = await response.arrayBuffer();
-    const bytes = new Uint8Array(arrayBuffer);
-    const chunkSize = 8192;
-    let binaryString = '';
     
-    for (let i = 0; i < bytes.length; i += chunkSize) {
-      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
-      binaryString += String.fromCharCode(...chunk);
-    }
+    console.log('Audio size in bytes:', arrayBuffer.byteLength);
     
-    const base64Audio = btoa(binaryString);
+    // Use Deno's built-in base64 encoding (handles large files properly)
+    const base64Audio = encodeBase64(arrayBuffer);
+    
+    console.log('Base64 encoded length:', base64Audio.length);
 
     // Calculate estimated duration (rough estimate: ~150 words per minute)
     const wordCount = storyText.split(/\s+/).length;
     const estimatedDuration = Math.ceil((wordCount / 150) * 60);
+
+    console.log('Estimated duration:', estimatedDuration, 'seconds');
 
     return new Response(
       JSON.stringify({ 
@@ -72,7 +77,7 @@ serve(async (req) => {
   } catch (error: any) {
     console.error('Error in generate-story-narration:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || 'Failed to generate narration' }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
