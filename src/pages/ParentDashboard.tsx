@@ -14,6 +14,7 @@ import { ContentModerationLog } from "@/components/dashboard/ContentModerationLo
 import { TopicLibrary } from "@/components/dashboard/TopicLibrary";
 import { ContentLibrary } from "@/components/dashboard/ContentLibrary";
 import { StoryLibrary } from "@/components/dashboard/StoryLibrary";
+import { GoalJourneyManager } from "@/components/dashboard/GoalJourneyManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -198,10 +199,11 @@ export default function ParentDashboard() {
                       return (
                         <div key={child.id}>
                           <Tabs defaultValue="insights" className="w-full">
-                            <TabsList className="grid w-full grid-cols-6">
+                            <TabsList className="grid w-full grid-cols-7">
                               <TabsTrigger value="insights">Learning Insights</TabsTrigger>
                               <TabsTrigger value="topics">Topics</TabsTrigger>
                               <TabsTrigger value="library">Topic Library</TabsTrigger>
+                              <TabsTrigger value="journeys">Goal Journeys</TabsTrigger>
                               <TabsTrigger value="stories">Story Library</TabsTrigger>
                               <TabsTrigger value="content">Content Review</TabsTrigger>
                               <TabsTrigger value="safety">Safety Monitor</TabsTrigger>
@@ -217,6 +219,14 @@ export default function ParentDashboard() {
 
                             <TabsContent value="library" className="space-y-4 mt-4">
                               <TopicLibrary childId={selectedChild.id} />
+                            </TabsContent>
+
+                            <TabsContent value="journeys" className="space-y-4 mt-4">
+                              <GoalJourneyManager 
+                                childId={selectedChild.id} 
+                                childName={selectedChild.name}
+                                childAge={selectedChild.age}
+                              />
                             </TabsContent>
 
                             <TabsContent value="stories" className="space-y-4 mt-4">
