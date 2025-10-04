@@ -91,6 +91,18 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Learning Mode Theme */
+    --learning-primary: 210 100% 60%;
+    --learning-secondary: 195 90% 55%;
+    --learning-bg: 210 40% 98%;
+    --learning-accent: 210 100% 50%;
+    
+    /* Story Time Theme */
+    --story-primary: 280 100% 70%;
+    --story-secondary: 300 100% 75%;
+    --story-bg: 280 40% 98%;
+    --story-accent: 280 100% 60%;
   }
 
   .dark {
@@ -174,5 +186,19 @@ All colors MUST be HSL.
   
   .animate-float {
     animation: float 3s ease-in-out infinite;
+  }
+  
+  /* Mobile-safe bottom padding for iOS notch/home indicator */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  
+  /* Hover scale utility */
+  .hover-scale-102 {
+    transition: transform 0.2s ease;
+  }
+  
+  .hover-scale-102:hover {
+    transform: scale(1.02);
   }
 }

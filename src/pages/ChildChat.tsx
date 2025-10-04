@@ -8,12 +8,11 @@ import { ChatInterface } from "@/components/chat/ChatInterface";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 import { BadgeDisplay } from "@/components/gamification/BadgeDisplay";
 import { StreakDisplay } from "@/components/gamification/StreakDisplay";
-import { StoryMode } from "@/components/stories/StoryMode";
+import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
 import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
 import { AccessoriesManager } from "@/components/dashboard/AccessoriesManager";
 import { BedtimeMode } from "@/components/stories/BedtimeMode";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Sheet,
@@ -25,14 +24,22 @@ import {
 } from "@/components/ui/sheet";
 import { PersonalitySelector } from "@/components/chat/PersonalitySelector";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { ModeProvider } from "@/contexts/ModeContext";
+import { BottomModeBar } from "@/components/modes/BottomModeBar";
+import { DesktopModeSwitcher } from "@/components/modes/DesktopModeSwitcher";
+import { LearningMode } from "@/components/modes/LearningMode";
+import { StoryTimeMode } from "@/components/modes/StoryTimeMode";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ChildChat() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
   const [bedtimeStory, setBedtimeStory] = useState<any>(null);
   const [showBedtime, setShowBedtime] = useState(false);
+  const [storyView, setStoryView] = useState<"create" | "library">("create");
 
   useEffect(() => {
     loadChild();
@@ -104,140 +111,195 @@ export default function ChildChat() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-child-bg via-child-primary/5 to-child-secondary/5">
-      <header className="bg-gradient-to-r from-child-primary to-child-secondary p-4 shadow-lg">
-        <div className="container mx-auto flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigate("/parent")}
-            className="text-white hover:bg-white/20"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back
-          </Button>
-          <div className="flex items-center gap-3">
-            <BuddyAvatar 
-              size="sm" 
-              avatar={child.avatar} 
-              customAvatarUrl={child.custom_avatar_url}
-              expression="happy"
-            />
-            <div className="text-white">
-              <h1 className="text-xl font-bold">Hi {child.name}! 👋</h1>
-              <p className="text-sm opacity-90">Your AI Buddy</p>
-            </div>
-          </div>
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
-                <Settings className="h-4 w-4" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent className="w-full sm:max-w-xl">
-              <SheetHeader>
-                <SheetTitle>Buddy Settings</SheetTitle>
-                <SheetDescription>
-                  Customize your buddy's personality and appearance
-                </SheetDescription>
-              </SheetHeader>
-              <ScrollArea className="h-[calc(100vh-120px)] mt-6">
-                <div className="space-y-6 pr-4">
-                  <AvatarCustomizer
-                    childId={id!}
-                    childName={child.name}
-                    currentAvatar={child.avatar}
-                    customAvatarUrl={child.custom_avatar_url}
-                    onAvatarGenerated={(url) => {
-                      setChild({ ...child, custom_avatar_url: url });
-                    }}
-                  />
-                  <AccessoriesManager
-                    childId={id!}
-                    streakDays={child.streak_days || 0}
-                  />
-                  <PersonalitySelector
-                    selectedMode={child.personality_mode || "curious_explorer"}
-                    onModeChange={updatePersonality}
-                  />
-                </div>
-              </ScrollArea>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6 space-y-6">
-        {/* Bedtime Story Card */}
-        {bedtimeStory && (
-          <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Moon className="w-6 h-6" />
-                Tonight's Bedtime Story
-              </CardTitle>
-              <CardDescription className="text-white/90">
-                Your parent made a special story just for you!
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-4">
-                <img
-                  src={bedtimeStory.illustrations?.[0]?.imageUrl || ""}
-                  alt={bedtimeStory.title}
-                  className="w-20 h-20 rounded-lg object-cover"
-                />
-                <div className="flex-1">
-                  <h3 className="font-semibold text-lg">{bedtimeStory.title}</h3>
-                  <p className="text-sm text-white/80">
-                    {Math.ceil(bedtimeStory.duration_seconds / 60)} minute story
-                  </p>
-                </div>
-                <Button
-                  size="lg"
-                  variant="secondary"
-                  onClick={() => setShowBedtime(true)}
-                  className="bg-white text-purple-600 hover:bg-white/90"
-                >
-                  <Moon className="w-5 h-5 mr-2" />
-                  Listen Now
-                </Button>
+    <ModeProvider>
+      <div className="min-h-screen bg-gradient-to-br from-child-bg via-child-primary/5 to-child-secondary/5">
+        <header className="bg-gradient-to-r from-child-primary to-child-secondary p-4 shadow-lg">
+          <div className="container mx-auto flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/parent")}
+              className="text-white hover:bg-white/20"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            <div className="flex items-center gap-3">
+              <BuddyAvatar 
+                size="sm" 
+                avatar={child.avatar} 
+                customAvatarUrl={child.custom_avatar_url}
+                expression="happy"
+              />
+              <div className="text-white">
+                <h1 className="text-xl font-bold">Hi {child.name}! 👋</h1>
+                <p className="text-sm opacity-90">Your AI Buddy</p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            <Sheet>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent className="w-full sm:max-w-xl">
+                <SheetHeader>
+                  <SheetTitle>Buddy Settings</SheetTitle>
+                  <SheetDescription>
+                    Customize your buddy's personality and appearance
+                  </SheetDescription>
+                </SheetHeader>
+                <ScrollArea className="h-[calc(100vh-120px)] mt-6">
+                  <div className="space-y-6 pr-4">
+                    <AvatarCustomizer
+                      childId={id!}
+                      childName={child.name}
+                      currentAvatar={child.avatar}
+                      customAvatarUrl={child.custom_avatar_url}
+                      onAvatarGenerated={(url) => {
+                        setChild({ ...child, custom_avatar_url: url });
+                      }}
+                    />
+                    <AccessoriesManager
+                      childId={id!}
+                      streakDays={child.streak_days || 0}
+                    />
+                    <PersonalitySelector
+                      selectedMode={child.personality_mode || "curious_explorer"}
+                      onModeChange={updatePersonality}
+                    />
+                  </div>
+                </ScrollArea>
+              </SheetContent>
+            </Sheet>
+          </div>
+        </header>
+
+        <main className="container mx-auto px-4 py-6 space-y-6">
+          {/* Bedtime Story Card */}
+          {bedtimeStory && (
+            <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Moon className="w-6 h-6" />
+                  Tonight's Bedtime Story
+                </CardTitle>
+                <CardDescription className="text-white/90">
+                  Your parent made a special story just for you!
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-4">
+                  <img
+                    src={bedtimeStory.illustrations?.[0]?.imageUrl || ""}
+                    alt={bedtimeStory.title}
+                    className="w-20 h-20 rounded-lg object-cover"
+                  />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-lg">{bedtimeStory.title}</h3>
+                    <p className="text-sm text-white/80">
+                      {Math.ceil(bedtimeStory.duration_seconds / 60)} minute story
+                    </p>
+                  </div>
+                  <Button
+                    size="lg"
+                    variant="secondary"
+                    onClick={() => setShowBedtime(true)}
+                    className="bg-white text-purple-600 hover:bg-white/90"
+                  >
+                    <Moon className="w-5 h-5 mr-2" />
+                    Listen Now
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {!isMobile && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
+              <BadgeDisplay childId={id!} childName={child.name} />
+            </div>
+          )}
+
+          <DesktopModeSwitcher />
+
+          {/* Learning Mode Content */}
+          <LearningMode>
+            <div className="space-y-6">
+              {isMobile && (
+                <div className="grid grid-cols-2 gap-3">
+                  <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
+                  <BadgeDisplay childId={id!} childName={child.name} />
+                </div>
+              )}
+              <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+            </div>
+          </LearningMode>
+
+          {/* Story Time Mode Content */}
+          <StoryTimeMode>
+            <div className="space-y-6">
+              {isMobile && (
+                <div className="flex gap-2 mb-4">
+                  <Button
+                    onClick={() => setStoryView("create")}
+                    variant={storyView === "create" ? "default" : "outline"}
+                    className="flex-1"
+                  >
+                    ✨ Create Story
+                  </Button>
+                  <Button
+                    onClick={() => setStoryView("library")}
+                    variant={storyView === "library" ? "default" : "outline"}
+                    className="flex-1"
+                  >
+                    📖 My Stories
+                  </Button>
+                </div>
+              )}
+
+              {!isMobile ? (
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div>
+                    <h3 className="text-xl font-bold mb-4">✨ Create New Story</h3>
+                    <EnhancedStoryBuilder
+                      childId={id!}
+                      childName={child.name}
+                      childAge={child.age || 8}
+                      onComplete={() => setStoryView("library")}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold mb-4">📖 My Stories</h3>
+                    <StoriesLibrary childId={id!} childName={child.name} />
+                  </div>
+                </div>
+              ) : storyView === "create" ? (
+                <EnhancedStoryBuilder
+                  childId={id!}
+                  childName={child.name}
+                  childAge={child.age || 8}
+                  onComplete={() => setStoryView("library")}
+                />
+              ) : (
+                <StoriesLibrary childId={id!} childName={child.name} />
+              )}
+            </div>
+          </StoryTimeMode>
+        </main>
+
+        <BottomModeBar />
+
+        {/* Bedtime Mode Overlay */}
+        {showBedtime && bedtimeStory && (
+          <BedtimeMode
+            story={bedtimeStory}
+            childName={child.name}
+            onClose={() => setShowBedtime(false)}
+          />
         )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
-          <BadgeDisplay childId={id!} childName={child.name} />
-        </div>
-
-        <Tabs defaultValue="chat" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="chat">💬 Chat</TabsTrigger>
-            <TabsTrigger value="stories">📚 Create Story</TabsTrigger>
-            <TabsTrigger value="library">📖 My Stories</TabsTrigger>
-          </TabsList>
-          <TabsContent value="chat" className="mt-6">
-            <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
-          </TabsContent>
-          <TabsContent value="stories" className="mt-6">
-            <StoryMode childId={id!} childName={child.name} />
-          </TabsContent>
-          <TabsContent value="library" className="mt-6">
-            <StoriesLibrary childId={id!} childName={child.name} />
-          </TabsContent>
-        </Tabs>
-      </main>
-
-      {/* Bedtime Mode Overlay */}
-      {showBedtime && bedtimeStory && (
-        <BedtimeMode
-          story={bedtimeStory}
-          childName={child.name}
-          onClose={() => setShowBedtime(false)}
-        />
-      )}
-    </div>
+      </div>
+    </ModeProvider>
   );
 }

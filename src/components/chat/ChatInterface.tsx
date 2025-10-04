@@ -234,8 +234,8 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
   };
 
   return (
-    <Card className="max-w-4xl mx-auto overflow-hidden">
-      <div className="h-[600px] flex flex-col">
+    <Card className="w-full overflow-hidden">
+      <div className="h-[70vh] md:h-[600px] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-child-primary/5 to-child-secondary/5">
           <div className="flex items-center gap-3">
             <BuddyAvatar 
