@@ -53,7 +53,7 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
   const generateStory = async (data: StoryWizardData) => {
     try {
       // Step 1: Generate story text and scenes
-      toast.info("Creating your story... ✨");
+      toast.info("Writing your magical story... ✨", { duration: 5000 });
       const { data: storyData, error: storyError } = await supabase.functions.invoke("generate-enhanced-story", {
         body: {
           childId,
@@ -67,38 +67,85 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
         },
       });
 
-      if (storyError) throw storyError;
+      if (storyError) {
+        console.error("Story generation error:", storyError);
+        throw new Error("Failed to generate story text");
+      }
+      
+      if (!storyData || !storyData.content) {
+        throw new Error("Invalid story data received");
+      }
+      
+      console.log("Story generated:", {
+        title: storyData.title,
+        wordCount: storyData.content.split(/\s+/).length,
+        scenes: storyData.scenes?.length || 0
+      });
+      
       setGeneratedStory(storyData);
+      toast.success("Story written! Now creating illustrations... 🎨");
 
       // Step 2: Generate illustrations if we have scenes
+      let generatedIllustrations = [];
       if (storyData.scenes && storyData.scenes.length > 0) {
-        toast.info("Drawing magical illustrations... 🎨");
-        const { data: illustrationsData, error: illustrationsError } = await supabase.functions.invoke("generate-story-illustrations", {
-          body: {
-            scenes: storyData.scenes,
-            illustrationStyle: data.illustrationStyle,
-            childAge,
-          },
-        });
+        toast.info(`Drawing ${storyData.scenes.length} magical illustrations... 🎨`, { duration: 8000 });
+        
+        try {
+          const { data: illustrationsData, error: illustrationsError } = await supabase.functions.invoke("generate-story-illustrations", {
+            body: {
+              scenes: storyData.scenes,
+              illustrationStyle: data.illustrationStyle,
+              childAge,
+            },
+          });
 
-        if (illustrationsError) throw illustrationsError;
-        setIllustrations(illustrationsData.illustrations || []);
+          if (illustrationsError) {
+            console.error("Illustrations error:", illustrationsError);
+            toast.warning("Story ready! Illustrations may take a moment...");
+          } else {
+            generatedIllustrations = illustrationsData.illustrations || [];
+            console.log("Illustrations generated:", generatedIllustrations.length);
+            
+            const failedCount = generatedIllustrations.filter((i: any) => i.error).length;
+            if (failedCount > 0) {
+              toast.info(`${generatedIllustrations.length - failedCount} illustrations ready!`);
+            } else {
+              toast.success("All illustrations created! 🎨");
+            }
+          }
+        } catch (illustrationError) {
+          console.error("Illustration generation failed:", illustrationError);
+          toast.warning("Story ready! Illustrations couldn't be generated.");
+        }
+        
+        setIllustrations(generatedIllustrations);
       }
 
       // Step 3: Generate narration
-      toast.info("Recording the narration... 🎙️");
-      const { data: narrationData, error: narrationError } = await supabase.functions.invoke("generate-story-narration", {
-        body: {
-          storyText: storyData.content,
-          voice: data.narrationVoice,
-        },
-      });
+      toast.info("Recording the narration... 🎙️", { duration: 5000 });
+      
+      try {
+        const { data: narrationData, error: narrationError } = await supabase.functions.invoke("generate-story-narration", {
+          body: {
+            storyText: storyData.content,
+            voice: data.narrationVoice,
+          },
+        });
 
-      if (narrationError) throw narrationError;
-      setAudioContent(narrationData.audioContent);
-      setAudioDuration(narrationData.duration);
+        if (narrationError) {
+          console.error("Narration error:", narrationError);
+          toast.warning("Story and illustrations ready! Narration couldn't be generated.");
+        } else {
+          setAudioContent(narrationData.audioContent);
+          setAudioDuration(narrationData.duration);
+          toast.success("Narration recorded! 🎙️");
+        }
+      } catch (narrationError) {
+        console.error("Narration generation failed:", narrationError);
+        toast.warning("Story ready without audio!");
+      }
 
-      toast.success("Story ready! 🎉");
+      toast.success("Your magical story is ready! 🎉");
       
       // Increment usage count
       try {
@@ -110,7 +157,7 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
       setStage("preview");
     } catch (error: any) {
       console.error("Story generation error:", error);
-      toast.error("Failed to generate story. Please try again!");
+      toast.error(error.message || "Failed to generate story. Please try again!");
       setStage("wizard");
     }
   };
@@ -199,10 +246,21 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
             className="w-16 h-16 animate-spin" 
             style={{ color: 'hsl(var(--story-magic))' }}
           />
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h3 className="text-2xl font-bold">Creating Your Magical Story</h3>
-            <p className="text-muted-foreground">
-              Writing the story, drawing illustrations, and recording narration...
+            <div className="space-y-2 text-muted-foreground">
+              <p className="flex items-center justify-center gap-2">
+                ✍️ Writing the story with {wizardData?.characters.length || 0} characters
+              </p>
+              <p className="flex items-center justify-center gap-2">
+                🎨 Drawing magical illustrations
+              </p>
+              <p className="flex items-center justify-center gap-2">
+                🎙️ Recording narration
+              </p>
+            </div>
+            <p className="text-sm text-muted-foreground mt-4">
+              This may take 30-60 seconds...
             </p>
           </div>
         </div>

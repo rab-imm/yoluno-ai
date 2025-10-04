@@ -128,10 +128,12 @@ export function StoryPreview({
               className="min-h-[400px] text-base leading-relaxed"
             />
           ) : (
-            <div className="prose prose-lg max-w-none">
-              <p className="text-base leading-relaxed whitespace-pre-wrap">
-                {editedContent}
-              </p>
+            <div className="prose prose-lg max-w-none space-y-4">
+              {editedContent.split('\n\n').filter(p => p.trim()).map((paragraph, idx) => (
+                <p key={idx} className="text-base leading-relaxed">
+                  {paragraph.trim()}
+                </p>
+              ))}
             </div>
           )}
         </div>

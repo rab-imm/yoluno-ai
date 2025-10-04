@@ -52,21 +52,32 @@ CRITICAL SAFETY RULES:
 - CREATE warm, cozy bedtime atmosphere
 - END with reassuring, gentle conclusion
 
+STORY STRUCTURE REQUIREMENTS:
+- Write EXACTLY ${targetWordCount} words (±50 words acceptable)
+- Use clear paragraph breaks (separate paragraphs with double newlines)
+- Include dialogue with quotation marks
+- Use descriptive, sensory language (sights, sounds, feelings)
+- Vary sentence length (mix short and long sentences)
+- Structure: Beginning (introduce setting/character) → Middle (adventure/challenge) → End (resolution/lesson)
+
 THEME: ${theme}
 MOOD: ${mood}
 CHARACTERS: ${characterDesc}
-LENGTH: ${targetWordCount} words
+TARGET WORD COUNT: ${targetWordCount} words
 
-Create a ${mood} story that teaches about ${values[0]} through ${theme}.
+SCENE DESCRIPTIONS:
+- Provide 3 detailed scene descriptions perfect for child-friendly illustrations
+- Each scene should describe specific visual elements, characters, setting, and mood
+- Make scenes colorful, magical, and age-appropriate
 
-Return ONLY a JSON object with this structure:
+Return ONLY a JSON object with this exact structure:
 {
-  "title": "Story Title",
-  "content": "Full story text...",
+  "title": "An engaging, descriptive title",
+  "content": "Full story with proper paragraph breaks using \\n\\n between paragraphs...",
   "scenes": [
-    {"scene": 1, "description": "Scene 1 description for illustration"},
-    {"scene": 2, "description": "Scene 2 description for illustration"},
-    {"scene": 3, "description": "Scene 3 description for illustration"}
+    {"scene": 1, "description": "Detailed visual description for illustration of opening scene"},
+    {"scene": 2, "description": "Detailed visual description for illustration of middle scene"},
+    {"scene": 3, "description": "Detailed visual description for illustration of ending scene"}
   ]
 }`;
 
@@ -94,16 +105,65 @@ Return ONLY a JSON object with this structure:
     const data = await response.json();
     const generatedText = data.choices[0].message.content;
     
+    console.log('AI Response received, length:', generatedText?.length || 0);
+    
     // Parse JSON response
     let storyData;
     try {
-      storyData = JSON.parse(generatedText);
+      // Extract JSON if wrapped in markdown code blocks
+      let jsonText = generatedText.trim();
+      if (jsonText.startsWith('```json')) {
+        jsonText = jsonText.replace(/^```json\s*/i, '').replace(/\s*```$/i, '');
+      } else if (jsonText.startsWith('```')) {
+        jsonText = jsonText.replace(/^```\s*/i, '').replace(/\s*```$/i, '');
+      }
+      
+      storyData = JSON.parse(jsonText);
+      
+      // Validate story structure
+      if (!storyData.title || !storyData.content || !storyData.scenes) {
+        throw new Error('Invalid story structure');
+      }
+      
+      // Validate word count
+      const wordCount = storyData.content.split(/\s+/).length;
+      console.log('Story word count:', wordCount, 'Target:', targetWordCount);
+      
+      if (wordCount < targetWordCount * 0.7) {
+        console.warn('Story too short:', wordCount, 'words (target:', targetWordCount, ')');
+      }
+      
+      // Validate scenes
+      if (storyData.scenes.length < 3) {
+        console.warn('Missing scenes, expected 3, got:', storyData.scenes.length);
+        // Add placeholder scenes if needed
+        while (storyData.scenes.length < 3) {
+          storyData.scenes.push({
+            scene: storyData.scenes.length + 1,
+            description: `Scene ${storyData.scenes.length + 1} from ${storyData.title}`
+          });
+        }
+      }
+      
+      console.log('Story validation passed:', {
+        title: storyData.title,
+        wordCount,
+        sceneCount: storyData.scenes.length
+      });
+      
     } catch (e) {
+      console.error('Failed to parse AI response:', e);
+      console.error('Raw response:', generatedText.substring(0, 500));
+      
       // Fallback if response isn't proper JSON
       storyData = {
         title: `${childName}'s ${theme} Adventure`,
         content: generatedText,
-        scenes: []
+        scenes: [
+          { scene: 1, description: `${childName} begins an adventure` },
+          { scene: 2, description: `${childName} discovers something magical` },
+          { scene: 3, description: `${childName} learns an important lesson` }
+        ]
       };
     }
 
