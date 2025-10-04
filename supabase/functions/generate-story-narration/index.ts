@@ -42,10 +42,18 @@ serve(async (req) => {
       throw new Error(error.error?.message || 'Failed to generate narration');
     }
 
+    // Convert audio to base64 in chunks to avoid stack overflow
     const arrayBuffer = await response.arrayBuffer();
-    const base64Audio = btoa(
-      String.fromCharCode(...new Uint8Array(arrayBuffer))
-    );
+    const bytes = new Uint8Array(arrayBuffer);
+    const chunkSize = 8192;
+    let binaryString = '';
+    
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      binaryString += String.fromCharCode(...chunk);
+    }
+    
+    const base64Audio = btoa(binaryString);
 
     // Calculate estimated duration (rough estimate: ~150 words per minute)
     const wordCount = storyText.split(/\s+/).length;
