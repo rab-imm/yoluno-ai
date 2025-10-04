@@ -7,9 +7,10 @@ interface ChatMessageProps {
     created_at?: string;
   };
   childAvatar?: string;
+  customAvatarUrl?: string;
 }
 
-export function ChatMessage({ message, childAvatar = "🤖" }: ChatMessageProps) {
+export function ChatMessage({ message, childAvatar = "🤖", customAvatarUrl }: ChatMessageProps) {
   const isUser = message.role === "user";
   const timestamp = message.created_at 
     ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -17,7 +18,13 @@ export function ChatMessage({ message, childAvatar = "🤖" }: ChatMessageProps)
 
   return (
     <div className={`flex items-start gap-3 ${isUser ? "flex-row-reverse" : ""}`}>
-      {!isUser && <BuddyAvatar size="sm" avatar={childAvatar} />}
+      {!isUser && (
+        <BuddyAvatar 
+          size="sm" 
+          avatar={childAvatar} 
+          customAvatarUrl={customAvatarUrl}
+        />
+      )}
       <div className="flex flex-col gap-1 max-w-[80%]">
         <div
           className={`rounded-2xl p-4 ${

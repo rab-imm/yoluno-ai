@@ -10,6 +10,7 @@ import { BadgeDisplay } from "@/components/gamification/BadgeDisplay";
 import { StreakDisplay } from "@/components/gamification/StreakDisplay";
 import { StoryMode } from "@/components/stories/StoryMode";
 import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
+import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
@@ -90,7 +91,12 @@ export default function ChildChat() {
             Back
           </Button>
           <div className="flex items-center gap-3">
-            <BuddyAvatar size="sm" avatar={child.avatar} />
+            <BuddyAvatar 
+              size="sm" 
+              avatar={child.avatar} 
+              customAvatarUrl={child.custom_avatar_url}
+              expression="happy"
+            />
             <div className="text-white">
               <h1 className="text-xl font-bold">Hi {child.name}! 👋</h1>
               <p className="text-sm opacity-90">Your AI Buddy</p>
@@ -106,10 +112,18 @@ export default function ChildChat() {
               <SheetHeader>
                 <SheetTitle>Buddy Settings</SheetTitle>
                 <SheetDescription>
-                  Customize your buddy's personality
+                  Customize your buddy's personality and appearance
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-6">
+              <div className="mt-6 space-y-6">
+                <AvatarCustomizer
+                  childId={id!}
+                  currentAvatar={child.avatar}
+                  customAvatarUrl={child.custom_avatar_url}
+                  onAvatarGenerated={(url) => {
+                    setChild({ ...child, custom_avatar_url: url });
+                  }}
+                />
                 <PersonalitySelector
                   selectedMode={child.personality_mode || "curious_explorer"}
                   onModeChange={updatePersonality}

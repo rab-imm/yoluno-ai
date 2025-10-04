@@ -14,6 +14,41 @@ export type Database = {
   }
   public: {
     Tables: {
+      avatar_accessories: {
+        Row: {
+          accessory_id: string
+          accessory_type: string
+          child_id: string | null
+          id: string
+          is_equipped: boolean | null
+          unlocked_at: string | null
+        }
+        Insert: {
+          accessory_id: string
+          accessory_type: string
+          child_id?: string | null
+          id?: string
+          is_equipped?: boolean | null
+          unlocked_at?: string | null
+        }
+        Update: {
+          accessory_id?: string
+          accessory_type?: string
+          child_id?: string | null
+          id?: string
+          is_equipped?: boolean | null
+          unlocked_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "avatar_accessories_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           child_id: string
@@ -82,7 +117,9 @@ export type Database = {
         Row: {
           age: number
           avatar: string | null
+          avatar_expression: string | null
           created_at: string
+          custom_avatar_url: string | null
           id: string
           last_chat_date: string | null
           name: string
@@ -94,7 +131,9 @@ export type Database = {
         Insert: {
           age: number
           avatar?: string | null
+          avatar_expression?: string | null
           created_at?: string
+          custom_avatar_url?: string | null
           id?: string
           last_chat_date?: string | null
           name: string
@@ -106,7 +145,9 @@ export type Database = {
         Update: {
           age?: number
           avatar?: string | null
+          avatar_expression?: string | null
           created_at?: string
+          custom_avatar_url?: string | null
           id?: string
           last_chat_date?: string | null
           name?: string

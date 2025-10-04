@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
 import { BuddyAvatar } from "./BuddyAvatar";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
+import { useAvatarExpression } from "@/hooks/useAvatarExpression";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,14 +40,17 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(true);
+  const [customAvatarUrl, setCustomAvatarUrl] = useState<string | undefined>();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const { speak, stop, speaking } = useTextToSpeech();
+  const { expression, updateExpression } = useAvatarExpression();
 
   useEffect(() => {
     loadMessages();
     sendWelcomeMessage();
     setupVoiceRecognition();
+    loadCustomAvatar();
   }, [childId]);
 
   useEffect(() => {
@@ -95,6 +99,18 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  const loadCustomAvatar = async () => {
+    const { data } = await supabase
+      .from("child_profiles")
+      .select("custom_avatar_url")
+      .eq("id", childId)
+      .single();
+    
+    if (data?.custom_avatar_url) {
+      setCustomAvatarUrl(data.custom_avatar_url);
+    }
   };
 
   const loadMessages = async () => {
@@ -199,6 +215,9 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
         content: assistantMessage.content,
       });
 
+      // Update avatar expression based on response
+      updateExpression(data.message);
+
       // Auto-speak the response if enabled
       if (autoSpeak) {
         await speak(data.message);
@@ -219,11 +238,18 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
       <div className="h-[600px] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-child-primary/5 to-child-secondary/5">
           <div className="flex items-center gap-3">
-            <BuddyAvatar size="sm" avatar={childAvatar} isThinking={speaking} />
+            <BuddyAvatar 
+              size="sm" 
+              avatar={childAvatar} 
+              customAvatarUrl={customAvatarUrl}
+              isThinking={loading} 
+              isSpeaking={speaking}
+              expression={expression}
+            />
             <div>
               <h3 className="font-semibold">Chatting with {childName}'s Buddy</h3>
               <p className="text-xs text-muted-foreground">
-                {speaking ? "Speaking..." : "Always here to help!"}
+                {speaking ? "Speaking..." : loading ? "Thinking..." : "Always here to help!"}
               </p>
             </div>
           </div>
@@ -260,11 +286,22 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((message) => (
-            <ChatMessage key={message.id} message={message} childAvatar={childAvatar} />
+            <ChatMessage 
+              key={message.id} 
+              message={message} 
+              childAvatar={childAvatar}
+              customAvatarUrl={customAvatarUrl}
+            />
           ))}
           {loading && (
             <div className="flex items-start gap-3">
-              <BuddyAvatar size="sm" avatar={childAvatar} isThinking={true} />
+              <BuddyAvatar 
+                size="sm" 
+                avatar={childAvatar} 
+                customAvatarUrl={customAvatarUrl}
+                isThinking={true}
+                expression="thinking"
+              />
               <div className="bg-gradient-to-r from-child-primary/10 to-child-secondary/10 rounded-2xl p-4">
                 <div className="flex gap-2 items-center">
                   <div className="w-2 h-2 bg-child-primary rounded-full animate-bounce" />
