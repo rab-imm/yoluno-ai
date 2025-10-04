@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ParentDashboard from "./pages/ParentDashboard";
+import JourneyMarketplace from "./pages/JourneyMarketplace";
 import ChildChat from "./pages/ChildChat";
 import KidsLauncher from "./pages/KidsLauncher";
 import StoryBuddy from "./pages/StoryBuddy";
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/parent" element={<ParentDashboard />} />
+          <Route path="/marketplace" element={<JourneyMarketplace />} />
           <Route path="/kids" element={<KidsLauncher />} />
           <Route path="/child/:id" element={<ChildChat />} />
           <Route path="/story-buddy" element={<StoryBuddy />} />

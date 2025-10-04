@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Target, Calendar, Share2, Play, Pause, CheckCircle2 } from "lucide-react";
+import { Plus, Target, Calendar, Share2, Play, Pause, CheckCircle2, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { JourneyWizard } from "./JourneyWizard";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -105,19 +105,25 @@ export function GoalJourneyManager({ childId, childName, childAge }: GoalJourney
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-lg font-semibold">Goal Journeys for {childName}</h3>
-          <p className="text-sm text-muted-foreground">
-            Build habits and reach milestones, one fun step at a time
-          </p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold">Goal Journeys for {childName}</h3>
+            <p className="text-sm text-muted-foreground">
+              Build habits and reach milestones, one fun step at a time
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => window.location.href = "/marketplace"}>
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Browse More
+            </Button>
+            <Button onClick={() => setShowWizard(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Start New Journey
+            </Button>
+          </div>
         </div>
-        <Button onClick={() => setShowWizard(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Start New Journey
-        </Button>
-      </div>
 
       {journeys.length === 0 ? (
         <Card className="border-dashed">

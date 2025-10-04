@@ -244,6 +244,7 @@ function ChildChatContent() {
                     <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
                     <BadgeDisplay childId={id!} childName={child.name} />
                   </div>
+                  <JourneyProgressWidget childId={id!} />
                   <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} personalityMode={child.personality_mode} />
                 </div>
               </LearningMode>
@@ -298,6 +299,7 @@ function ChildChatContent() {
               {mode === "learning" && (
                 <LearningMode>
                   <div className="space-y-6 mode-transition">
+                    <JourneyProgressWidget childId={id!} />
                     <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} personalityMode={child.personality_mode} />
                   </div>
                 </LearningMode>

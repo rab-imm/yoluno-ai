@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, LogOut, Users, BookOpen, Sparkles } from "lucide-react";
+import { Plus, LogOut, Users, BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
 import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
@@ -96,6 +96,14 @@ export default function ParentDashboard() {
             <h1 className="text-2xl font-bold">Parent Dashboard</h1>
           </div>
           <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => navigate("/marketplace")}
+            >
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Browse Journeys
+            </Button>
             <Button size="sm" onClick={() => navigate("/kids")} className="bg-gradient-to-r from-[hsl(var(--learning-primary))] to-[hsl(var(--story-primary))]">
               <Sparkles className="h-4 w-4 mr-2" />
               Launch Kids Mode

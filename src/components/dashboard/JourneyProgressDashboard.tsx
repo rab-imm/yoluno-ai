@@ -8,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ArrowLeft, Play, Pause, CheckCircle2, Circle, Calendar, MessageSquare, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { JourneyReflectionPrompt } from "./JourneyReflectionPrompt";
+import { JourneyShareManager } from "../journey/JourneyShareManager";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 interface JourneyProgressDashboardProps {
@@ -25,6 +26,7 @@ interface Journey {
   total_steps: number;
   status: string;
   reward_type: string;
+  allow_sharing: boolean;
   created_at: string;
 }
 
@@ -203,6 +205,19 @@ export function JourneyProgressDashboard({
           </div>
         </CardContent>
       </Card>
+
+      <JourneyShareManager
+        journeyId={journeyId}
+        journeyTitle={journey.title}
+        allowSharing={journey.allow_sharing}
+        onSharingToggle={async (enabled) => {
+          await supabase
+            .from("goal_journeys")
+            .update({ allow_sharing: enabled })
+            .eq("id", journeyId);
+          loadJourneyData();
+        }}
+      />
 
       <Card>
         <CardHeader>
