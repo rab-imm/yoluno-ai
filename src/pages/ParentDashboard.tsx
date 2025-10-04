@@ -13,6 +13,7 @@ import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
 import { ContentModerationLog } from "@/components/dashboard/ContentModerationLog";
 import { TopicLibrary } from "@/components/dashboard/TopicLibrary";
 import { ContentLibrary } from "@/components/dashboard/ContentLibrary";
+import { StoryLibrary } from "@/components/dashboard/StoryLibrary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -93,10 +94,16 @@ export default function ParentDashboard() {
             <Users className="h-6 w-6 text-primary" />
             <h1 className="text-2xl font-bold">Parent Dashboard</h1>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleSignOut}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Sign Out
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button size="sm" onClick={() => navigate("/kids")} className="bg-gradient-to-r from-[hsl(var(--learning-primary))] to-[hsl(var(--story-primary))]">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Launch Kids Mode
+            </Button>
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Sign Out
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -191,10 +198,11 @@ export default function ParentDashboard() {
                       return (
                         <div key={child.id}>
                           <Tabs defaultValue="insights" className="w-full">
-                            <TabsList className="grid w-full grid-cols-5">
+                            <TabsList className="grid w-full grid-cols-6">
                               <TabsTrigger value="insights">Learning Insights</TabsTrigger>
                               <TabsTrigger value="topics">Topics</TabsTrigger>
                               <TabsTrigger value="library">Topic Library</TabsTrigger>
+                              <TabsTrigger value="stories">Story Library</TabsTrigger>
                               <TabsTrigger value="content">Content Review</TabsTrigger>
                               <TabsTrigger value="safety">Safety Monitor</TabsTrigger>
                             </TabsList>
@@ -209,6 +217,10 @@ export default function ParentDashboard() {
 
                             <TabsContent value="library" className="space-y-4 mt-4">
                               <TopicLibrary childId={selectedChild.id} />
+                            </TabsContent>
+
+                            <TabsContent value="stories" className="space-y-4 mt-4">
+                              <StoryLibrary childId={selectedChild.id} childName={selectedChild.name} />
                             </TabsContent>
 
                             <TabsContent value="content" className="space-y-4 mt-4">

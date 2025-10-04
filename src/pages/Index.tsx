@@ -22,6 +22,10 @@ const Index = () => {
               Complete control. Complete safety. Pure learning magic. ✨
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button size="lg" onClick={() => navigate("/kids")} className="text-lg bg-gradient-to-r from-[hsl(var(--learning-primary))] to-[hsl(var(--story-primary))] hover:opacity-90">
+                <Sparkles className="mr-2 h-5 w-5" />
+                Kids Corner
+              </Button>
               <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
                 Get Started Free
               </Button>

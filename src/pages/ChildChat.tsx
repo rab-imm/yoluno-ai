@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Settings, Moon } from "lucide-react";
+import { ArrowLeft, Settings, Moon, LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
@@ -35,12 +35,15 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export default function ChildChat() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const isMobile = useIsMobile();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
   const [bedtimeStory, setBedtimeStory] = useState<any>(null);
   const [showBedtime, setShowBedtime] = useState(false);
   const [storyView, setStoryView] = useState<"create" | "library">("create");
+  
+  const fromLauncher = location.state?.fromLauncher || false;
 
   useEffect(() => {
     loadChild();
@@ -119,10 +122,11 @@ export default function ChildChat() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/parent")}
+              onClick={() => navigate(fromLauncher ? "/kids" : "/parent")}
               className="text-white hover:bg-white/20 shrink-0"
+              title={fromLauncher ? "Back to Profile Selection" : "Back to Dashboard"}
             >
-              <ArrowLeft className="h-4 w-4 md:mr-2" />
+              {fromLauncher ? <LogOut className="h-4 w-4 md:mr-2" /> : <ArrowLeft className="h-4 w-4 md:mr-2" />}
               <span className="hidden md:inline">Back</span>
             </Button>
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
