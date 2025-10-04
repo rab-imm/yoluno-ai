@@ -230,31 +230,26 @@ function ChildChatContent() {
 
           <DesktopModeSwitcher />
 
-          {/* Learning Mode Content */}
-          {(mode === "learning" || !isMobile) && (
-            <LearningMode>
-              <div className="space-y-6 mode-transition">
-                {isMobile && (
+          {/* Mobile: Show only active mode, Desktop: Show both */}
+          {isMobile ? (
+            mode === "learning" ? (
+              <LearningMode>
+                <div className="space-y-6 mode-transition">
                   <div className="grid grid-cols-2 gap-3">
                     <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
                     <BadgeDisplay childId={id!} childName={child.name} />
                   </div>
-                )}
-                <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
-              </div>
-            </LearningMode>
-          )}
-
-          {/* Story Time Mode Content */}
-          {(mode === "story" || !isMobile) && (
-            <StoryTimeMode>
-              <div className="space-y-6 mode-transition">
-                <StoryModeHeader 
-                  title="Story Time Magic"
-                  description="Create wonderful stories and explore your collection"
-                />
-                
-                {isMobile && (
+                  <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+                </div>
+              </LearningMode>
+            ) : (
+              <StoryTimeMode>
+                <div className="space-y-6 mode-transition">
+                  <StoryModeHeader 
+                    title="Story Time Magic"
+                    description="Create wonderful stories and explore your collection"
+                  />
+                  
                   <div className="flex gap-2 mb-4">
                     <Button
                       onClick={() => setStoryView("create")}
@@ -279,9 +274,37 @@ function ChildChatContent() {
                       📖 My Stories
                     </Button>
                   </div>
-                )}
 
-                {!isMobile ? (
+                  {storyView === "create" ? (
+                    <EnhancedStoryBuilder
+                      childId={id!}
+                      childName={child.name}
+                      childAge={child.age || 8}
+                      onComplete={() => setStoryView("library")}
+                    />
+                  ) : (
+                    <StoriesLibrary childId={id!} childName={child.name} />
+                  )}
+                </div>
+              </StoryTimeMode>
+            )
+          ) : (
+            <>
+              {/* Desktop: Learning Mode */}
+              <LearningMode>
+                <div className="space-y-6">
+                  <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+                </div>
+              </LearningMode>
+
+              {/* Desktop: Story Time Mode */}
+              <StoryTimeMode>
+                <div className="space-y-6">
+                  <StoryModeHeader 
+                    title="Story Time Magic"
+                    description="Create wonderful stories and explore your collection"
+                  />
+                  
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div>
                       <EnhancedStoryBuilder
@@ -295,18 +318,9 @@ function ChildChatContent() {
                       <StoriesLibrary childId={id!} childName={child.name} />
                     </div>
                   </div>
-                ) : storyView === "create" ? (
-                  <EnhancedStoryBuilder
-                    childId={id!}
-                    childName={child.name}
-                    childAge={child.age || 8}
-                    onComplete={() => setStoryView("library")}
-                  />
-                ) : (
-                  <StoriesLibrary childId={id!} childName={child.name} />
-                )}
-              </div>
-            </StoryTimeMode>
+                </div>
+              </StoryTimeMode>
+            </>
           )}
         </main>
 
