@@ -14,14 +14,16 @@ export function LearningMode({ children }: LearningModeProps) {
 
   return (
     <div 
-      className={`${isMobile ? "pb-24" : ""} transition-all duration-500 animate-fade-in`}
+      className={`${isMobile ? "pb-24 min-h-[80vh]" : ""} transition-all duration-500 animate-fade-in`}
       style={{
         background: isMobile 
           ? "linear-gradient(180deg, hsl(var(--learning-bg)) 0%, hsl(var(--background)) 100%)"
           : "transparent"
       }}
     >
-      {children}
+      <div className={isMobile ? "px-1" : ""}>
+        {children}
+      </div>
     </div>
   );
 }

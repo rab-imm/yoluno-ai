@@ -234,9 +234,9 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
   };
 
   return (
-    <Card className="w-full overflow-hidden">
+    <Card className="w-full overflow-hidden shadow-lg">
       <div className="h-[70vh] md:h-[600px] flex flex-col">
-        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-child-primary/5 to-child-secondary/5">
+        <div className="flex items-center justify-between p-3 md:p-4 border-b bg-gradient-to-r from-[hsl(var(--learning-primary))]/10 to-[hsl(var(--learning-secondary))]/10">
           <div className="flex items-center gap-3">
             <BuddyAvatar 
               size="sm" 
@@ -284,7 +284,7 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
           {messages.map((message) => (
             <ChatMessage 
               key={message.id} 
@@ -315,14 +315,14 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="border-t p-4 bg-background/95 backdrop-blur">
+        <div className="border-t p-3 md:p-4 bg-background/95 backdrop-blur">
           <div className="flex gap-2">
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
               placeholder="Type your message..."
-              className="text-lg rounded-2xl"
+              className="text-base md:text-lg rounded-2xl"
               disabled={loading || isListening}
             />
             <Button
@@ -331,16 +331,20 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
               variant={isListening ? "destructive" : "secondary"}
               size="lg"
               title="Voice input"
+              className="shrink-0"
             >
-              <Mic className={`h-5 w-5 ${isListening ? "animate-pulse" : ""}`} />
+              <Mic className={`h-4 w-4 md:h-5 md:w-5 ${isListening ? "animate-pulse" : ""}`} />
             </Button>
             <Button
               onClick={handleSend}
               disabled={loading || !input.trim()}
-              variant="playful"
+              style={{
+                background: loading || !input.trim() ? undefined : "linear-gradient(135deg, hsl(var(--learning-primary)), hsl(var(--learning-secondary)))"
+              }}
               size="lg"
+              className="shrink-0"
             >
-              <Send className="h-5 w-5" />
+              <Send className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
           </div>
         </div>

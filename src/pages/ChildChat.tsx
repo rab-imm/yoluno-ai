@@ -29,6 +29,7 @@ import { BottomModeBar } from "@/components/modes/BottomModeBar";
 import { DesktopModeSwitcher } from "@/components/modes/DesktopModeSwitcher";
 import { LearningMode } from "@/components/modes/LearningMode";
 import { StoryTimeMode } from "@/components/modes/StoryTimeMode";
+import { StoryModeHeader } from "@/components/stories/StoryModeHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function ChildChat() {
@@ -113,32 +114,32 @@ export default function ChildChat() {
   return (
     <ModeProvider>
       <div className="min-h-screen bg-gradient-to-br from-child-bg via-child-primary/5 to-child-secondary/5">
-        <header className="bg-gradient-to-r from-child-primary to-child-secondary p-4 shadow-lg">
+        <header className="bg-gradient-to-r from-child-primary to-child-secondary p-3 md:p-4 shadow-lg sticky top-0 z-40">
           <div className="container mx-auto flex items-center justify-between">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate("/parent")}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 shrink-0"
             >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back
+              <ArrowLeft className="h-4 w-4 md:mr-2" />
+              <span className="hidden md:inline">Back</span>
             </Button>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3 min-w-0">
               <BuddyAvatar 
                 size="sm" 
                 avatar={child.avatar} 
                 customAvatarUrl={child.custom_avatar_url}
                 expression="happy"
               />
-              <div className="text-white">
-                <h1 className="text-xl font-bold">Hi {child.name}! 👋</h1>
-                <p className="text-sm opacity-90">Your AI Buddy</p>
+              <div className="text-white min-w-0">
+                <h1 className="text-base md:text-xl font-bold truncate">Hi {child.name}! 👋</h1>
+                <p className="text-xs md:text-sm opacity-90 truncate">Your AI Buddy</p>
               </div>
             </div>
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                <Button variant="ghost" size="sm" className="text-white hover:bg-white/20 shrink-0">
                   <Settings className="h-4 w-4" />
                 </Button>
               </SheetTrigger>
@@ -175,7 +176,7 @@ export default function ChildChat() {
           </div>
         </header>
 
-        <main className="container mx-auto px-4 py-6 space-y-6">
+        <main className="container mx-auto px-2 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6">
           {/* Bedtime Story Card */}
           {bedtimeStory && (
             <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0">
@@ -240,19 +241,32 @@ export default function ChildChat() {
           {/* Story Time Mode Content */}
           <StoryTimeMode>
             <div className="space-y-6">
+              <StoryModeHeader 
+                title="Story Time Magic"
+                description="Create wonderful stories and explore your collection"
+              />
+              
               {isMobile && (
                 <div className="flex gap-2 mb-4">
                   <Button
                     onClick={() => setStoryView("create")}
+                    className="flex-1 transition-all"
+                    style={storyView === "create" ? {
+                      background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
+                      color: "white"
+                    } : undefined}
                     variant={storyView === "create" ? "default" : "outline"}
-                    className="flex-1"
                   >
                     ✨ Create Story
                   </Button>
                   <Button
                     onClick={() => setStoryView("library")}
+                    className="flex-1 transition-all"
+                    style={storyView === "library" ? {
+                      background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
+                      color: "white"
+                    } : undefined}
                     variant={storyView === "library" ? "default" : "outline"}
-                    className="flex-1"
                   >
                     📖 My Stories
                   </Button>
@@ -262,7 +276,6 @@ export default function ChildChat() {
               {!isMobile ? (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <div>
-                    <h3 className="text-xl font-bold mb-4">✨ Create New Story</h3>
                     <EnhancedStoryBuilder
                       childId={id!}
                       childName={child.name}
@@ -271,7 +284,6 @@ export default function ChildChat() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold mb-4">📖 My Stories</h3>
                     <StoriesLibrary childId={id!} childName={child.name} />
                   </div>
                 </div>
