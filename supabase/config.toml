@@ -21,5 +21,11 @@ verify_jwt = false
 [functions.child-chat]
 verify_jwt = false
 
-[functions.match-content]
+[functions.generate-journey-steps]
+verify_jwt = false
+
+[functions.inject-habit-into-story]
+verify_jwt = false
+
+[functions.buddy-mission-encouragement]
 verify_jwt = false

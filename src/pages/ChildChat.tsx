@@ -14,6 +14,7 @@ import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
 import { AccessoriesManager } from "@/components/dashboard/AccessoriesManager";
 import { BedtimeMode } from "@/components/stories/BedtimeMode";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { JourneyProgressWidget } from "@/components/journey/JourneyProgressWidget";
 import {
   Sheet,
   SheetContent,
@@ -174,6 +175,10 @@ function ChildChatContent() {
                       selectedMode={child.personality_mode || "curious_explorer"}
                       onModeChange={updatePersonality}
                     />
+                    <div>
+                      <h3 className="text-sm font-semibold mb-2">My Journeys</h3>
+                      <JourneyProgressWidget childId={id!} />
+                    </div>
                   </div>
                 </ScrollArea>
               </SheetContent>
@@ -239,7 +244,7 @@ function ChildChatContent() {
                     <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
                     <BadgeDisplay childId={id!} childName={child.name} />
                   </div>
-                  <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+                  <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} personalityMode={child.personality_mode} />
                 </div>
               </LearningMode>
             ) : (
@@ -293,7 +298,7 @@ function ChildChatContent() {
               {mode === "learning" && (
                 <LearningMode>
                   <div className="space-y-6 mode-transition">
-                    <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+                    <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} personalityMode={child.personality_mode} />
                   </div>
                 </LearningMode>
               )}

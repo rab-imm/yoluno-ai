@@ -9,6 +9,7 @@ import { ChatMessage } from "./ChatMessage";
 import { BuddyAvatar } from "./BuddyAvatar";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import { useAvatarExpression } from "@/hooks/useAvatarExpression";
+import { DailyMissionCard } from "@/components/journey/DailyMissionCard";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +26,7 @@ interface ChatInterfaceProps {
   childId: string;
   childName: string;
   childAvatar?: string;
+  personalityMode?: string;
 }
 
 interface Message {
@@ -34,7 +36,7 @@ interface Message {
   created_at: string;
 }
 
-export function ChatInterface({ childId, childName, childAvatar = "🤖" }: ChatInterfaceProps) {
+export function ChatInterface({ childId, childName, childAvatar = "🤖", personalityMode = "curious_explorer" }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -285,6 +287,8 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
         </div>
 
         <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
+          <DailyMissionCard childId={childId} personalityMode={personalityMode} />
+          
           {messages.map((message) => (
             <ChatMessage 
               key={message.id} 
