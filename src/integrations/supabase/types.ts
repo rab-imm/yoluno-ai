@@ -371,6 +371,107 @@ export type Database = {
           },
         ]
       }
+      custom_topic_packs: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          emoji: string | null
+          id: string
+          is_public: boolean | null
+          name: string
+          parent_id: string
+          topics: string[]
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          is_public?: boolean | null
+          name: string
+          parent_id: string
+          topics: string[]
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          emoji?: string | null
+          id?: string
+          is_public?: boolean | null
+          name?: string
+          parent_id?: string
+          topics?: string[]
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      topic_analytics: {
+        Row: {
+          child_id: string
+          created_at: string | null
+          engagement_score: number | null
+          id: string
+          last_used_at: string | null
+          message_count: number | null
+          topic: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          last_used_at?: string | null
+          message_count?: number | null
+          topic: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string | null
+          engagement_score?: number | null
+          id?: string
+          last_used_at?: string | null
+          message_count?: number | null
+          topic?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "topic_analytics_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topic_feedback: {
+        Row: {
+          created_at: string | null
+          id: string
+          notes: string | null
+          parent_id: string
+          rating: number | null
+          topic: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          parent_id: string
+          rating?: number | null
+          topic: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          notes?: string | null
+          parent_id?: string
+          rating?: number | null
+          topic?: string
+        }
+        Relationships: []
+      }
       topic_packs: {
         Row: {
           created_at: string
