@@ -47,7 +47,12 @@ export function ChatInterface({ childId, childName }: ChatInterfaceProps) {
       .order("created_at", { ascending: true });
 
     if (data && data.length > 0) {
-      setMessages(data);
+      // Type assertion to convert database role (string) to our Message role type
+      const typedMessages = data.map(msg => ({
+        ...msg,
+        role: msg.role as "user" | "assistant"
+      }));
+      setMessages(typedMessages);
     }
   };
 
