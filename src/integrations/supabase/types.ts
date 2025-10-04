@@ -496,6 +496,259 @@ export type Database = {
         }
         Relationships: []
       }
+      goal_journeys: {
+        Row: {
+          allow_sharing: boolean | null
+          child_id: string
+          completed_at: string | null
+          created_at: string
+          current_step: number
+          description: string | null
+          duration_days: number
+          goal_type: string
+          id: string
+          journey_category: string
+          mission_schedule_time: string | null
+          parent_id: string
+          reward_details: Json | null
+          reward_type: string
+          status: string
+          title: string
+          total_steps: number
+          updated_at: string
+        }
+        Insert: {
+          allow_sharing?: boolean | null
+          child_id: string
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          description?: string | null
+          duration_days: number
+          goal_type: string
+          id?: string
+          journey_category: string
+          mission_schedule_time?: string | null
+          parent_id: string
+          reward_details?: Json | null
+          reward_type: string
+          status?: string
+          title: string
+          total_steps: number
+          updated_at?: string
+        }
+        Update: {
+          allow_sharing?: boolean | null
+          child_id?: string
+          completed_at?: string | null
+          created_at?: string
+          current_step?: number
+          description?: string | null
+          duration_days?: number
+          goal_type?: string
+          id?: string
+          journey_category?: string
+          mission_schedule_time?: string | null
+          parent_id?: string
+          reward_details?: Json | null
+          reward_type?: string
+          status?: string
+          title?: string
+          total_steps?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      journey_progress_log: {
+        Row: {
+          buddy_message: string | null
+          child_id: string
+          child_reflection: string | null
+          completed: boolean
+          id: string
+          journey_id: string
+          logged_at: string
+          parent_reflection_prompt: string | null
+          step_id: string
+        }
+        Insert: {
+          buddy_message?: string | null
+          child_id: string
+          child_reflection?: string | null
+          completed: boolean
+          id?: string
+          journey_id: string
+          logged_at?: string
+          parent_reflection_prompt?: string | null
+          step_id: string
+        }
+        Update: {
+          buddy_message?: string | null
+          child_id?: string
+          child_reflection?: string | null
+          completed?: boolean
+          id?: string
+          journey_id?: string
+          logged_at?: string
+          parent_reflection_prompt?: string | null
+          step_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journey_progress_log_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "goal_journeys"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "journey_progress_log_step_id_fkey"
+            columns: ["step_id"]
+            isOneToOne: false
+            referencedRelation: "journey_steps"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journey_shares: {
+        Row: {
+          download_count: number
+          id: string
+          journey_id: string
+          privacy_level: string
+          rating: number | null
+          shared_at: string
+          shared_by_parent_id: string
+        }
+        Insert: {
+          download_count?: number
+          id?: string
+          journey_id: string
+          privacy_level?: string
+          rating?: number | null
+          shared_at?: string
+          shared_by_parent_id: string
+        }
+        Update: {
+          download_count?: number
+          id?: string
+          journey_id?: string
+          privacy_level?: string
+          rating?: number | null
+          shared_at?: string
+          shared_by_parent_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journey_shares_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "goal_journeys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journey_steps: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_completed: boolean
+          journey_id: string
+          reflection: string | null
+          step_number: number
+          title: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          journey_id: string
+          reflection?: string | null
+          step_number: number
+          title: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_completed?: boolean
+          journey_id?: string
+          reflection?: string | null
+          step_number?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "journey_steps_journey_id_fkey"
+            columns: ["journey_id"]
+            isOneToOne: false
+            referencedRelation: "goal_journeys"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      journey_templates: {
+        Row: {
+          age_range: string
+          category: string
+          community_shares_count: number
+          created_at: string
+          creator_id: string | null
+          description: string
+          download_count: number
+          duration_days: number
+          emoji: string
+          id: string
+          is_positive_habit: boolean
+          is_public: boolean
+          name: string
+          rating: number | null
+          steps_template: Json
+          updated_at: string
+        }
+        Insert: {
+          age_range: string
+          category: string
+          community_shares_count?: number
+          created_at?: string
+          creator_id?: string | null
+          description: string
+          download_count?: number
+          duration_days: number
+          emoji: string
+          id?: string
+          is_positive_habit?: boolean
+          is_public?: boolean
+          name: string
+          rating?: number | null
+          steps_template?: Json
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string
+          category?: string
+          community_shares_count?: number
+          created_at?: string
+          creator_id?: string | null
+          description?: string
+          download_count?: number
+          duration_days?: number
+          emoji?: string
+          id?: string
+          is_positive_habit?: boolean
+          is_public?: boolean
+          name?: string
+          rating?: number | null
+          steps_template?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       parent_approved_content: {
         Row: {
           approved_at: string
