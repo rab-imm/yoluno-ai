@@ -6,8 +6,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { X, Plus, Save, ArrowLeft } from "lucide-react";
+import { X, Plus, Save, ArrowLeft, Edit2, Check, Grid3x3, List, Search, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface TopicPack {
   id: string;
@@ -29,7 +31,14 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
   const [emoji, setEmoji] = useState(pack?.emoji || "📚");
   const [topics, setTopics] = useState<string[]>(pack?.topics || []);
   const [newTopic, setNewTopic] = useState("");
+  const [bulkTopics, setBulkTopics] = useState("");
   const [saving, setSaving] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "badge">("list");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"alpha-asc" | "alpha-desc" | "recent">("alpha-asc");
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [editingTopic, setEditingTopic] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState("");
 
   const handleAddTopic = () => {
     if (!newTopic.trim()) return;
@@ -45,7 +54,82 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
 
   const handleRemoveTopic = (topic: string) => {
     setTopics(topics.filter(t => t !== topic));
+    setSelectedTopics(selectedTopics.filter(t => t !== topic));
   };
+
+  const handleBulkAdd = () => {
+    if (!bulkTopics.trim()) return;
+    
+    const newTopics = bulkTopics
+      .split(/[\n,]+/)
+      .map(t => t.trim())
+      .filter(t => t && !topics.includes(t));
+    
+    if (newTopics.length === 0) {
+      toast.error("No new topics to add");
+      return;
+    }
+
+    setTopics([...topics, ...newTopics]);
+    setBulkTopics("");
+    toast.success(`Added ${newTopics.length} topic(s)`);
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedTopics.length === 0) return;
+    
+    setTopics(topics.filter(t => !selectedTopics.includes(t)));
+    setSelectedTopics([]);
+    toast.success(`Deleted ${selectedTopics.length} topic(s)`);
+  };
+
+  const handleToggleSelect = (topic: string) => {
+    setSelectedTopics(prev => 
+      prev.includes(topic) 
+        ? prev.filter(t => t !== topic)
+        : [...prev, topic]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setSelectedTopics(filteredAndSortedTopics);
+  };
+
+  const handleDeselectAll = () => {
+    setSelectedTopics([]);
+  };
+
+  const handleEditTopic = (topic: string) => {
+    setEditingTopic(topic);
+    setEditValue(topic);
+  };
+
+  const handleSaveEdit = () => {
+    if (!editValue.trim() || !editingTopic) return;
+    
+    if (topics.includes(editValue.trim()) && editValue.trim() !== editingTopic) {
+      toast.error("Topic already exists");
+      return;
+    }
+
+    setTopics(topics.map(t => t === editingTopic ? editValue.trim() : t));
+    setEditingTopic(null);
+    setEditValue("");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingTopic(null);
+    setEditValue("");
+  };
+
+  // Filter and sort topics
+  const filteredAndSortedTopics = topics
+    .filter(topic => topic.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === "alpha-asc") return a.localeCompare(b);
+      if (sortBy === "alpha-desc") return b.localeCompare(a);
+      return 0; // recent keeps original order
+    });
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -187,12 +271,38 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
 
       <Card>
         <CardHeader>
-          <CardTitle>Topics ({topics.length})</CardTitle>
-          <CardDescription>
-            Add and manage topics in this pack
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                Topics 
+                <Badge variant="secondary">{topics.length}</Badge>
+              </CardTitle>
+              <CardDescription>
+                Add and manage topics in this pack
+              </CardDescription>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setViewMode("list")}
+                className={viewMode === "list" ? "bg-accent" : ""}
+              >
+                <List className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => setViewMode("badge")}
+                className={viewMode === "badge" ? "bg-accent" : ""}
+              >
+                <Grid3x3 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
+          {/* Quick Add */}
           <div className="flex gap-2">
             <Input
               value={newTopic}
@@ -205,21 +315,148 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
             </Button>
           </div>
 
-          <div className="flex flex-wrap gap-2 max-h-80 overflow-y-auto p-2 border rounded-md">
+          {/* Bulk Add */}
+          <div className="space-y-2">
+            <Label htmlFor="bulk-topics">Bulk Add (comma or line separated)</Label>
+            <div className="flex gap-2">
+              <Textarea
+                id="bulk-topics"
+                value={bulkTopics}
+                onChange={(e) => setBulkTopics(e.target.value)}
+                placeholder="planets, stars, galaxies&#10;or one per line..."
+                rows={3}
+                className="flex-1"
+              />
+              <Button onClick={handleBulkAdd} variant="secondary">
+                Add All
+              </Button>
+            </div>
+          </div>
+
+          {/* Search and Sort */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search topics..."
+                className="pl-9"
+              />
+            </div>
+            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="alpha-asc">A → Z</SelectItem>
+                <SelectItem value="alpha-desc">Z → A</SelectItem>
+                <SelectItem value="recent">Recently Added</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Bulk Actions */}
+          {topics.length > 0 && (
+            <div className="flex gap-2 items-center">
+              <Button variant="outline" size="sm" onClick={handleSelectAll}>
+                Select All
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleDeselectAll}>
+                Deselect All
+              </Button>
+              {selectedTopics.length > 0 && (
+                <Button 
+                  variant="destructive" 
+                  size="sm" 
+                  onClick={handleDeleteSelected}
+                  className="ml-auto"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Selected ({selectedTopics.length})
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Topics Display */}
+          <div className="border rounded-md p-2 max-h-96 overflow-y-auto">
             {topics.length === 0 ? (
-              <p className="text-sm text-muted-foreground">No topics added yet</p>
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No topics added yet
+              </p>
+            ) : viewMode === "badge" ? (
+              <div className="flex flex-wrap gap-2">
+                {filteredAndSortedTopics.map((topic) => (
+                  <Badge key={topic} variant="secondary" className="gap-1">
+                    {topic}
+                    <button
+                      onClick={() => handleRemoveTopic(topic)}
+                      className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </Badge>
+                ))}
+              </div>
             ) : (
-              topics.map((topic) => (
-                <Badge key={topic} variant="secondary" className="gap-1">
-                  {topic}
-                  <button
-                    onClick={() => handleRemoveTopic(topic)}
-                    className="ml-1 hover:bg-destructive/20 rounded-full p-0.5"
+              <div className="space-y-2">
+                {filteredAndSortedTopics.map((topic) => (
+                  <div
+                    key={topic}
+                    className="flex items-center gap-3 p-3 rounded-md hover:bg-accent/50 transition-colors"
                   >
-                    <X className="w-3 h-3" />
-                  </button>
-                </Badge>
-              ))
+                    <Checkbox
+                      checked={selectedTopics.includes(topic)}
+                      onCheckedChange={() => handleToggleSelect(topic)}
+                    />
+                    
+                    {editingTopic === topic ? (
+                      <>
+                        <Input
+                          value={editValue}
+                          onChange={(e) => setEditValue(e.target.value)}
+                          onKeyPress={(e) => e.key === "Enter" && handleSaveEdit()}
+                          className="flex-1"
+                          autoFocus
+                        />
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={handleSaveEdit}
+                        >
+                          <Check className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={handleCancelEdit}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="flex-1 text-sm">{topic}</span>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleEditTopic(topic)}
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="icon"
+                          variant="ghost"
+                          onClick={() => handleRemoveTopic(topic)}
+                        >
+                          <X className="w-4 h-4" />
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         </CardContent>
