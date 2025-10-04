@@ -7,10 +7,7 @@ interface LearningModeProps {
 }
 
 export function LearningMode({ children }: LearningModeProps) {
-  const { mode } = useMode();
   const isMobile = useIsMobile();
-
-  if (isMobile && mode !== "learning") return null;
 
   return (
     <div 

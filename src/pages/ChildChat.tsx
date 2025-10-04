@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/sheet";
 import { PersonalitySelector } from "@/components/chat/PersonalitySelector";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ModeProvider } from "@/contexts/ModeContext";
+import { ModeProvider, useMode } from "@/contexts/ModeContext";
 import { BottomModeBar } from "@/components/modes/BottomModeBar";
 import { DesktopModeSwitcher } from "@/components/modes/DesktopModeSwitcher";
 import { LearningMode } from "@/components/modes/LearningMode";
@@ -32,11 +32,12 @@ import { StoryTimeMode } from "@/components/modes/StoryTimeMode";
 import { StoryModeHeader } from "@/components/stories/StoryModeHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export default function ChildChat() {
+function ChildChatContent() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
+  const { mode } = useMode();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
   const [bedtimeStory, setBedtimeStory] = useState<any>(null);
@@ -44,6 +45,7 @@ export default function ChildChat() {
   const [storyView, setStoryView] = useState<"create" | "library">("create");
   
   const fromLauncher = location.state?.fromLauncher || false;
+
 
   useEffect(() => {
     loadChild();
@@ -115,8 +117,7 @@ export default function ChildChat() {
   }
 
   return (
-    <ModeProvider>
-      <div className="min-h-screen bg-gradient-to-br from-child-bg via-child-primary/5 to-child-secondary/5">
+    <div className="min-h-screen bg-gradient-to-br from-child-bg via-child-primary/5 to-child-secondary/5">
         <header className="bg-gradient-to-r from-child-primary to-child-secondary p-3 md:p-4 shadow-lg sticky top-0 z-40">
           <div className="container mx-auto flex items-center justify-between">
             <Button
@@ -230,79 +231,83 @@ export default function ChildChat() {
           <DesktopModeSwitcher />
 
           {/* Learning Mode Content */}
-          <LearningMode>
-            <div className="space-y-6">
-              {isMobile && (
-                <div className="grid grid-cols-2 gap-3">
-                  <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
-                  <BadgeDisplay childId={id!} childName={child.name} />
-                </div>
-              )}
-              <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
-            </div>
-          </LearningMode>
+          {(mode === "learning" || !isMobile) && (
+            <LearningMode>
+              <div className="space-y-6 mode-transition">
+                {isMobile && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
+                    <BadgeDisplay childId={id!} childName={child.name} />
+                  </div>
+                )}
+                <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+              </div>
+            </LearningMode>
+          )}
 
           {/* Story Time Mode Content */}
-          <StoryTimeMode>
-            <div className="space-y-6">
-              <StoryModeHeader 
-                title="Story Time Magic"
-                description="Create wonderful stories and explore your collection"
-              />
-              
-              {isMobile && (
-                <div className="flex gap-2 mb-4">
-                  <Button
-                    onClick={() => setStoryView("create")}
-                    className="flex-1 transition-all"
-                    style={storyView === "create" ? {
-                      background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
-                      color: "white"
-                    } : undefined}
-                    variant={storyView === "create" ? "default" : "outline"}
-                  >
-                    ✨ Create Story
-                  </Button>
-                  <Button
-                    onClick={() => setStoryView("library")}
-                    className="flex-1 transition-all"
-                    style={storyView === "library" ? {
-                      background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
-                      color: "white"
-                    } : undefined}
-                    variant={storyView === "library" ? "default" : "outline"}
-                  >
-                    📖 My Stories
-                  </Button>
-                </div>
-              )}
-
-              {!isMobile ? (
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  <div>
-                    <EnhancedStoryBuilder
-                      childId={id!}
-                      childName={child.name}
-                      childAge={child.age || 8}
-                      onComplete={() => setStoryView("library")}
-                    />
-                  </div>
-                  <div>
-                    <StoriesLibrary childId={id!} childName={child.name} />
-                  </div>
-                </div>
-              ) : storyView === "create" ? (
-                <EnhancedStoryBuilder
-                  childId={id!}
-                  childName={child.name}
-                  childAge={child.age || 8}
-                  onComplete={() => setStoryView("library")}
+          {(mode === "story" || !isMobile) && (
+            <StoryTimeMode>
+              <div className="space-y-6 mode-transition">
+                <StoryModeHeader 
+                  title="Story Time Magic"
+                  description="Create wonderful stories and explore your collection"
                 />
-              ) : (
-                <StoriesLibrary childId={id!} childName={child.name} />
-              )}
-            </div>
-          </StoryTimeMode>
+                
+                {isMobile && (
+                  <div className="flex gap-2 mb-4">
+                    <Button
+                      onClick={() => setStoryView("create")}
+                      className="flex-1 transition-all"
+                      style={storyView === "create" ? {
+                        background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
+                        color: "white"
+                      } : undefined}
+                      variant={storyView === "create" ? "default" : "outline"}
+                    >
+                      ✨ Create Story
+                    </Button>
+                    <Button
+                      onClick={() => setStoryView("library")}
+                      className="flex-1 transition-all"
+                      style={storyView === "library" ? {
+                        background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
+                        color: "white"
+                      } : undefined}
+                      variant={storyView === "library" ? "default" : "outline"}
+                    >
+                      📖 My Stories
+                    </Button>
+                  </div>
+                )}
+
+                {!isMobile ? (
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div>
+                      <EnhancedStoryBuilder
+                        childId={id!}
+                        childName={child.name}
+                        childAge={child.age || 8}
+                        onComplete={() => setStoryView("library")}
+                      />
+                    </div>
+                    <div>
+                      <StoriesLibrary childId={id!} childName={child.name} />
+                    </div>
+                  </div>
+                ) : storyView === "create" ? (
+                  <EnhancedStoryBuilder
+                    childId={id!}
+                    childName={child.name}
+                    childAge={child.age || 8}
+                    onComplete={() => setStoryView("library")}
+                  />
+                ) : (
+                  <StoriesLibrary childId={id!} childName={child.name} />
+                )}
+              </div>
+            </StoryTimeMode>
+          )}
         </main>
 
         <BottomModeBar />
@@ -316,6 +321,13 @@ export default function ChildChat() {
           />
         )}
       </div>
+  );
+}
+
+export default function ChildChat() {
+  return (
+    <ModeProvider>
+      <ChildChatContent />
     </ModeProvider>
   );
 }

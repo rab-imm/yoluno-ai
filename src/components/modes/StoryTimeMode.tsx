@@ -7,10 +7,7 @@ interface StoryTimeModeProps {
 }
 
 export function StoryTimeMode({ children }: StoryTimeModeProps) {
-  const { mode } = useMode();
   const isMobile = useIsMobile();
-
-  if (isMobile && mode !== "story") return null;
 
   return (
     <div 
