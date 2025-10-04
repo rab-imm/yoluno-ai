@@ -182,8 +182,8 @@ function ChildChatContent() {
         </header>
 
         <main className="container mx-auto px-2 md:px-4 py-4 md:py-6 space-y-4 md:space-y-6">
-          {/* Bedtime Story Card */}
-          {bedtimeStory && (
+          {/* Bedtime Story Card - only show in story mode on desktop, always on mobile */}
+          {bedtimeStory && (isMobile || mode === "story") && (
             <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
