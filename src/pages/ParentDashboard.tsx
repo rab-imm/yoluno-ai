@@ -87,7 +87,7 @@ export default function ParentDashboard() {
 
   return (
     <div className="min-h-screen bg-secondary/30">
-      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Users className="h-6 w-6 text-primary" />
@@ -104,29 +104,35 @@ export default function ParentDashboard() {
         <div className="grid gap-6">
           {/* Story Buddy Hero Section */}
           {children.length > 0 && selectedChildId && (
-            <Card className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 text-white border-0">
-              <CardHeader>
-                <div className="flex items-center gap-3">
+            <Card className="border-0 overflow-hidden relative" style={{ background: 'var(--gradient-story)' }}>
+              <CardHeader className="relative z-10">
+                <div className="flex items-center gap-3 text-white">
                   <BookOpen className="h-8 w-8" />
                   <div>
-                    <CardTitle className="text-2xl">🌙 Tonight's Bedtime Story</CardTitle>
+                    <CardTitle className="text-2xl text-white">🌙 Tonight's Bedtime Story</CardTitle>
                     <CardDescription className="text-white/90">
                       Create a magical story for {children.find(c => c.id === selectedChildId)?.name} in just 2 minutes
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative z-10">
                 <Button 
                   size="lg" 
                   variant="secondary" 
                   onClick={() => setShowStoryWizard(true)}
-                  className="bg-white text-purple-600 hover:bg-white/90"
+                  className="bg-white hover:bg-white/90 shadow-lg"
+                  style={{ color: 'hsl(var(--story-magic))' }}
                 >
                   <Sparkles className="w-5 h-5 mr-2" />
                   Start Story Wizard
                 </Button>
               </CardContent>
+              <div className="absolute inset-0 opacity-10 pointer-events-none">
+                <div className="absolute top-4 right-4 text-6xl">✨</div>
+                <div className="absolute bottom-4 left-4 text-5xl">📖</div>
+                <div className="absolute top-1/2 right-1/4 text-4xl">🌙</div>
+              </div>
             </Card>
           )}
 

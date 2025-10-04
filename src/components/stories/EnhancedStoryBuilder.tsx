@@ -159,7 +159,13 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
           <Button onClick={onComplete} variant="outline" className="flex-1">
             Go Back
           </Button>
-          <Button className="flex-1 bg-purple-600 hover:bg-purple-700">
+          <Button 
+            className="flex-1"
+            style={{ 
+              backgroundColor: 'hsl(var(--story-magic))',
+              color: 'white'
+            }}
+          >
             Upgrade Plan
           </Button>
         </div>
@@ -189,7 +195,10 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
     return (
       <Card className="w-full max-w-3xl mx-auto p-12">
         <div className="flex flex-col items-center justify-center text-center space-y-6">
-          <Loader2 className="w-16 h-16 animate-spin text-purple-600" />
+          <Loader2 
+            className="w-16 h-16 animate-spin" 
+            style={{ color: 'hsl(var(--story-magic))' }}
+          />
           <div className="space-y-2">
             <h3 className="text-2xl font-bold">Creating Your Magical Story</h3>
             <p className="text-muted-foreground">

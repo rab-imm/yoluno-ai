@@ -246,7 +246,11 @@ export function StoriesLibrary({ childId, childName }: StoriesLibraryProps) {
                         e.stopPropagation();
                         launchBedtimeMode(story);
                       }}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      style={{ 
+                        backgroundColor: 'hsl(var(--story-bedtime))',
+                        color: 'white'
+                      }}
+                      className="hover:opacity-90 transition-opacity"
                     >
                       <Moon className="h-4 w-4 mr-1" />
                       Bedtime

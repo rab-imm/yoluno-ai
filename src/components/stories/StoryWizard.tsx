@@ -139,7 +139,10 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
     <Card className="w-full max-w-3xl mx-auto">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-purple-600" />
+          <Sparkles 
+            className="w-5 h-5" 
+            style={{ color: 'hsl(var(--story-magic))' }}
+          />
           Create Tonight's Story
         </CardTitle>
         <CardDescription>
@@ -149,9 +152,10 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
           {[1, 2, 3, 4].map(s => (
             <div
               key={s}
-              className={`h-2 flex-1 rounded-full transition-colors ${
-                s <= step ? "bg-purple-600" : "bg-gray-200"
-              }`}
+              className="h-2 flex-1 rounded-full transition-colors"
+              style={{
+                backgroundColor: s <= step ? 'hsl(var(--story-magic))' : 'hsl(var(--muted))'
+              }}
             />
           ))}
         </div>

@@ -46,6 +46,12 @@ All colors MUST be HSL.
     --child-secondary: 340 82% 67%;
     --child-bg: 270 50% 98%;
     
+    /* Story mode tokens */
+    --story-magic: 271 76% 63%;
+    --story-magic-light: 271 76% 90%;
+    --story-bedtime: 243 75% 59%;
+    --story-bedtime-dark: 243 75% 40%;
+    
     /* Success states */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
@@ -57,10 +63,12 @@ All colors MUST be HSL.
     /* Gradients */
     --gradient-playful: linear-gradient(135deg, hsl(283 89% 68%), hsl(340 82% 67%));
     --gradient-trust: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 63%));
+    --gradient-story: linear-gradient(135deg, hsl(271 76% 63%), hsl(243 75% 59%));
     
     /* Shadows */
     --shadow-soft: 0 4px 6px -1px hsl(221 83% 53% / 0.1);
     --shadow-playful: 0 10px 30px -10px hsl(283 89% 68% / 0.3);
+    --shadow-story: 0 20px 40px -15px hsl(271 76% 63% / 0.4);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
