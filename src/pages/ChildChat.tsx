@@ -9,6 +9,7 @@ import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 import { BadgeDisplay } from "@/components/gamification/BadgeDisplay";
 import { StreakDisplay } from "@/components/gamification/StreakDisplay";
 import { StoryMode } from "@/components/stories/StoryMode";
+import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
@@ -126,15 +127,19 @@ export default function ChildChat() {
         </div>
 
         <Tabs defaultValue="chat" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="chat">💬 Chat</TabsTrigger>
-            <TabsTrigger value="stories">📚 Story Time</TabsTrigger>
+            <TabsTrigger value="stories">📚 Create Story</TabsTrigger>
+            <TabsTrigger value="library">📖 My Stories</TabsTrigger>
           </TabsList>
           <TabsContent value="chat" className="mt-6">
             <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
           </TabsContent>
           <TabsContent value="stories" className="mt-6">
             <StoryMode childId={id!} childName={child.name} />
+          </TabsContent>
+          <TabsContent value="library" className="mt-6">
+            <StoriesLibrary childId={id!} childName={child.name} />
           </TabsContent>
         </Tabs>
       </main>

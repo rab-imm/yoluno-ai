@@ -2,11 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { Send, Mic, Trash2 } from "lucide-react";
+import { Send, Mic, Trash2, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { ChatMessage } from "./ChatMessage";
 import { BuddyAvatar } from "./BuddyAvatar";
+import { useTextToSpeech } from "@/hooks/useTextToSpeech";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -37,8 +38,10 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const { speak, stop, speaking } = useTextToSpeech();
 
   useEffect(() => {
     loadMessages();
@@ -196,6 +199,11 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
         content: assistantMessage.content,
       });
 
+      // Auto-speak the response if enabled
+      if (autoSpeak) {
+        await speak(data.message);
+      }
+
       // Check for new badges
       await supabase.rpc("check_and_award_badges", { p_child_id: childId });
     } catch (error: any) {
@@ -211,31 +219,43 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
       <div className="h-[600px] flex flex-col">
         <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-child-primary/5 to-child-secondary/5">
           <div className="flex items-center gap-3">
-            <BuddyAvatar size="sm" avatar={childAvatar} />
+            <BuddyAvatar size="sm" avatar={childAvatar} isThinking={speaking} />
             <div>
               <h3 className="font-semibold">Chatting with {childName}'s Buddy</h3>
-              <p className="text-xs text-muted-foreground">Always here to help!</p>
+              <p className="text-xs text-muted-foreground">
+                {speaking ? "Speaking..." : "Always here to help!"}
+              </p>
             </div>
           </div>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="ghost" size="sm">
-                <Trash2 className="h-4 w-4" />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Clear chat history?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will delete all messages in this conversation. This action cannot be undone.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={clearChatHistory}>Clear</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setAutoSpeak(!autoSpeak)}
+              title={autoSpeak ? "Disable auto-speak" : "Enable auto-speak"}
+            >
+              {autoSpeak ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Clear chat history?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will delete all messages in this conversation. This action cannot be undone.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={clearChatHistory}>Clear</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4">

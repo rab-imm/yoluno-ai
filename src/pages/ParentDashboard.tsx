@@ -9,6 +9,7 @@ import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
 import { TopicManager } from "@/components/dashboard/TopicManager";
 import { ParentInsights } from "@/components/dashboard/ParentInsights";
+import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ParentDashboard() {
@@ -17,6 +18,7 @@ export default function ParentDashboard() {
   const [children, setChildren] = useState<any[]>([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
+  const [showWelcome, setShowWelcome] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -29,7 +31,22 @@ export default function ParentDashboard() {
       navigate("/auth");
       return;
     }
+    
+    // Check if this is first login
+    const isFirstLogin = localStorage.getItem("hasSeenWelcome") !== "true";
+    if (isFirstLogin) {
+      setShowWelcome(true);
+    }
+    
     setLoading(false);
+  };
+
+  const handleWelcomeComplete = () => {
+    localStorage.setItem("hasSeenWelcome", "true");
+    setShowWelcome(false);
+    if (children.length === 0) {
+      setShowCreateDialog(true);
+    }
   };
 
   const fetchChildren = async () => {
@@ -169,6 +186,8 @@ export default function ParentDashboard() {
         onOpenChange={setShowCreateDialog}
         onSuccess={fetchChildren}
       />
+
+      <WelcomeDialog open={showWelcome} onComplete={handleWelcomeComplete} />
     </div>
   );
 }
