@@ -1,0 +1,113 @@
+import { useState } from "react";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface CreateChildDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess: () => void;
+}
+
+export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChildDialogProps) {
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
+  const [avatar, setAvatar] = useState("👦");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      toast.error("You must be logged in");
+      setLoading(false);
+      return;
+    }
+
+    const { error } = await supabase.from("child_profiles").insert({
+      parent_id: user.id,
+      name,
+      age: parseInt(age),
+      avatar,
+    });
+
+    if (error) {
+      toast.error("Failed to create profile");
+      setLoading(false);
+      return;
+    }
+
+    toast.success("Profile created!");
+    setName("");
+    setAge("");
+    setAvatar("👦");
+    onSuccess();
+    onOpenChange(false);
+    setLoading(false);
+  };
+
+  const avatarOptions = ["👦", "👧", "🧒", "👶", "🐻", "🐼", "🦁", "🐯"];
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Create Child Profile</DialogTitle>
+          <DialogDescription>
+            Add a new profile for your child
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="age">Age</Label>
+            <Input
+              id="age"
+              type="number"
+              min="3"
+              max="12"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label>Avatar</Label>
+            <div className="grid grid-cols-4 gap-2">
+              {avatarOptions.map((emoji) => (
+                <button
+                  key={emoji}
+                  type="button"
+                  className={`p-3 text-2xl rounded-lg border-2 transition-all ${
+                    avatar === emoji
+                      ? "border-primary bg-primary/10 scale-110"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                  onClick={() => setAvatar(emoji)}
+                >
+                  {emoji}
+                </button>
+              ))}
+            </div>
+          </div>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? "Creating..." : "Create Profile"}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
