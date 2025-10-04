@@ -11,6 +11,7 @@ import { StreakDisplay } from "@/components/gamification/StreakDisplay";
 import { StoryMode } from "@/components/stories/StoryMode";
 import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
 import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
+import { AccessoriesManager } from "@/components/dashboard/AccessoriesManager";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
@@ -21,6 +22,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { PersonalitySelector } from "@/components/chat/PersonalitySelector";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ChildChat() {
   const { id } = useParams();
@@ -108,27 +110,34 @@ export default function ChildChat() {
                 <Settings className="h-4 w-4" />
               </Button>
             </SheetTrigger>
-            <SheetContent>
+            <SheetContent className="w-full sm:max-w-xl">
               <SheetHeader>
                 <SheetTitle>Buddy Settings</SheetTitle>
                 <SheetDescription>
                   Customize your buddy's personality and appearance
                 </SheetDescription>
               </SheetHeader>
-              <div className="mt-6 space-y-6">
-                <AvatarCustomizer
-                  childId={id!}
-                  currentAvatar={child.avatar}
-                  customAvatarUrl={child.custom_avatar_url}
-                  onAvatarGenerated={(url) => {
-                    setChild({ ...child, custom_avatar_url: url });
-                  }}
-                />
-                <PersonalitySelector
-                  selectedMode={child.personality_mode || "curious_explorer"}
-                  onModeChange={updatePersonality}
-                />
-              </div>
+              <ScrollArea className="h-[calc(100vh-120px)] mt-6">
+                <div className="space-y-6 pr-4">
+                  <AvatarCustomizer
+                    childId={id!}
+                    childName={child.name}
+                    currentAvatar={child.avatar}
+                    customAvatarUrl={child.custom_avatar_url}
+                    onAvatarGenerated={(url) => {
+                      setChild({ ...child, custom_avatar_url: url });
+                    }}
+                  />
+                  <AccessoriesManager
+                    childId={id!}
+                    streakDays={child.streak_days || 0}
+                  />
+                  <PersonalitySelector
+                    selectedMode={child.personality_mode || "curious_explorer"}
+                    onModeChange={updatePersonality}
+                  />
+                </div>
+              </ScrollArea>
             </SheetContent>
           </Sheet>
         </div>

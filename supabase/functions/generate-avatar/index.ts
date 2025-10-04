@@ -20,11 +20,12 @@ serve(async (req) => {
 
     // Generate custom avatar using Gemini image generation
     const prompt = `Create a cute, friendly, child-appropriate avatar character based on ${emoji}. 
+    This is ${childName}'s personal AI learning buddy companion.
     The character should be colorful, expressive, and appealing to children aged 5-12. 
-    Style: cartoon, simple shapes, bright colors, friendly face. 
-    The character should look welcoming and fun, suitable for an educational AI companion.
+    Style: cartoon, simple shapes, bright colors, friendly face with big expressive eyes. 
+    The character should look welcoming, fun, and educational - perfect for a learning companion.
     Background: transparent or soft gradient.
-    High quality, professional illustration style.`;
+    High quality, professional illustration style suitable for a children's educational app.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
