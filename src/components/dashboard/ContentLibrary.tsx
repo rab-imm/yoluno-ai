@@ -8,8 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Check, X, Eye, Trash2 } from "lucide-react";
+import { Search, Check, X, Eye, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { CustomContentEditor } from "./CustomContentEditor";
 
 interface ContentLibraryProps {
   childId: string;
@@ -257,6 +258,10 @@ export const ContentLibrary = ({ childId, childName }: ContentLibraryProps) => {
           <TabsTrigger value="pending">
             Pending ({pendingCount})
           </TabsTrigger>
+          <TabsTrigger value="custom">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Custom
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -301,6 +306,13 @@ export const ContentLibrary = ({ childId, childName }: ContentLibraryProps) => {
             onApprove={handleApprove}
             onReject={handleReject}
             onPreview={setPreviewItem}
+          />
+        </TabsContent>
+
+        <TabsContent value="custom" className="space-y-4">
+          <CustomContentEditor 
+            childId={childId} 
+            onContentAdded={loadContent}
           />
         </TabsContent>
       </Tabs>
