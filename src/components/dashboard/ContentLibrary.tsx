@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { Search, Check, X, Eye, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { CustomContentEditor } from "./CustomContentEditor";
@@ -40,6 +41,7 @@ export const ContentLibrary = ({ childId, childName }: ContentLibraryProps) => {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
   const [previewItem, setPreviewItem] = useState<TopicContent | null>(null);
   const [approvalStatus, setApprovalStatus] = useState<Record<string, boolean>>({});
+  const [customEditorOpen, setCustomEditorOpen] = useState(false);
 
   useEffect(() => {
     loadContent();
@@ -206,11 +208,17 @@ export const ContentLibrary = ({ childId, childName }: ContentLibraryProps) => {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-bold">Content Library for {childName}</h2>
-        <p className="text-muted-foreground">
-          Review and approve educational content before it's shown to your child
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold">Content Library for {childName}</h2>
+          <p className="text-muted-foreground">
+            Review and approve educational content before it's shown to your child
+          </p>
+        </div>
+        <Button onClick={() => setCustomEditorOpen(true)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Create Custom
+        </Button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
@@ -258,10 +266,6 @@ export const ContentLibrary = ({ childId, childName }: ContentLibraryProps) => {
           <TabsTrigger value="pending">
             Pending ({pendingCount})
           </TabsTrigger>
-          <TabsTrigger value="custom">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Custom
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
@@ -308,14 +312,24 @@ export const ContentLibrary = ({ childId, childName }: ContentLibraryProps) => {
             onPreview={setPreviewItem}
           />
         </TabsContent>
-
-        <TabsContent value="custom" className="space-y-4">
-          <CustomContentEditor 
-            childId={childId} 
-            onContentAdded={loadContent}
-          />
-        </TabsContent>
       </Tabs>
+
+      <Drawer open={customEditorOpen} onOpenChange={setCustomEditorOpen}>
+        <DrawerContent className="max-h-[90vh]">
+          <DrawerHeader>
+            <DrawerTitle>Create Custom Content</DrawerTitle>
+          </DrawerHeader>
+          <div className="overflow-y-auto p-6">
+            <CustomContentEditor 
+              childId={childId} 
+              onContentAdded={() => {
+                loadContent();
+                setCustomEditorOpen(false);
+              }}
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
 
       {previewItem && (
         <ContentPreview item={previewItem} onClose={() => setPreviewItem(null)} />
