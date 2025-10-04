@@ -11,6 +11,7 @@ export const Navigation = () => {
   const navLinks = [
     { label: "Story Buddy", path: "/story-buddy" },
     { label: "Learning Buddy", path: "/learning-buddy" },
+    { label: "Journeys", path: "/marketplace" },
     { label: "Safety", path: "/safety" },
     { label: "Pricing", path: "/pricing" },
   ];

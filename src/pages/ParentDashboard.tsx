@@ -15,6 +15,7 @@ import { TopicLibrary } from "@/components/dashboard/TopicLibrary";
 import { ContentLibrary } from "@/components/dashboard/ContentLibrary";
 import { StoryLibrary } from "@/components/dashboard/StoryLibrary";
 import { GoalJourneyManager } from "@/components/dashboard/GoalJourneyManager";
+import { JourneyOnboardingCard } from "@/components/journey/JourneyOnboardingCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
@@ -150,6 +151,20 @@ export default function ParentDashboard() {
                 <div className="absolute top-1/2 right-1/4 text-4xl">🌙</div>
               </div>
             </Card>
+          )}
+
+          {/* Journey Onboarding Card - shown if child exists */}
+          {children.length > 0 && selectedChildId && (
+            <JourneyOnboardingCard
+              onStartJourney={() => {
+                // Navigate to journeys tab
+                const journeysSection = document.querySelector('[value="journeys"]');
+                if (journeysSection) {
+                  (journeysSection as HTMLElement).click();
+                }
+              }}
+              onBrowseMarketplace={() => navigate("/marketplace")}
+            />
           )}
 
           <Card>

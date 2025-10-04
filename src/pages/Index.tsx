@@ -5,7 +5,7 @@ import { Testimonial } from "@/components/landing/Testimonial";
 import { TrustBadge } from "@/components/landing/TrustBadge";
 import { VideoEmbed } from "@/components/landing/VideoEmbed";
 import { useNavigate } from "react-router-dom";
-import { Shield, Heart, Lock, Sparkles, BookOpen, Brain } from "lucide-react";
+import { Shield, Heart, Lock, Sparkles, BookOpen, Brain, Target } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const Index = () => {
@@ -32,6 +32,10 @@ const Index = () => {
               <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--story-magic))] to-[hsl(var(--story-bedtime))] hover:opacity-90">
                 <Sparkles className="mr-2 h-5 w-5" />
                 Start Free – Create Your First Story
+              </Button>
+              <Button size="lg" variant="outline" onClick={() => navigate("/marketplace")} className="text-lg">
+                <Target className="mr-2 h-5 w-5" />
+                Explore Goal Journeys
               </Button>
             </div>
             
