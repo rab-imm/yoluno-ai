@@ -1,4 +1,7 @@
 project_id = "dmgbocugghekzsdptrgj"
 
+[functions.generate-story]
+verify_jwt = false
+
 [functions.child-chat]
 verify_jwt = false

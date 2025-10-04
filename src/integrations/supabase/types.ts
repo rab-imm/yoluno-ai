@@ -46,14 +46,49 @@ export type Database = {
           },
         ]
       }
+      child_badges: {
+        Row: {
+          badge_name: string
+          badge_type: string
+          child_id: string
+          earned_at: string
+          id: string
+        }
+        Insert: {
+          badge_name: string
+          badge_type: string
+          child_id: string
+          earned_at?: string
+          id?: string
+        }
+        Update: {
+          badge_name?: string
+          badge_type?: string
+          child_id?: string
+          earned_at?: string
+          id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_badges_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_profiles: {
         Row: {
           age: number
           avatar: string | null
           created_at: string
           id: string
+          last_chat_date: string | null
           name: string
           parent_id: string
+          personality_mode: string
+          streak_days: number
           updated_at: string
         }
         Insert: {
@@ -61,8 +96,11 @@ export type Database = {
           avatar?: string | null
           created_at?: string
           id?: string
+          last_chat_date?: string | null
           name: string
           parent_id: string
+          personality_mode?: string
+          streak_days?: number
           updated_at?: string
         }
         Update: {
@@ -70,11 +108,52 @@ export type Database = {
           avatar?: string | null
           created_at?: string
           id?: string
+          last_chat_date?: string | null
           name?: string
           parent_id?: string
+          personality_mode?: string
+          streak_days?: number
           updated_at?: string
         }
         Relationships: []
+      }
+      child_stories: {
+        Row: {
+          child_id: string
+          content: string
+          created_at: string
+          id: string
+          is_favorite: boolean
+          prompt: string
+          title: string
+        }
+        Insert: {
+          child_id: string
+          content: string
+          created_at?: string
+          id?: string
+          is_favorite?: boolean
+          prompt: string
+          title: string
+        }
+        Update: {
+          child_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          is_favorite?: boolean
+          prompt?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_stories_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       child_topics: {
         Row: {
@@ -169,7 +248,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_and_award_badges: {
+        Args: { p_child_id: string }
+        Returns: undefined
+      }
+      update_child_streak: {
+        Args: { p_child_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

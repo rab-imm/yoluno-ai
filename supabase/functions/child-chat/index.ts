@@ -66,7 +66,25 @@ serve(async (req) => {
     }
 
     // System prompt for the AI buddy
+    const personalityPrompts: Record<string, string> = {
+      curious_explorer: "You love asking follow-up questions! After answering, ask the child what else they'd like to know about the topic.",
+      patient_teacher: "You explain things step-by-step with clear examples. Break down complex ideas into simple parts.",
+      playful_friend: "You use jokes, silly examples, and playful language to make learning super fun!",
+    };
+
+    // Get child's personality mode
+    const { data: childData } = await supabase
+      .from('child_profiles')
+      .select('personality_mode')
+      .eq('id', childId)
+      .single();
+
+    const personalityMode = childData?.personality_mode || 'curious_explorer';
+    const personalityInstruction = personalityPrompts[personalityMode] || personalityPrompts.curious_explorer;
+
     const systemPrompt = `You are a friendly AI buddy for children. You can ONLY talk about these approved topics: ${approvedTopics.join(', ')}.
+
+PERSONALITY: ${personalityInstruction}
 
 IMPORTANT RULES:
 1. Keep responses simple, fun, and age-appropriate (ages 5-12)

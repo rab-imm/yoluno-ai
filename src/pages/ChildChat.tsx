@@ -2,10 +2,23 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
+import { BadgeDisplay } from "@/components/gamification/BadgeDisplay";
+import { StreakDisplay } from "@/components/gamification/StreakDisplay";
+import { StoryMode } from "@/components/stories/StoryMode";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import { PersonalitySelector } from "@/components/chat/PersonalitySelector";
 
 export default function ChildChat() {
   const { id } = useParams();
@@ -39,6 +52,21 @@ export default function ChildChat() {
     setLoading(false);
   };
 
+  const updatePersonality = async (mode: string) => {
+    const { error } = await supabase
+      .from("child_profiles")
+      .update({ personality_mode: mode })
+      .eq("id", id);
+
+    if (error) {
+      toast.error("Failed to update personality");
+      return;
+    }
+
+    setChild({ ...child, personality_mode: mode });
+    toast.success("Buddy personality updated! 🎉");
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-child-bg">
@@ -67,12 +95,48 @@ export default function ChildChat() {
               <p className="text-sm opacity-90">Your AI Buddy</p>
             </div>
           </div>
-          <div className="w-20" /> {/* Spacer for centering */}
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Buddy Settings</SheetTitle>
+                <SheetDescription>
+                  Customize your buddy's personality
+                </SheetDescription>
+              </SheetHeader>
+              <div className="mt-6">
+                <PersonalitySelector
+                  selectedMode={child.personality_mode || "curious_explorer"}
+                  onModeChange={updatePersonality}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-6">
-        <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+      <main className="container mx-auto px-4 py-6 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
+          <BadgeDisplay childId={id!} childName={child.name} />
+        </div>
+
+        <Tabs defaultValue="chat" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="chat">💬 Chat</TabsTrigger>
+            <TabsTrigger value="stories">📚 Story Time</TabsTrigger>
+          </TabsList>
+          <TabsContent value="chat" className="mt-6">
+            <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+          </TabsContent>
+          <TabsContent value="stories" className="mt-6">
+            <StoryMode childId={id!} childName={child.name} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

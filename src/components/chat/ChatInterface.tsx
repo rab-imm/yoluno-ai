@@ -167,6 +167,9 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
     });
 
     try {
+      // Update streak
+      await supabase.rpc("update_child_streak", { p_child_id: childId });
+
       // Call the AI chat function
       const { data, error } = await supabase.functions.invoke("child-chat", {
         body: {
@@ -192,6 +195,9 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖" }: Chat
         role: "assistant",
         content: assistantMessage.content,
       });
+
+      // Check for new badges
+      await supabase.rpc("check_and_award_badges", { p_child_id: childId });
     } catch (error: any) {
       toast.error("Sorry, I couldn't respond right now. Please try again!");
       console.error("Chat error:", error);
