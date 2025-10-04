@@ -12,6 +12,7 @@ import { ParentInsights } from "@/components/dashboard/ParentInsights";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
 import { ContentModerationLog } from "@/components/dashboard/ContentModerationLog";
 import { TopicLibrary } from "@/components/dashboard/TopicLibrary";
+import { ContentLibrary } from "@/components/dashboard/ContentLibrary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ParentDashboard() {
@@ -153,10 +154,11 @@ export default function ParentDashboard() {
                       return (
                         <div key={child.id}>
                           <Tabs defaultValue="insights" className="w-full">
-                            <TabsList className="grid w-full grid-cols-4">
+                            <TabsList className="grid w-full grid-cols-5">
                               <TabsTrigger value="insights">Learning Insights</TabsTrigger>
                               <TabsTrigger value="topics">Topics</TabsTrigger>
                               <TabsTrigger value="library">Topic Library</TabsTrigger>
+                              <TabsTrigger value="content">Content Review</TabsTrigger>
                               <TabsTrigger value="safety">Safety Monitor</TabsTrigger>
                             </TabsList>
                             
@@ -170,6 +172,10 @@ export default function ParentDashboard() {
 
                             <TabsContent value="library" className="space-y-4 mt-4">
                               <TopicLibrary childId={selectedChild.id} />
+                            </TabsContent>
+
+                            <TabsContent value="content" className="space-y-4 mt-4">
+                              <ContentLibrary childId={selectedChild.id} childName={selectedChild.name} />
                             </TabsContent>
                             
                             <TabsContent value="safety" className="space-y-4 mt-4">
