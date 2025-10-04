@@ -113,6 +113,47 @@ export type Database = {
           },
         ]
       }
+      child_memory: {
+        Row: {
+          child_id: string
+          created_at: string
+          id: string
+          importance_score: number
+          last_accessed_at: string
+          memory_key: string
+          memory_type: string
+          memory_value: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          id?: string
+          importance_score?: number
+          last_accessed_at?: string
+          memory_key: string
+          memory_type: string
+          memory_value: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          id?: string
+          importance_score?: number
+          last_accessed_at?: string
+          memory_key?: string
+          memory_type?: string
+          memory_value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_memory_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_profiles: {
         Row: {
           age: number
@@ -285,6 +326,44 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "conversation_stats_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversation_summaries: {
+        Row: {
+          child_id: string
+          created_at: string
+          id: string
+          message_count: number
+          session_date: string
+          summary: string
+          topics_discussed: string[]
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          id?: string
+          message_count?: number
+          session_date: string
+          summary: string
+          topics_discussed?: string[]
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          id?: string
+          message_count?: number
+          session_date?: string
+          summary?: string
+          topics_discussed?: string[]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_summaries_child_id_fkey"
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "child_profiles"

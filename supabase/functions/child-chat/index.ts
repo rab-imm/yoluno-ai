@@ -85,20 +85,118 @@ serve(async (req) => {
     const childAge = childData?.age || 8;
     const personalityMode = childData?.personality_mode || 'curious_explorer';
 
-    // Get conversation history (last 15 messages for context)
+    // ADAPTIVE CONVERSATION MEMORY SYSTEM
+    
+    // 1. Get persistent memories (key facts about the child)
+    const { data: persistentMemories, error: memoryError } = await supabase
+      .from('child_memory')
+      .select('memory_type, memory_key, memory_value, importance_score')
+      .eq('child_id', childId)
+      .order('importance_score', { ascending: false })
+      .order('last_accessed_at', { ascending: false })
+      .limit(10);
+
+    if (memoryError) {
+      console.error('Error fetching persistent memories:', memoryError);
+    }
+
+    // Update last_accessed_at for retrieved memories
+    if (persistentMemories && persistentMemories.length > 0) {
+      await supabase
+        .from('child_memory')
+        .update({ last_accessed_at: new Date().toISOString() })
+        .eq('child_id', childId);
+    }
+
+    // 2. Get today's conversation summary (if exists)
+    const today = new Date().toISOString().split('T')[0];
+    const { data: todaySummary } = await supabase
+      .from('conversation_summaries')
+      .select('summary, topics_discussed')
+      .eq('child_id', childId)
+      .eq('session_date', today)
+      .single();
+
+    // 3. Get recent conversation summaries (last 3 days, excluding today)
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const { data: recentSummaries } = await supabase
+      .from('conversation_summaries')
+      .select('session_date, summary, topics_discussed')
+      .eq('child_id', childId)
+      .lt('session_date', today)
+      .gte('session_date', threeDaysAgo.toISOString().split('T')[0])
+      .order('session_date', { ascending: false })
+      .limit(3);
+
+    // 4. Get conversation history with intelligent selection
+    // Load more messages than we'll use, then filter for importance
     const { data: conversationHistory, error: historyError } = await supabase
       .from('chat_messages')
-      .select('role, content')
+      .select('role, content, created_at')
       .eq('child_id', childId)
       .order('created_at', { ascending: false })
-      .limit(15);
+      .limit(30); // Load 30 to have more to choose from
 
     if (historyError) {
       console.error('Error fetching conversation history:', historyError);
     }
 
     // Reverse to get chronological order
-    const recentMessages = (conversationHistory || []).reverse();
+    const allMessages = (conversationHistory || []).reverse();
+
+    // 5. INTELLIGENT MESSAGE SELECTION
+    // Estimate tokens (rough estimate: 1 token ≈ 4 characters)
+    const estimateTokens = (text: string) => Math.ceil(text.length / 4);
+    
+    // Filter out low-value messages (greetings, short responses)
+    const isImportantMessage = (msg: any) => {
+      const content = msg.content.toLowerCase();
+      const tokens = estimateTokens(msg.content);
+      
+      // Keep if it's a substantial message (>30 tokens)
+      if (tokens > 30) return true;
+      
+      // Filter out simple greetings and acknowledgments
+      const lowValuePatterns = [
+        /^(hi|hello|hey|thanks|thank you|ok|okay|yes|no|cool|nice)[\s!.]*$/i,
+        /^(got it|i see|makes sense)[\s!.]*$/i
+      ];
+      
+      return !lowValuePatterns.some(pattern => pattern.test(content));
+    };
+
+    // Keep last 8 messages always (recent context is critical)
+    const recentMessages = allMessages.slice(-8);
+    
+    // From older messages, keep only important ones
+    const olderMessages = allMessages.slice(0, -8);
+    const importantOlderMessages = olderMessages.filter(isImportantMessage);
+    
+    // Combine: important older messages + all recent messages
+    const selectedMessages = [...importantOlderMessages, ...recentMessages];
+    
+    // 6. TOKEN BUDGET MANAGEMENT
+    // Limit total context to ~2000 tokens for messages
+    let totalTokens = 0;
+    const maxMessageTokens = 2000;
+    const finalMessages = [];
+    
+    // Start from most recent and work backwards
+    for (let i = selectedMessages.length - 1; i >= 0; i--) {
+      const msg = selectedMessages[i];
+      const msgTokens = estimateTokens(msg.content);
+      
+      if (totalTokens + msgTokens > maxMessageTokens && finalMessages.length >= 6) {
+        // We have enough context, stop adding older messages
+        break;
+      }
+      
+      finalMessages.unshift(msg);
+      totalTokens += msgTokens;
+    }
+
+    console.log(`Loaded ${finalMessages.length} messages from ${allMessages.length} total (estimated ${totalTokens} tokens)`);
 
     // Get approved topics for this child
     const { data: topics, error: topicsError } = await supabase
@@ -193,12 +291,34 @@ AGE GUIDANCE (Child is ${childAge} years old - Upper Elementary):
 
     const relevantTopics = findRelevantTopics(message);
 
+    // Build memory context string
+    let memoryContext = '';
+    
+    if (persistentMemories && persistentMemories.length > 0) {
+      memoryContext = '\n\nIMPORTANT - WHAT YOU KNOW ABOUT THIS CHILD:\n';
+      persistentMemories.forEach(mem => {
+        memoryContext += `- ${mem.memory_key}: ${mem.memory_value}\n`;
+      });
+    }
+
+    // Build summary context
+    let summaryContext = '';
+    if (todaySummary) {
+      summaryContext += `\n\nEARLIER TODAY: ${todaySummary.summary}\n`;
+    }
+    if (recentSummaries && recentSummaries.length > 0) {
+      summaryContext += '\n\nRECENT CONVERSATIONS:\n';
+      recentSummaries.forEach(summary => {
+        summaryContext += `${summary.session_date}: ${summary.summary}\n`;
+      });
+    }
+
     const systemPrompt = `You are a friendly AI buddy for children. You can ONLY talk about these approved topics: ${approvedTopics.join(', ')}.
 
 ${ageGuidance}
 
 PERSONALITY MODE: ${personalityMode.replace('_', ' ').toUpperCase()}
-${personalityInstruction}
+${personalityInstruction}${memoryContext}${summaryContext}
 
 CRITICAL SAFETY RULES:
 1. NEVER discuss violence, weapons, scary content, drugs, alcohol, or inappropriate topics
@@ -210,24 +330,38 @@ TOPIC ENFORCEMENT:
 - Before answering, verify the question relates to: ${approvedTopics.join(', ')}
 - Use AI judgment to detect topic relevance, not just keyword matching
 
-CONVERSATION QUALITY:
-- Reference previous messages when relevant to show you remember
-- Build on earlier topics: "Remember when we talked about...?"
+CONVERSATION QUALITY & MEMORY:
+- USE THE MEMORIES ABOVE! Reference what you know about the child naturally
+- Build on previous conversations: "Last time we talked about X..."
+- If you learn something new and important about the child, mention it in your response
+- Notice patterns: "I've noticed you really enjoy..."
+- Celebrate progress: "You're getting better at understanding..."
 - Vary your responses - don't be repetitive
-- If child seems confused, explain differently
+- If child seems confused, explain differently using what you know about them
 - Encourage deeper thinking with follow-up questions
-- Celebrate their curiosity and insights
+- Be warm, enthusiastic, and make every conversation meaningful!
+
+MEMORY EXTRACTION:
+Pay attention to important information that should be remembered:
+- Child's preferences: "I love dinosaurs!" → Remember they love dinosaurs
+- Facts about them: "I have a pet cat named Whiskers" → Remember their pet
+- Learning progress: Child masters a concept → Remember they understand it
+- Interests: Topics they get excited about → Remember what excites them
+- Achievements: Things they're proud of → Celebrate and remember
 
 Be warm, enthusiastic, and make every conversation meaningful!`;
 
-    // Build conversation context with history
+    // Build conversation context with enhanced memory
     const conversationMessages: Array<{role: string, content: string}> = [
       { role: 'system', content: systemPrompt }
     ];
 
-    // Add conversation history for context
-    if (recentMessages && recentMessages.length > 0) {
-      conversationMessages.push(...recentMessages);
+    // Add selected conversation history for context
+    if (finalMessages && finalMessages.length > 0) {
+      conversationMessages.push(...finalMessages.map(msg => ({
+        role: msg.role,
+        content: msg.content
+      })));
     }
 
     // Add current message
@@ -312,47 +446,188 @@ Be warm, enthusiastic, and make every conversation meaningful!`;
       );
     }
 
-    // Track conversation stats for insights (run in background, don't block response)
-    let detectedTopic = null;
-    
-    for (const topic of approvedTopics) {
-      if (messageLower.includes(topic.toLowerCase())) {
-        detectedTopic = topic;
-        break;
-      }
-    }
-    
-    if (detectedTopic) {
-      // Try to update existing stat or insert new one
-      const { data: existingStat } = await supabase
-        .from('conversation_stats')
-        .select('message_count')
-        .eq('child_id', childId)
-        .eq('topic', detectedTopic)
-        .single();
-      
-      if (existingStat) {
-        // Increment existing count
-        await supabase
-          .from('conversation_stats')
-          .update({
-            message_count: existingStat.message_count + 1,
-            last_message_at: new Date().toISOString(),
-          })
+    // BACKGROUND TASKS: Extract memories and update stats (non-blocking)
+    (async () => {
+      try {
+        // 1. Track conversation stats
+        let detectedTopic = null;
+        for (const topic of approvedTopics) {
+          if (messageLower.includes(topic.toLowerCase())) {
+            detectedTopic = topic;
+            break;
+          }
+        }
+        
+        if (detectedTopic) {
+          const { data: existingStat } = await supabase
+            .from('conversation_stats')
+            .select('message_count')
+            .eq('child_id', childId)
+            .eq('topic', detectedTopic)
+            .single();
+          
+          if (existingStat) {
+            await supabase
+              .from('conversation_stats')
+              .update({
+                message_count: existingStat.message_count + 1,
+                last_message_at: new Date().toISOString(),
+              })
+              .eq('child_id', childId)
+              .eq('topic', detectedTopic);
+          } else {
+            await supabase
+              .from('conversation_stats')
+              .insert({
+                child_id: childId,
+                topic: detectedTopic,
+                message_count: 1,
+                last_message_at: new Date().toISOString(),
+              });
+          }
+        }
+
+        // 2. EXTRACT MEMORIES FROM CONVERSATION
+        // Use AI to identify important facts to remember
+        const memoryExtractionPrompt = `Analyze this child's message and the AI response. Extract any important information that should be remembered about the child for future conversations.
+
+Child's message: "${message}"
+AI response: "${assistantMessage}"
+
+Look for:
+- Preferences (likes/dislikes)
+- Personal facts (pets, family, hobbies)
+- Interests (topics they're excited about)
+- Learning progress (concepts they've mastered)
+- Achievements (things they're proud of)
+
+Return a JSON array of memories in this format:
+[
+  {
+    "type": "preference|fact|interest|learning_progress|achievement",
+    "key": "brief descriptive key",
+    "value": "the actual information",
+    "importance": 1-10
+  }
+]
+
+If no important memories, return an empty array: []`;
+
+        const memoryResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'google/gemini-2.5-flash',
+            messages: [
+              { role: 'system', content: 'You are a memory extraction system. Respond with ONLY valid JSON.' },
+              { role: 'user', content: memoryExtractionPrompt }
+            ],
+            temperature: 0.3,
+          }),
+        });
+
+        if (memoryResponse.ok) {
+          const memoryData = await memoryResponse.json();
+          const memoryContent = memoryData.choices[0].message.content;
+          
+          try {
+            // Extract JSON from response (might be wrapped in markdown code blocks)
+            let jsonStr = memoryContent.trim();
+            if (jsonStr.startsWith('```json')) {
+              jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+            } else if (jsonStr.startsWith('```')) {
+              jsonStr = jsonStr.replace(/```\n?/g, '');
+            }
+            
+            const memories = JSON.parse(jsonStr);
+            
+            if (Array.isArray(memories) && memories.length > 0) {
+              for (const mem of memories) {
+                // Upsert memory (insert or update if exists)
+                await supabase
+                  .from('child_memory')
+                  .upsert({
+                    child_id: childId,
+                    memory_type: mem.type,
+                    memory_key: mem.key,
+                    memory_value: mem.value,
+                    importance_score: mem.importance,
+                    last_accessed_at: new Date().toISOString(),
+                  }, {
+                    onConflict: 'child_id,memory_type,memory_key',
+                    ignoreDuplicates: false
+                  });
+              }
+              console.log(`Extracted and stored ${memories.length} memories`);
+            }
+          } catch (parseError) {
+            console.error('Failed to parse memory extraction response:', parseError);
+          }
+        }
+
+        // 3. UPDATE CONVERSATION SUMMARY
+        // Get today's messages to create/update summary
+        const { data: todayMessages } = await supabase
+          .from('chat_messages')
+          .select('content')
           .eq('child_id', childId)
-          .eq('topic', detectedTopic);
-      } else {
-        // Insert new stat
-        await supabase
-          .from('conversation_stats')
-          .insert({
-            child_id: childId,
-            topic: detectedTopic,
-            message_count: 1,
-            last_message_at: new Date().toISOString(),
+          .gte('created_at', `${today}T00:00:00Z`)
+          .order('created_at', { ascending: true });
+
+        if (todayMessages && todayMessages.length >= 4) {
+          // Generate summary if we have enough messages
+          const messageSummary = todayMessages.map(m => m.content).join('\n');
+          
+          const summaryPrompt = `Summarize this conversation between a child and their AI buddy in 2-3 sentences. Focus on what topics were discussed and what the child learned or was interested in.
+
+Conversation:
+${messageSummary}
+
+Summary:`;
+
+          const summaryResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'google/gemini-2.5-flash',
+              messages: [
+                { role: 'system', content: 'You create concise conversation summaries.' },
+                { role: 'user', content: summaryPrompt }
+              ],
+              temperature: 0.5,
+            }),
           });
+
+          if (summaryResponse.ok) {
+            const summaryData = await summaryResponse.json();
+            const summary = summaryData.choices[0].message.content;
+
+            await supabase
+              .from('conversation_summaries')
+              .upsert({
+                child_id: childId,
+                session_date: today,
+                summary: summary,
+                message_count: todayMessages.length,
+                topics_discussed: detectedTopic ? [detectedTopic] : [],
+              }, {
+                onConflict: 'child_id,session_date',
+                ignoreDuplicates: false
+              });
+
+            console.log('Updated conversation summary for today');
+          }
+        }
+      } catch (bgError) {
+        console.error('Background task error:', bgError);
       }
-    }
+    })().catch(err => console.error('Background task failed:', err));
 
     return new Response(
       JSON.stringify({ message: assistantMessage }),
