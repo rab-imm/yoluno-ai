@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { Search, Plus, TrendingUp, Star, Copy } from "lucide-react";
@@ -35,6 +36,7 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingPack, setEditingPack] = useState<TopicPack | null>(null);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [activeView, setActiveView] = useState<"library" | "analytics" | "review">("library");
 
   useEffect(() => {
     loadPacks();
@@ -98,15 +100,25 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
   };
 
   const handleClonePack = (pack: TopicPack) => {
+    // Smart naming for cloned packs
+    const getSmartName = (originalName: string) => {
+      // If already has "My" or "Custom", just add number
+      if (originalName.includes("My ") || originalName.includes("Custom ")) {
+        return `${originalName} 2`;
+      }
+      // Otherwise, prefix with "My"
+      return `My ${originalName}`;
+    };
+
     // Immediately open editor with cloned data (no DB save yet)
     setEditingPack({
       ...pack,
       id: "", // Empty ID indicates new pack
-      name: `${pack.name} (Copy)`,
+      name: getSmartName(pack.name),
       is_custom: true,
     });
     setDrawerOpen(true);
-    toast.info("Cloned! Edit and save when ready.");
+    toast.info("Cloned! Customize and save when ready.");
   };
 
   const handleCloseEditor = () => {
@@ -124,21 +136,34 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
             Browse, search, and manage {uniqueTopics.length} educational topics across {allPacks.length} packs
           </p>
         </div>
-        <Button onClick={handleCreatePack} className="gap-2">
-          <Plus className="w-4 h-4" />
-          Create Custom Pack
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant={activeView === "analytics" ? "default" : "outline"}
+            onClick={() => setActiveView("analytics")}
+            size="sm"
+            className="gap-2"
+          >
+            <TrendingUp className="w-4 h-4" />
+            Analytics
+          </Button>
+          <Button
+            variant={activeView === "review" ? "default" : "outline"}
+            onClick={() => setActiveView("review")}
+            size="sm"
+            className="gap-2"
+          >
+            <Star className="w-4 h-4" />
+            Review
+          </Button>
+          <Button onClick={handleCreatePack} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Create Pack
+          </Button>
+        </div>
       </div>
 
-      <Tabs defaultValue="library" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="library">Library</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-          <TabsTrigger value="review">Review Topics</TabsTrigger>
-          <TabsTrigger value="bulk">Bulk Manager</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="library" className="space-y-4">
+      {activeView === "library" && (
+        <div className="space-y-4">
           <div className="flex gap-4">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
@@ -172,85 +197,98 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
                 <p className="text-muted-foreground col-span-2">No packs found matching your search.</p>
               ) : (
                 filteredPacks.map((pack) => (
-                  <Card key={pack.id} className="hover:shadow-md transition-shadow">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-2">
-                          <span className="text-3xl">{pack.emoji}</span>
-                          <div>
+                <Card key={pack.id} className={`hover:shadow-lg transition-all ${pack.is_custom ? 'border-primary/50' : ''}`}>
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-3xl">{pack.emoji}</span>
+                        <div>
+                          <div className="flex items-center gap-2">
                             <CardTitle className="text-lg">{pack.name}</CardTitle>
-                            <CardDescription className="text-xs">
-                              {pack.topics.length} topics
-                              {pack.is_custom && " • Custom Pack"}
-                            </CardDescription>
+                            {pack.is_custom && (
+                              <Badge variant="default" className="text-xs">Custom</Badge>
+                            )}
                           </div>
+                          <CardDescription className="text-xs">
+                            {pack.topics.length} topics
+                          </CardDescription>
                         </div>
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                      <p className="text-sm text-muted-foreground">{pack.description}</p>
-                      <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
-                        {pack.topics.slice(0, 5).map((topic) => (
-                          <span
-                            key={topic}
-                            className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full"
-                          >
-                            {topic}
-                          </span>
-                        ))}
-                        {pack.topics.length > 5 && (
-                          <span className="text-xs px-2 py-1 text-muted-foreground">
-                            +{pack.topics.length - 5} more
-                          </span>
-                        )}
-                      </div>
-                       <div className="flex gap-2">
-                        {pack.is_custom ? (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEditPack(pack)}
-                            className="flex-1"
-                          >
-                            Edit Pack
-                          </Button>
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleClonePack(pack)}
-                            className="flex-1 gap-2"
-                          >
-                            <Copy className="w-4 h-4" />
-                            Clone & Customize
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <p className="text-sm text-muted-foreground">{pack.description}</p>
+                    <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
+                      {pack.topics.slice(0, 5).map((topic) => (
+                        <span
+                          key={topic}
+                          className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full"
+                        >
+                          {topic}
+                        </span>
+                      ))}
+                      {pack.topics.length > 5 && (
+                        <span className="text-xs px-2 py-1 text-muted-foreground">
+                          +{pack.topics.length - 5} more
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {pack.is_custom ? (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleEditPack(pack)}
+                          className="flex-1"
+                        >
+                          Edit Pack
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleClonePack(pack)}
+                          className="flex-1 gap-2"
+                        >
+                          <Copy className="w-4 h-4" />
+                          Clone & Customize
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
                 ))
               )}
             </div>
           </ScrollArea>
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="analytics">
+      {activeView === "analytics" && (
+        <div className="space-y-4">
+          <Button
+            variant="ghost"
+            onClick={() => setActiveView("library")}
+            className="gap-2"
+          >
+            ← Back to Library
+          </Button>
           <TopicAnalytics childId={childId} />
-        </TabsContent>
+        </div>
+      )}
 
-        <TabsContent value="review">
+      {activeView === "review" && (
+        <div className="space-y-4">
+          <Button
+            variant="ghost"
+            onClick={() => setActiveView("library")}
+            className="gap-2"
+          >
+            ← Back to Library
+          </Button>
           <TopicReviewCard topics={uniqueTopics} />
-        </TabsContent>
-
-        <TabsContent value="bulk">
-          <BulkTopicManager 
-            childId={childId} 
-            allTopics={uniqueTopics}
-            selectedTopics={selectedTopics}
-            onSelectionChange={setSelectedTopics}
-          />
-        </TabsContent>
-      </Tabs>
+        </div>
+      )}
 
       <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
         <DrawerContent className="max-h-[90vh]">
