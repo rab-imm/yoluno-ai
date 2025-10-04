@@ -46,23 +46,48 @@ serve(async (req) => {
 
     const approvedTopics = topics?.map(t => t.topic) || [];
 
+    // Get child's age for personalization
+    const { data: childData } = await supabase
+      .from('child_profiles')
+      .select('age')
+      .eq('id', childId)
+      .single();
+
+    const childAge = childData?.age || 8;
+
+    // Age-based story guidance
+    let ageGuidance = '';
+    if (childAge >= 5 && childAge <= 7) {
+      ageGuidance = 'Use very simple words and short sentences. Include lots of action and fun sounds. Keep paragraphs very short (2-3 sentences).';
+    } else if (childAge >= 8 && childAge <= 10) {
+      ageGuidance = 'Use moderate vocabulary with some descriptive language. Include dialogue and adventure. Paragraphs can be 3-4 sentences.';
+    } else if (childAge >= 11 && childAge <= 12) {
+      ageGuidance = 'Use richer vocabulary and more complex plots. Include character development and meaningful lessons. Paragraphs can be 4-5 sentences.';
+    }
+
     // Create story prompt
-    const systemPrompt = `You are a creative storyteller for children aged 5-12. Create an engaging, age-appropriate short story (300-500 words).
+    const systemPrompt = `You are a creative storyteller for children aged ${childAge}. Create an engaging, age-appropriate short story (300-500 words).
 
 APPROVED TOPICS: ${approvedTopics.join(', ')}
+CHILD'S NAME: ${childName}
+CHILD'S AGE: ${childAge} years old
+
+AGE-APPROPRIATE WRITING: ${ageGuidance}
 
 RULES:
-1. Keep it appropriate and fun for children
-2. Include a clear beginning, middle, and end
-3. Use simple language and vivid descriptions
-4. Include a positive message or lesson
-5. Make it exciting and engaging
-6. Stay within approved topics when possible
-7. No scary, violent, or inappropriate content
+1. The story MUST relate to one or more approved topics: ${approvedTopics.join(', ')}
+2. Include ${childName} as the main character or reference them in the story
+3. Keep it appropriate and fun for a ${childAge}-year-old
+4. Include a clear beginning, middle, and end
+5. Use age-appropriate language and vivid descriptions
+6. Include a positive message or lesson
+7. Make it exciting and engaging
+8. NO scary, violent, or inappropriate content
+9. If the prompt asks for something not in approved topics, use the closest approved topic instead
 
 Format your response as JSON:
 {
-  "title": "Story Title Here",
+  "title": "Story Title Here (include ${childName}'s name when possible)",
   "story": "The full story text here..."
 }`;
 

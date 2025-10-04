@@ -10,6 +10,7 @@ import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
 import { TopicManager } from "@/components/dashboard/TopicManager";
 import { ParentInsights } from "@/components/dashboard/ParentInsights";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
+import { ContentModerationLog } from "@/components/dashboard/ContentModerationLog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ParentDashboard() {
@@ -129,50 +130,52 @@ export default function ParentDashboard() {
             <>
               <Card>
                 <CardHeader>
-                  <CardTitle>Learning Insights</CardTitle>
+                  <CardTitle>Child Management</CardTitle>
                   <CardDescription>
-                    Track your children's curiosity and learning journey
+                    View insights, manage topics, and monitor safety for each child
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <Tabs value={selectedChildId} onValueChange={setSelectedChildId}>
-                    <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${children.length}, 1fr)` }}>
+                    <TabsList className="grid w-full mb-6" style={{ gridTemplateColumns: `repeat(${children.length}, 1fr)` }}>
                       {children.map((child) => (
                         <TabsTrigger key={child.id} value={child.id}>
                           {child.avatar} {child.name}
                         </TabsTrigger>
                       ))}
                     </TabsList>
-                    {children.map((child) => (
-                      <TabsContent key={child.id} value={child.id}>
-                        <ParentInsights childId={child.id} childName={child.name} />
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Topic Management</CardTitle>
-                  <CardDescription>
-                    Select approved topics for each child
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Tabs value={selectedChildId} onValueChange={setSelectedChildId}>
-                    <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${children.length}, 1fr)` }}>
-                      {children.map((child) => (
-                        <TabsTrigger key={child.id} value={child.id}>
-                          {child.avatar} {child.name}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
-                    {children.map((child) => (
-                      <TabsContent key={child.id} value={child.id} className="mt-4">
-                        <TopicManager childId={child.id} />
-                      </TabsContent>
-                    ))}
+                    
+                    {children.map((child) => {
+                      const selectedChild = children.find(c => c.id === selectedChildId);
+                      if (child.id !== selectedChildId || !selectedChild) return null;
+                      
+                      return (
+                        <div key={child.id}>
+                          <Tabs defaultValue="insights" className="w-full">
+                            <TabsList className="grid w-full grid-cols-3">
+                              <TabsTrigger value="insights">Learning Insights</TabsTrigger>
+                              <TabsTrigger value="topics">Topics</TabsTrigger>
+                              <TabsTrigger value="safety">Safety Monitor</TabsTrigger>
+                            </TabsList>
+                            
+                            <TabsContent value="insights" className="space-y-4 mt-4">
+                              <ParentInsights childId={selectedChild.id} childName={selectedChild.name} />
+                            </TabsContent>
+                            
+                            <TabsContent value="topics" className="space-y-4 mt-4">
+                              <TopicManager childId={selectedChild.id} />
+                            </TabsContent>
+                            
+                            <TabsContent value="safety" className="space-y-4 mt-4">
+                              <ContentModerationLog 
+                                childId={selectedChild.id} 
+                                childName={selectedChild.name}
+                              />
+                            </TabsContent>
+                          </Tabs>
+                        </div>
+                      );
+                    })}
                   </Tabs>
                 </CardContent>
               </Card>

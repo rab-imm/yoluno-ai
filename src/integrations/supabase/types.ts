@@ -225,6 +225,41 @@ export type Database = {
           },
         ]
       }
+      content_moderation_logs: {
+        Row: {
+          child_id: string
+          created_at: string
+          flag_reason: string
+          id: string
+          message_content: string
+          severity: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          flag_reason: string
+          id?: string
+          message_content: string
+          severity: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          flag_reason?: string
+          id?: string
+          message_content?: string
+          severity?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_moderation_logs_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_stats: {
         Row: {
           child_id: string
