@@ -7,9 +7,9 @@ interface BedtimeModeProps {
   story: {
     title: string;
     content: string;
-    audio_content: string | null;
-    illustrations: any[];
-    duration_seconds: number | null;
+    audio_content?: string | null;
+    illustrations?: any;
+    duration_seconds?: number | null;
   };
   childName: string;
   onClose: () => void;
@@ -34,7 +34,7 @@ export function BedtimeMode({ story, childName, onClose }: BedtimeModeProps) {
       
       // Update illustrations based on time
       audio.ontimeupdate = () => {
-        if (story.duration_seconds && story.illustrations.length > 0) {
+        if (story.duration_seconds && Array.isArray(story.illustrations) && story.illustrations.length > 0) {
           const progress = audio.currentTime / story.duration_seconds;
           const illustrationIndex = Math.min(
             Math.floor(progress * story.illustrations.length),
@@ -163,7 +163,7 @@ export function BedtimeMode({ story, childName, onClose }: BedtimeModeProps) {
             </div>
 
             {/* Illustration */}
-            {story.illustrations.length > 0 && (
+            {Array.isArray(story.illustrations) && story.illustrations.length > 0 && (
               <div className="flex-shrink-0 px-8 pb-6">
                 <motion.div
                   key={currentIllustration}

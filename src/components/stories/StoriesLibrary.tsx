@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { BookOpen, Heart, Trash2, Eye } from "lucide-react";
+import { BookOpen, Heart, Trash2, Eye, Moon, Calendar, Filter } from "lucide-react";
 import { toast } from "sonner";
 import {
   Dialog,
@@ -11,6 +11,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
+import { BedtimeMode } from "./BedtimeMode";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 interface Story {
   id: string;
@@ -18,6 +21,12 @@ interface Story {
   content: string;
   is_favorite: boolean;
   created_at: string;
+  theme?: string;
+  mood?: string;
+  illustrations?: any;
+  audio_content?: string;
+  duration_seconds?: number;
+  bedtime_ready?: boolean;
 }
 
 interface StoriesLibraryProps {
@@ -29,23 +38,39 @@ export function StoriesLibrary({ childId, childName }: StoriesLibraryProps) {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
+  const [bedtimeStory, setBedtimeStory] = useState<Story | null>(null);
+  const [filterTheme, setFilterTheme] = useState<string>("all");
+  const [filterFavorites, setFilterFavorites] = useState(false);
 
   useEffect(() => {
     loadStories();
   }, [childId]);
 
   const loadStories = async () => {
-    const { data } = await supabase
+    let query = supabase
       .from("child_stories")
       .select("*")
-      .eq("child_id", childId)
-      .order("created_at", { ascending: false });
+      .eq("child_id", childId);
+
+    if (filterTheme !== "all") {
+      query = query.eq("theme", filterTheme);
+    }
+
+    if (filterFavorites) {
+      query = query.eq("is_favorite", true);
+    }
+
+    const { data } = await query.order("created_at", { ascending: false });
 
     if (data) {
       setStories(data);
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    loadStories();
+  }, [filterTheme, filterFavorites]);
 
   const toggleFavorite = async (storyId: string, currentStatus: boolean) => {
     const { error } = await supabase
@@ -106,23 +131,89 @@ export function StoriesLibrary({ childId, childName }: StoriesLibraryProps) {
     );
   }
 
+  const uniqueThemes = Array.from(new Set(stories.map(s => s.theme).filter(Boolean)));
+
+  const launchBedtimeMode = (story: Story) => {
+    if (story.audio_content && story.illustrations && story.duration_seconds) {
+      setBedtimeStory(story);
+    } else {
+      toast.error("This story doesn't have audio narration yet");
+    }
+  };
+
   return (
     <>
       <div className="space-y-4">
-        <h3 className="text-xl font-bold flex items-center gap-2">
-          <BookOpen className="w-5 h-5" />
-          {childName}'s Story Collection ({stories.length})
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-bold flex items-center gap-2">
+            <BookOpen className="w-5 h-5" />
+            {childName}'s Story Collection ({stories.length})
+          </h3>
+
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-muted-foreground" />
+            <Select value={filterTheme} onValueChange={setFilterTheme}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Filter by theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Themes</SelectItem>
+                {uniqueThemes.map(theme => (
+                  <SelectItem key={theme} value={theme!}>{theme}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              variant={filterFavorites ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterFavorites(!filterFavorites)}
+            >
+              <Heart className={`w-4 h-4 mr-2 ${filterFavorites ? "fill-current" : ""}`} />
+              Favorites
+            </Button>
+          </div>
+        </div>
         
         <div className="grid gap-4 md:grid-cols-2">
           {stories.map((story) => (
             <Card
               key={story.id}
-              className="p-4 hover:shadow-lg transition-shadow cursor-pointer"
+              className="p-4 hover:shadow-lg transition-shadow cursor-pointer relative overflow-hidden"
               onClick={() => setSelectedStory(story)}
             >
+              {/* Thumbnail */}
+              {story.illustrations?.[0]?.imageUrl && (
+                <div className="mb-3">
+                  <img
+                    src={story.illustrations[0].imageUrl}
+                    alt={story.title}
+                    className="w-full h-32 object-cover rounded-md"
+                  />
+                </div>
+              )}
+
               <div className="flex items-start justify-between mb-2">
-                <h4 className="font-semibold text-base flex-1">{story.title}</h4>
+                <div className="flex-1">
+                  <h4 className="font-semibold text-base mb-1">{story.title}</h4>
+                  <div className="flex flex-wrap gap-1 mb-2">
+                    {story.theme && (
+                      <Badge variant="secondary" className="text-xs">
+                        {story.theme}
+                      </Badge>
+                    )}
+                    {story.mood && (
+                      <Badge variant="outline" className="text-xs">
+                        {story.mood}
+                      </Badge>
+                    )}
+                    {story.duration_seconds && (
+                      <Badge variant="outline" className="text-xs">
+                        <Calendar className="w-3 h-3 mr-1" />
+                        {Math.ceil(story.duration_seconds / 60)}min
+                      </Badge>
+                    )}
+                  </div>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -147,6 +238,20 @@ export function StoriesLibrary({ childId, childName }: StoriesLibraryProps) {
                   {new Date(story.created_at).toLocaleDateString()}
                 </span>
                 <div className="flex gap-1">
+                  {story.bedtime_ready && story.audio_content && (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        launchBedtimeMode(story);
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      <Moon className="h-4 w-4 mr-1" />
+                      Bedtime
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -218,6 +323,15 @@ export function StoriesLibrary({ childId, childName }: StoriesLibraryProps) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Bedtime Mode */}
+      {bedtimeStory && (
+        <BedtimeMode
+          story={bedtimeStory}
+          childName={childName}
+          onClose={() => setBedtimeStory(null)}
+        />
+      )}
     </>
   );
 }

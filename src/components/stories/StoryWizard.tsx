@@ -7,7 +7,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, Sparkles, AlertCircle } from "lucide-react";
+import { validateCharacterName } from "@/lib/storyValidation";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface StoryWizardProps {
   childId: string;
@@ -62,6 +64,7 @@ const ILLUSTRATION_STYLES = [
 
 export function StoryWizard({ childId, childName, childAge, onComplete, onCancel }: StoryWizardProps) {
   const [step, setStep] = useState(1);
+  const [validationError, setValidationError] = useState<string>("");
   const [wizardData, setWizardData] = useState<StoryWizardData>({
     theme: "",
     characters: [{ name: childName, role: "hero" }],
@@ -77,12 +80,51 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
   };
 
   const canProceed = () => {
+    setValidationError("");
+    
     switch (step) {
-      case 1: return wizardData.theme !== "";
-      case 2: return wizardData.characters.length > 0 && wizardData.characters[0].name !== "";
-      case 3: return wizardData.mood !== "" && wizardData.values.length > 0;
-      case 4: return true;
-      default: return false;
+      case 1: 
+        if (wizardData.theme === "") {
+          setValidationError("Please select a theme");
+          return false;
+        }
+        return true;
+      case 2:
+        if (wizardData.characters.length === 0 || wizardData.characters[0].name === "") {
+          setValidationError("Hero name is required");
+          return false;
+        }
+        // Validate character names
+        for (const char of wizardData.characters) {
+          const validation = validateCharacterName(char.name);
+          if (!validation.valid) {
+            setValidationError(validation.error || "Invalid character name");
+            return false;
+          }
+        }
+        return true;
+      case 3:
+        if (wizardData.mood === "" || wizardData.values.length === 0) {
+          setValidationError("Please select a mood and at least one value");
+          return false;
+        }
+        return true;
+      case 4: 
+        return true;
+      default: 
+        return false;
+    }
+  };
+
+  const handleNext = () => {
+    if (canProceed()) {
+      setStep(step + 1);
+    }
+  };
+
+  const handleComplete = () => {
+    if (canProceed()) {
+      onComplete(wizardData);
     }
   };
 
@@ -116,6 +158,13 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {validationError && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{validationError}</AlertDescription>
+          </Alert>
+        )}
+
         {step === 1 && (
           <div className="space-y-4">
             <Label className="text-lg">Choose a Theme</Label>
@@ -142,17 +191,22 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
             <Label className="text-lg">Add Characters</Label>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="hero-name">Hero Name</Label>
+                <Label htmlFor="hero-name">Hero Name *</Label>
                 <Input
                   id="hero-name"
                   value={wizardData.characters[0]?.name || ""}
                   onChange={(e) => {
                     const newChars = [...wizardData.characters];
-                    newChars[0] = { ...newChars[0], name: e.target.value };
+                    newChars[0] = { ...newChars[0], name: e.target.value.slice(0, 50) };
                     updateData({ characters: newChars });
+                    setValidationError("");
                   }}
                   placeholder={childName}
+                  maxLength={50}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Letters, numbers, spaces, hyphens, and apostrophes only (max 50 characters)
+                </p>
               </div>
               
               <div className="space-y-2">
@@ -162,14 +216,17 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
                   value={wizardData.characters[1]?.name || ""}
                   onChange={(e) => {
                     const newChars = [...wizardData.characters];
-                    if (e.target.value) {
-                      newChars[1] = { name: e.target.value, role: "sidekick" };
+                    const value = e.target.value.slice(0, 50);
+                    if (value) {
+                      newChars[1] = { name: value, role: "sidekick" };
                     } else {
                       newChars.splice(1, 1);
                     }
                     updateData({ characters: newChars });
+                    setValidationError("");
                   }}
                   placeholder="favorite toy, sibling, or pet"
+                  maxLength={50}
                 />
               </div>
             </div>
@@ -278,12 +335,12 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
             Cancel
           </Button>
           {step < 4 ? (
-            <Button onClick={() => setStep(step + 1)} disabled={!canProceed()}>
+            <Button onClick={handleNext}>
               Next
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           ) : (
-            <Button onClick={() => onComplete(wizardData)} disabled={!canProceed()}>
+            <Button onClick={handleComplete}>
               <Sparkles className="w-4 h-4 mr-2" />
               Generate Story
             </Button>

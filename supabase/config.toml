@@ -9,6 +9,15 @@ verify_jwt = false
 [functions.generate-story]
 verify_jwt = false
 
+[functions.generate-enhanced-story]
+verify_jwt = false
+
+[functions.generate-story-illustrations]
+verify_jwt = false
+
+[functions.generate-story-narration]
+verify_jwt = false
+
 [functions.child-chat]
 verify_jwt = false
 
