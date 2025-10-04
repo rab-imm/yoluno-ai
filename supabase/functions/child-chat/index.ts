@@ -115,6 +115,49 @@ Be enthusiastic, supportive, and make learning fun!`;
     const aiData = await aiResponse.json();
     const assistantMessage = aiData.choices[0].message.content;
 
+    // Track conversation stats for insights (run in background, don't block response)
+    const messageLower = message.toLowerCase();
+    let detectedTopic = null;
+    
+    for (const topic of approvedTopics) {
+      if (messageLower.includes(topic.toLowerCase())) {
+        detectedTopic = topic;
+        break;
+      }
+    }
+    
+    if (detectedTopic) {
+      // Try to update existing stat or insert new one
+      const { data: existingStat } = await supabase
+        .from('conversation_stats')
+        .select('message_count')
+        .eq('child_id', childId)
+        .eq('topic', detectedTopic)
+        .single();
+      
+      if (existingStat) {
+        // Increment existing count
+        await supabase
+          .from('conversation_stats')
+          .update({
+            message_count: existingStat.message_count + 1,
+            last_message_at: new Date().toISOString(),
+          })
+          .eq('child_id', childId)
+          .eq('topic', detectedTopic);
+      } else {
+        // Insert new stat
+        await supabase
+          .from('conversation_stats')
+          .insert({
+            child_id: childId,
+            topic: detectedTopic,
+            message_count: 1,
+            last_message_at: new Date().toISOString(),
+          });
+      }
+    }
+
     return new Response(
       JSON.stringify({ message: assistantMessage }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

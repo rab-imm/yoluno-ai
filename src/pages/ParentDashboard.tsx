@@ -3,17 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, LogOut, Settings, Users } from "lucide-react";
+import { Plus, LogOut, Users } from "lucide-react";
 import { toast } from "sonner";
 import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
 import { TopicManager } from "@/components/dashboard/TopicManager";
+import { ParentInsights } from "@/components/dashboard/ParentInsights";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function ParentDashboard() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [children, setChildren] = useState<any[]>([]);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 
   useEffect(() => {
     checkAuth();
@@ -41,6 +44,9 @@ export default function ParentDashboard() {
     }
 
     setChildren(data || []);
+    if (data && data.length > 0 && !selectedChildId) {
+      setSelectedChildId(data[0].id);
+    }
   };
 
   const handleSignOut = async () => {
@@ -102,18 +108,58 @@ export default function ParentDashboard() {
             </CardContent>
           </Card>
 
-          {children.length > 0 && (
-            <Card>
-              <CardHeader>
-                <CardTitle>Topic Management</CardTitle>
-                <CardDescription>
-                  Select approved topics for your children
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TopicManager childId={children[0]?.id} />
-              </CardContent>
-            </Card>
+          {children.length > 0 && selectedChildId && (
+            <>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Learning Insights</CardTitle>
+                  <CardDescription>
+                    Track your children's curiosity and learning journey
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs value={selectedChildId} onValueChange={setSelectedChildId}>
+                    <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${children.length}, 1fr)` }}>
+                      {children.map((child) => (
+                        <TabsTrigger key={child.id} value={child.id}>
+                          {child.avatar} {child.name}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    {children.map((child) => (
+                      <TabsContent key={child.id} value={child.id}>
+                        <ParentInsights childId={child.id} childName={child.name} />
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Topic Management</CardTitle>
+                  <CardDescription>
+                    Select approved topics for each child
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <Tabs value={selectedChildId} onValueChange={setSelectedChildId}>
+                    <TabsList className="grid w-full" style={{ gridTemplateColumns: `repeat(${children.length}, 1fr)` }}>
+                      {children.map((child) => (
+                        <TabsTrigger key={child.id} value={child.id}>
+                          {child.avatar} {child.name}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    {children.map((child) => (
+                      <TabsContent key={child.id} value={child.id} className="mt-4">
+                        <TopicManager childId={child.id} />
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                </CardContent>
+              </Card>
+            </>
           )}
         </div>
       </main>

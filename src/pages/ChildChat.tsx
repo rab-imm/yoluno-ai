@@ -61,7 +61,7 @@ export default function ChildChat() {
             Back
           </Button>
           <div className="flex items-center gap-3">
-            <BuddyAvatar size="sm" />
+            <BuddyAvatar size="sm" avatar={child.avatar} />
             <div className="text-white">
               <h1 className="text-xl font-bold">Hi {child.name}! 👋</h1>
               <p className="text-sm opacity-90">Your AI Buddy</p>
@@ -72,7 +72,7 @@ export default function ChildChat() {
       </header>
 
       <main className="container mx-auto px-4 py-6">
-        <ChatInterface childId={id!} childName={child.name} />
+        <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
       </main>
     </div>
   );

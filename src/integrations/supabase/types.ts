@@ -105,6 +105,65 @@ export type Database = {
           },
         ]
       }
+      conversation_stats: {
+        Row: {
+          child_id: string
+          id: string
+          last_message_at: string
+          message_count: number
+          topic: string
+        }
+        Insert: {
+          child_id: string
+          id?: string
+          last_message_at?: string
+          message_count?: number
+          topic: string
+        }
+        Update: {
+          child_id?: string
+          id?: string
+          last_message_at?: string
+          message_count?: number
+          topic?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "conversation_stats_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      topic_packs: {
+        Row: {
+          created_at: string
+          description: string
+          emoji: string
+          id: string
+          name: string
+          topics: string[]
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          emoji: string
+          id?: string
+          name: string
+          topics: string[]
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          emoji?: string
+          id?: string
+          name?: string
+          topics?: string[]
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

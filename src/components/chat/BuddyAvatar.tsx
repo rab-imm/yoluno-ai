@@ -1,8 +1,10 @@
 interface BuddyAvatarProps {
   size?: "sm" | "md" | "lg";
+  avatar?: string;
+  isThinking?: boolean;
 }
 
-export function BuddyAvatar({ size = "md" }: BuddyAvatarProps) {
+export function BuddyAvatar({ size = "md", avatar = "🤖", isThinking = false }: BuddyAvatarProps) {
   const sizeClasses = {
     sm: "w-10 h-10 text-2xl",
     md: "w-16 h-16 text-4xl",
@@ -11,9 +13,11 @@ export function BuddyAvatar({ size = "md" }: BuddyAvatarProps) {
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-white to-child-primary/20 flex items-center justify-center animate-float shadow-lg`}
+      className={`${sizeClasses[size]} rounded-full bg-gradient-to-br from-white to-child-primary/20 flex items-center justify-center shadow-lg ${
+        isThinking ? "animate-bounce" : "animate-float"
+      }`}
     >
-      🤖
+      {avatar}
     </div>
   );
 }

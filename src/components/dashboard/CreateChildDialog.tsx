@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { AvatarSelector } from "./AvatarSelector";
 
 interface CreateChildDialogProps {
   open: boolean;
@@ -15,7 +16,7 @@ interface CreateChildDialogProps {
 export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChildDialogProps) {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [avatar, setAvatar] = useState("👦");
+  const [avatar, setAvatar] = useState("🤖");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,20 +43,18 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
       return;
     }
 
-    toast.success("Profile created!");
+    toast.success(`Created profile for ${name}! 🎉`);
     setName("");
     setAge("");
-    setAvatar("👦");
+    setAvatar("🤖");
     onSuccess();
     onOpenChange(false);
     setLoading(false);
   };
 
-  const avatarOptions = ["👦", "👧", "🧒", "👶", "🐻", "🐼", "🦁", "🐯"];
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>Create Child Profile</DialogTitle>
           <DialogDescription>
@@ -63,6 +62,8 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
+          <AvatarSelector selectedAvatar={avatar} onSelect={setAvatar} />
+          
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input
@@ -70,6 +71,7 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              placeholder="Enter child's name"
             />
           </div>
           <div className="space-y-2">
@@ -78,32 +80,14 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
               id="age"
               type="number"
               min="3"
-              max="12"
+              max="18"
               value={age}
               onChange={(e) => setAge(e.target.value)}
               required
+              placeholder="Enter child's age"
             />
           </div>
-          <div className="space-y-2">
-            <Label>Avatar</Label>
-            <div className="grid grid-cols-4 gap-2">
-              {avatarOptions.map((emoji) => (
-                <button
-                  key={emoji}
-                  type="button"
-                  className={`p-3 text-2xl rounded-lg border-2 transition-all ${
-                    avatar === emoji
-                      ? "border-primary bg-primary/10 scale-110"
-                      : "border-border hover:border-primary/50"
-                  }`}
-                  onClick={() => setAvatar(emoji)}
-                >
-                  {emoji}
-                </button>
-              ))}
-            </div>
-          </div>
-          <Button type="submit" className="w-full" disabled={loading}>
+          <Button type="submit" className="w-full" disabled={loading} variant="playful">
             {loading ? "Creating..." : "Create Profile"}
           </Button>
         </form>
