@@ -371,6 +371,53 @@ export type Database = {
           },
         ]
       }
+      custom_content: {
+        Row: {
+          age_range: string
+          answer: string
+          child_id: string | null
+          created_at: string
+          id: string
+          keywords: string[]
+          parent_id: string
+          question: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          age_range: string
+          answer: string
+          child_id?: string | null
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          parent_id: string
+          question: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string
+          answer?: string
+          child_id?: string | null
+          created_at?: string
+          id?: string
+          keywords?: string[]
+          parent_id?: string
+          question?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "custom_content_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       custom_topic_packs: {
         Row: {
           created_at: string | null
@@ -406,6 +453,48 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      parent_approved_content: {
+        Row: {
+          approved_at: string
+          child_id: string | null
+          content_id: string
+          id: string
+          notes: string | null
+          parent_id: string
+        }
+        Insert: {
+          approved_at?: string
+          child_id?: string | null
+          content_id: string
+          id?: string
+          notes?: string | null
+          parent_id: string
+        }
+        Update: {
+          approved_at?: string
+          child_id?: string | null
+          content_id?: string
+          id?: string
+          notes?: string | null
+          parent_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_approved_content_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_approved_content_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "topic_content"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       topic_analytics: {
         Row: {
@@ -444,6 +533,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      topic_content: {
+        Row: {
+          age_range: string
+          answer: string
+          created_at: string
+          difficulty_level: string
+          id: string
+          is_reviewed: boolean | null
+          keywords: string[]
+          question: string
+          topic: string
+          updated_at: string
+        }
+        Insert: {
+          age_range: string
+          answer: string
+          created_at?: string
+          difficulty_level: string
+          id?: string
+          is_reviewed?: boolean | null
+          keywords?: string[]
+          question: string
+          topic: string
+          updated_at?: string
+        }
+        Update: {
+          age_range?: string
+          answer?: string
+          created_at?: string
+          difficulty_level?: string
+          id?: string
+          is_reviewed?: boolean | null
+          keywords?: string[]
+          question?: string
+          topic?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       topic_feedback: {
         Row: {
