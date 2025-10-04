@@ -52,6 +52,41 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
 
   const generateStory = async (data: StoryWizardData) => {
     try {
+      // Check for active journeys with story reinforcement
+      const { data: activeJourneys } = await supabase
+        .from("goal_journeys")
+        .select("*, journey_steps!inner(*)")
+        .eq("child_id", childId)
+        .eq("status", "active")
+        .eq("reward_type", "story_reinforcement")
+        .eq("journey_steps.is_completed", false)
+        .order("journey_steps.step_number", { ascending: true })
+        .limit(1);
+
+      let modifiedPrompt = data.theme;
+      
+      // If there's an active journey with story reinforcement, inject the habit
+      if (activeJourneys && activeJourneys.length > 0) {
+        const journey = activeJourneys[0];
+        const nextStep = journey.journey_steps?.[0];
+        
+        if (nextStep) {
+          toast.info("Adding your journey mission to the story... 🌟");
+          
+          const { data: habitData } = await supabase.functions.invoke("inject-habit-into-story", {
+            body: {
+              storyPrompt: data.theme,
+              habitTitle: nextStep.title,
+              personalityMode: data.mood || "curious_explorer",
+            },
+          });
+          
+          if (habitData?.modifiedPrompt) {
+            modifiedPrompt = habitData.modifiedPrompt;
+          }
+        }
+      }
+
       // Step 1: Generate story text and scenes
       toast.info("Writing your magical story... ✨", { duration: 5000 });
       const { data: storyData, error: storyError } = await supabase.functions.invoke("generate-enhanced-story", {
@@ -59,7 +94,7 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
           childId,
           childName,
           childAge,
-          theme: data.theme,
+          theme: modifiedPrompt,
           characters: data.characters,
           mood: data.mood,
           values: data.values,

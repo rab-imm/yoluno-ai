@@ -124,7 +124,11 @@ export function DailyMissionCard({ childId, personalityMode }: DailyMissionCardP
           buddy_message: getEncouragementMessage(),
         });
 
+      // Trigger confetti celebration
       if (logError) throw logError;
+
+      // Award journey badges
+      await supabase.rpc("check_and_award_journey_badges", { p_child_id: childId });
 
       setShowCompletion(true);
     } catch (error) {

@@ -988,6 +988,10 @@ export type Database = {
         Args: { p_child_id: string }
         Returns: undefined
       }
+      check_and_award_journey_badges: {
+        Args: { p_child_id: string }
+        Returns: undefined
+      }
       update_child_streak: {
         Args: { p_child_id: string }
         Returns: undefined
