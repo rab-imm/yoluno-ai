@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
-import { BookOpen, Headphones, Sparkles, Heart, Library, Mic } from "lucide-react";
+import { BookOpen, Headphones, Sparkles, Heart, Library, Mic, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const StoryBuddy = () => {
@@ -36,20 +36,19 @@ const StoryBuddy = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--story-magic-light))] via-background to-accent/5">
+      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--imagination-light))] via-background to-accent/5">
         <div className="container mx-auto max-w-6xl text-center space-y-6">
-          <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--story-magic))] to-[hsl(var(--story-bedtime))] rounded-3xl mb-4 animate-float">
+          <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))] rounded-3xl mb-4 animate-float">
             <BookOpen className="h-16 w-16 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--story-magic))] to-[hsl(var(--story-bedtime))] bg-clip-text text-transparent">
-            Bring bedtime to life
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))] bg-clip-text text-transparent">
+            Bring bedtime to life — every night, from you.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Every night, from you. Your child's name, their favorite toy, your values — woven into a personalized story. 
-            Narrated with gentle voices, brought to life with illustrations.
+            Stories crafted with your child's name, your values, and their world—narrated with gentle voices and illustrated visuals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--story-magic))] to-[hsl(var(--story-bedtime))] hover:opacity-90">
+            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))] hover:opacity-90">
               <Sparkles className="mr-2 h-5 w-5" />
               Create Tonight's Story
             </Button>
@@ -66,7 +65,7 @@ const StoryBuddy = () => {
           <div className="grid md:grid-cols-2 gap-8">
             {features.map((feature) => (
               <Card key={feature.title} className="p-8 hover:shadow-lg transition-shadow">
-                <feature.icon className="h-12 w-12 text-[hsl(var(--story-magic))] mb-4" />
+                <feature.icon className="h-12 w-12 text-[hsl(var(--imagination-primary))] mb-4" />
                 <h3 className="text-2xl font-semibold mb-3">{feature.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
               </Card>
@@ -90,14 +89,13 @@ const StoryBuddy = () => {
         </div>
       </section>
 
-      {/* Story Library */}
+      {/* Library & Keepsakes */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-5xl text-center space-y-6">
-          <Library className="h-16 w-16 text-primary mx-auto" />
-          <h2 className="text-4xl font-bold">Your Family's Story Library</h2>
+          <Library className="h-16 w-16 text-[hsl(var(--imagination-primary))] mx-auto" />
+          <h2 className="text-4xl font-bold">Library & Keepsakes</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Every story is saved. Replay favorites, print them as bedtime books, or create a beautiful hardcover keepsake 
-            of your child's adventures.
+            Save stories to a family library. Replay favorites. Export to PDF or print a hardcover "Month of Stories" keepsake.
           </p>
           <div className="grid sm:grid-cols-3 gap-4 pt-8">
             {["The Dragon Who Made Friends", "Sofia's Space Adventure", "Counting with Dinosaurs"].map((title, i) => (
@@ -113,16 +111,27 @@ const StoryBuddy = () => {
         </div>
       </section>
 
+      {/* Trust Note */}
+      <section className="py-20 px-4 bg-gradient-to-br from-success/5 to-[hsl(var(--imagination-primary))]/5">
+        <div className="container mx-auto max-w-4xl text-center space-y-6">
+          <Shield className="h-16 w-16 text-[hsl(var(--imagination-primary))] mx-auto" />
+          <h2 className="text-3xl font-bold">Safe by design</h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            All story content is generated within your approved themes. No religion/politics/medical topics.
+          </p>
+        </div>
+      </section>
+
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
+      <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h2 className="text-4xl font-bold">Make bedtime magical tonight</h2>
           <p className="text-xl text-muted-foreground">
             Start with 2 free stories. No credit card required.
           </p>
-          <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
+          <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))] hover:opacity-90">
             <Sparkles className="mr-2 h-5 w-5" />
-            Create Your First Story
+            Create Tonight's Story
           </Button>
         </div>
       </section>

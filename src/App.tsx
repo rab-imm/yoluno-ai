@@ -9,8 +9,9 @@ import ParentDashboard from "./pages/ParentDashboard";
 import JourneyMarketplace from "./pages/JourneyMarketplace";
 import ChildChat from "./pages/ChildChat";
 import KidsLauncher from "./pages/KidsLauncher";
-import StoryBuddy from "./pages/StoryBuddy";
-import LearningBuddy from "./pages/LearningBuddy";
+import Stories from "./pages/Stories";
+import Journeys from "./pages/Journeys";
+import Learning from "./pages/Learning";
 import Safety from "./pages/Safety";
 import Pricing from "./pages/Pricing";
 import About from "./pages/About";
@@ -31,8 +32,9 @@ const App = () => (
           <Route path="/marketplace" element={<JourneyMarketplace />} />
           <Route path="/kids" element={<KidsLauncher />} />
           <Route path="/child/:id" element={<ChildChat />} />
-          <Route path="/story-buddy" element={<StoryBuddy />} />
-          <Route path="/learning-buddy" element={<LearningBuddy />} />
+          <Route path="/stories" element={<Stories />} />
+          <Route path="/journeys" element={<Journeys />} />
+          <Route path="/learning" element={<Learning />} />
           <Route path="/safety" element={<Safety />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/about" element={<About />} />

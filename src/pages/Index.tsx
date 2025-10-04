@@ -5,11 +5,41 @@ import { Testimonial } from "@/components/landing/Testimonial";
 import { TrustBadge } from "@/components/landing/TrustBadge";
 import { VideoEmbed } from "@/components/landing/VideoEmbed";
 import { useNavigate } from "react-router-dom";
-import { Shield, Heart, Lock, Sparkles, BookOpen, Brain, Target } from "lucide-react";
+import { Shield, Sparkles, BookOpen, Target, Lightbulb } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const Index = () => {
   const navigate = useNavigate();
+
+  const pillars = [
+    {
+      icon: BookOpen,
+      title: "Imagination",
+      subtitle: "Stories that sound like love",
+      description: "Nightly stories where your child is the hero—narrated with gentle voices and beautiful art. Parent chooses themes, Buddy creates & narrates, save favorites.",
+      color: "from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))]",
+      cta: "Make Tonight's Story",
+      path: "/stories"
+    },
+    {
+      icon: Target,
+      title: "Growth",
+      subtitle: "Good habits, one tiny step at a time",
+      description: "Daily missions that build big habits—kindness, reading, responsibility. Buddy sends missions + positive reinforcement, bedtime stories reinforce progress.",
+      color: "from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))]",
+      cta: "Start a Journey",
+      path: "/journeys"
+    },
+    {
+      icon: Lightbulb,
+      title: "Curiosity",
+      subtitle: "Answers you can trust",
+      description: "Safe exploration in parent-curated topics. You choose topics & packs, Buddy answers within sandbox, parent can view & manage logs.",
+      color: "from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))]",
+      cta: "Add a Learning Pack",
+      path: "/learning"
+    }
+  ];
 
   return (
     <div className="min-h-screen">
@@ -23,60 +53,123 @@ const Index = () => {
               <Shield className="h-16 w-16 text-white" />
             </div>
             <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              One AI Buddy. Safe, personal, and parent-approved.
+              One safe AI buddy for your child — imagination, growth, and curiosity in one place.
             </h1>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Bedtime stories, learning adventures, and curiosity — all within the boundaries <em>you</em> set.
+              Personalized bedtime stories, guided habit journeys, and safe learning—always within the boundaries you choose.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--story-magic))] to-[hsl(var(--story-bedtime))] hover:opacity-90">
+              <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
                 <Sparkles className="mr-2 h-5 w-5" />
-                Start Free – Create Your First Story
+                Start Free
               </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate("/marketplace")} className="text-lg">
-                <Target className="mr-2 h-5 w-5" />
-                Explore Goal Journeys
+              <Button size="lg" variant="outline" onClick={() => navigate("/about")} className="text-lg">
+                Watch Demo
               </Button>
             </div>
             
             {/* Trust Badges */}
             <div className="flex flex-wrap justify-center gap-3 pt-6">
-              <TrustBadge icon={Lock} text="Locked Sandbox" />
-              <TrustBadge icon={Heart} text="Parent-Curated" />
-              <TrustBadge icon={Shield} text="Age-Appropriate" />
+              <TrustBadge icon={Shield} text="No ads" />
+              <TrustBadge icon={Shield} text="No data resale" />
+              <TrustBadge icon={Shield} text="Cancel anytime" />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Emotional Hook */}
+      {/* Three Pillars - Equal Weight */}
       <section className="py-20 px-4 bg-secondary/30">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-4xl md:text-5xl font-bold text-center mb-4">
-            Because bedtime isn't just a story.<br />It's a connection.
+            Three ways Buddy helps your child thrive.
           </h2>
-          <div className="grid md:grid-cols-3 gap-8 mt-12">
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--story-magic))] to-[hsl(var(--story-bedtime))] rounded-2xl mb-4">
-                <BookOpen className="h-10 w-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-3">Bedtime Stories</h3>
-              <p className="text-muted-foreground">Magical, nightly tales with your child as the hero.</p>
+          <p className="text-xl text-muted-foreground text-center mb-12 max-w-3xl mx-auto">
+            One safe AI buddy for stories, habits, and learning—all in your control.
+          </p>
+          <div className="grid md:grid-cols-3 gap-8">
+            {pillars.map((pillar) => (
+              <Card key={pillar.title} className="p-8 text-center hover:shadow-lg transition-shadow">
+                <div className={`inline-block p-4 bg-gradient-to-br ${pillar.color} rounded-2xl mb-4`}>
+                  <pillar.icon className="h-10 w-10 text-white" />
+                </div>
+                <h3 className="text-2xl font-semibold mb-2">{pillar.title}</h3>
+                <p className="text-lg font-medium text-muted-foreground mb-3 italic">{pillar.subtitle}</p>
+                <p className="text-muted-foreground mb-6 leading-relaxed">{pillar.description}</p>
+                <Button 
+                  onClick={() => navigate(pillar.path)}
+                  className={`bg-gradient-to-r ${pillar.color} hover:opacity-90`}
+                >
+                  {pillar.cta}
+                </Button>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-5xl">
+          <h2 className="text-4xl font-bold text-center mb-4">How It Works</h2>
+          <p className="text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+            Applies to all three pillars: Stories, Journeys, and Learning
+          </p>
+          <div className="grid sm:grid-cols-3 gap-8">
+            <Card className="p-6 text-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">1</div>
+              <h3 className="font-semibold text-lg mb-2">You Choose</h3>
+              <p className="text-muted-foreground">What Buddy knows: themes, topics, goals—all parent-approved.</p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--learning-primary))] to-[hsl(var(--learning-secondary))] rounded-2xl mb-4">
-                <Brain className="h-10 w-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-3">Safe Learning</h3>
-              <p className="text-muted-foreground">Daytime discovery in parent-approved topics.</p>
+            <Card className="p-6 text-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">2</div>
+              <h3 className="font-semibold text-lg mb-2">Buddy Creates</h3>
+              <p className="text-muted-foreground">Stories, missions, or safe answers—always in your sandbox.</p>
             </Card>
-            <Card className="p-8 text-center hover:shadow-lg transition-shadow">
-              <div className="inline-block p-4 bg-gradient-to-br from-primary to-accent rounded-2xl mb-4">
-                <Shield className="h-10 w-10 text-white" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-3">Parent Control</h3>
-              <p className="text-muted-foreground">You decide what Buddy can talk about.</p>
+            <Card className="p-6 text-center">
+              <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">3</div>
+              <h3 className="font-semibold text-lg mb-2">Your Child Connects</h3>
+              <p className="text-muted-foreground">Listens, learns, and grows every day.</p>
             </Card>
+          </div>
+          <p className="text-center text-sm text-muted-foreground mt-8 italic">
+            Every response cites its approved source. No web browsing. No freestyle.
+          </p>
+        </div>
+      </section>
+
+      {/* Safety & Trust */}
+      <section className="py-20 px-4 bg-secondary/30">
+        <div className="container mx-auto max-w-5xl">
+          <div className="text-center mb-12">
+            <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
+            <h2 className="text-4xl font-bold mb-4">Safe by design.</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Every pillar—Stories, Journeys, Learning—operates within your controlled environment.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="font-semibold text-lg mb-2">🔒 Locked Sandbox AI</h3>
+              <p className="text-muted-foreground">No open internet, no random answers. Only your approved packs.</p>
+            </Card>
+            <Card className="p-6">
+              <h3 className="font-semibold text-lg mb-2">👤 Parent Controls</h3>
+              <p className="text-muted-foreground">Allowlist topics, remove packs any time, review all logs.</p>
+            </Card>
+            <Card className="p-6">
+              <h3 className="font-semibold text-lg mb-2">😊 Gentle Language</h3>
+              <p className="text-muted-foreground">Age-appropriate content with refusal templates for sensitive topics.</p>
+            </Card>
+            <Card className="p-6">
+              <h3 className="font-semibold text-lg mb-2">👁️ Full Transparency</h3>
+              <p className="text-muted-foreground">Every answer cites its source. Parents can view & manage everything.</p>
+            </Card>
+          </div>
+          <div className="text-center mt-8">
+            <Button variant="outline" size="lg" onClick={() => navigate("/safety")}>
+              See How Safety Works
+            </Button>
           </div>
         </div>
       </section>
@@ -86,67 +179,65 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <VideoEmbed 
             title="See Safe AI Buddy in Action"
-            description="Watch how parents create personalized bedtime stories and set up safe learning environments"
+            description="Watch how parents create personalized bedtime stories, set up habit journeys, and curate safe learning environments"
           />
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-20 px-4 bg-secondary/30">
-        <div className="container mx-auto max-w-5xl">
-          <h2 className="text-4xl font-bold text-center mb-12">How It Works</h2>
-          <div className="grid sm:grid-cols-3 gap-8">
-            <Card className="p-6 text-center">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">1</div>
-              <h3 className="font-semibold text-lg mb-2">Choose</h3>
-              <p className="text-muted-foreground">Pick a theme, characters, and values.</p>
-            </Card>
-            <Card className="p-6 text-center">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">2</div>
-              <h3 className="font-semibold text-lg mb-2">Create</h3>
-              <p className="text-muted-foreground">Buddy builds a safe story or learning adventure.</p>
-            </Card>
-            <Card className="p-6 text-center">
-              <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">3</div>
-              <h3 className="font-semibold text-lg mb-2">Connect</h3>
-              <p className="text-muted-foreground">Your child listens, learns, and dreams.</p>
-            </Card>
-          </div>
-        </div>
-      </section>
-
       {/* Testimonials */}
-      <section className="py-20 px-4">
+      <section className="py-20 px-4 bg-secondary/30">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-4xl font-bold text-center mb-12">What Parents Are Saying</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <Testimonial
-              quote="Even when I travel, my daughter hears a story I made just for her. It feels like I'm still tucking her in."
+              quote="Stories kept our bedtime ritual alive while I traveled. It feels like I'm still tucking her in."
               author="Michael Chen"
               role="Parent of 2, San Francisco"
               avatarFallback="MC"
             />
             <Testimonial
-              quote="Finally, an AI I trust with my son. He learns, but never wanders into unsafe answers."
+              quote="Our 30-day kindness journey changed the vibe at home. Small steps, big impact."
               author="Sarah Martinez"
               role="Homeschooling Parent, Austin"
               avatarFallback="SM"
             />
+            <Testimonial
+              quote="Finally, a learning tool I trust. He learns, but never wanders into unsafe answers."
+              author="David Kim"
+              role="Parent & Teacher, Seattle"
+              avatarFallback="DK"
+            />
           </div>
+        </div>
+      </section>
+
+      {/* Pricing Preview */}
+      <section className="py-20 px-4">
+        <div className="container mx-auto max-w-4xl text-center space-y-6">
+          <h2 className="text-4xl font-bold">Simple plans. Family-friendly pricing.</h2>
+          <p className="text-xl text-muted-foreground">
+            Free to start. Cancel anytime. No ads. No data resale.
+          </p>
+          <Button size="lg" variant="outline" onClick={() => navigate("/pricing")}>
+            View Plans
+          </Button>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Make bedtime magical. Make learning safe. Start tonight.</h2>
+          <h2 className="text-4xl font-bold">Make bedtime magical. Build great habits. Keep learning safe.</h2>
           <p className="text-xl text-muted-foreground">
-            Start with 2 free stories. No credit card required.
+            Start with 2 free stories, 1 journey, and 50 learning questions. No credit card required.
           </p>
           <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
             <Sparkles className="mr-2 h-5 w-5" />
             Start Free Today
           </Button>
+          <p className="text-sm text-muted-foreground">
+            No ads · No data resale · Cancel anytime
+          </p>
         </div>
       </section>
 

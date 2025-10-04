@@ -6,8 +6,10 @@ export const Footer = () => {
 
   const footerLinks = {
     Product: [
-      { label: "Story Buddy", path: "/story-buddy" },
-      { label: "Learning Buddy", path: "/learning-buddy" },
+      { label: "Stories", path: "/stories" },
+      { label: "Journeys", path: "/journeys" },
+      { label: "Learning", path: "/learning" },
+      { label: "Marketplace", path: "/marketplace" },
       { label: "Pricing", path: "/pricing" },
     ],
     Company: [

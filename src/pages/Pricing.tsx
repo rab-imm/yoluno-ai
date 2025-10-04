@@ -13,12 +13,12 @@ const Pricing = () => {
       name: "Free",
       price: "$0",
       period: "forever",
-      description: "Perfect for trying out bedtime stories",
+      description: "Try all three pillars",
       features: [
         "2 bedtime stories / month",
+        "1 active habit journey",
         "50 learning questions / month",
         "1 child profile",
-        "Basic voices & illustrations",
         "Story library"
       ],
       cta: "Start Free",
@@ -28,13 +28,13 @@ const Pricing = () => {
       name: "Standard",
       price: "$15",
       period: "per month",
-      description: "Great for families with regular bedtime routines",
+      description: "Great for regular use",
       features: [
         "10 bedtime stories / month",
-        "Unlimited learning questions",
+        "3 active journeys",
+        "Unlimited learning packs",
         "3 child profiles",
-        "1 premium voice style",
-        "1 illustration style",
+        "1 voice + 1 illustration style",
         "Story library with export",
         "Priority support"
       ],
@@ -45,17 +45,15 @@ const Pricing = () => {
       name: "Premium",
       price: "$25",
       period: "per month",
-      description: "Everything you need for magical bedtimes",
+      description: "Everything unlimited",
       features: [
-        "Unlimited bedtime stories",
-        "Unlimited learning questions",
-        "Unlimited child profiles",
-        "All premium voices",
-        "All illustration styles",
-        "Parent voice recordings",
-        "Weekly family insights",
-        "Print & export stories",
-        "Custom content packs",
+        "Unlimited stories",
+        "Unlimited journeys",
+        "Unlimited learning packs",
+        "All voices + illustration styles",
+        "Parent voice intro recordings",
+        "Weekly family report",
+        "Export & print stories/journals",
         "Priority support"
       ],
       cta: "Start Premium",
@@ -64,26 +62,35 @@ const Pricing = () => {
   ];
 
   const addons = [
-    { name: "Premium Story Bundle", price: "$5", description: "10 additional premium stories" },
-    { name: "Hardcover Storybook", price: "$29", description: "30 stories in a beautiful keepsake book" }
+    { name: "Premium Story Pack", price: "$5", description: "10 additional premium stories" },
+    { name: "Premium Journey Template", price: "$5", description: "Professionally crafted journey with 30+ missions" },
+    { name: "Hardcover Keepsake", price: "$29", description: "Month of Stories & Journeys in a beautiful book" }
   ];
 
   const faqs = [
+    {
+      question: "What ages is Buddy for?",
+      answer: "Great for 4–12. You set age-appropriate language & topics for all three pillars."
+    },
     {
       question: "Can I cancel anytime?",
       answer: "Yes, absolutely. Cancel anytime from your parent dashboard. No hidden fees or penalties."
     },
     {
-      question: "What happens to my stories if I downgrade?",
-      answer: "You keep access to all stories you've created. You just can't create new ones beyond your new plan limit."
+      question: "What happens if I downgrade?",
+      answer: "You keep access to all stories, journeys, and learning history. You just can't create new content beyond your new plan limit."
     },
     {
       question: "Do you sell data or show ads?",
       answer: "Never. Your privacy is non-negotiable. We make money from subscriptions, not from your data."
     },
     {
-      question: "What if my child exceeds the question limit?",
-      answer: "On the Free plan, they'll see a gentle message to try again tomorrow. On paid plans, questions are unlimited."
+      question: "Can I export or delete my family's data?",
+      answer: "Yes—export stories & logs, or delete everything with one click from your parent dashboard."
+    },
+    {
+      question: "Does Buddy work offline?",
+      answer: "Bedtime stories you've saved can play offline. For new content generation (stories, journeys, learning), an internet connection is required."
     }
   ];
 
@@ -193,14 +200,14 @@ const Pricing = () => {
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h2 className="text-4xl font-bold">Start tonight for free</h2>
           <p className="text-xl text-muted-foreground">
-            2 free bedtime stories. 50 free questions. No credit card required.
+            2 stories, 1 journey, 50 learning questions—free. No credit card required.
           </p>
           <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
             <Sparkles className="mr-2 h-5 w-5" />
-            Create Your First Story
+            Start Free Today
           </Button>
           <p className="text-sm text-muted-foreground">
-            Cancel anytime • No hidden fees • No ads • No data resale
+            No ads · No data resale · Cancel anytime
           </p>
         </div>
       </section>

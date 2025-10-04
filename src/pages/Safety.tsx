@@ -57,10 +57,10 @@ const Safety = () => {
             <Shield className="h-16 w-16 text-white" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-            Safety first. Always.
+            Safety isn't a setting. It's the system.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            We built Safe AI Buddy with one principle: your trust is everything. Here's exactly how we keep your children safe.
+            Every pillar—Stories, Journeys, Learning—operates within your controlled environment. Here's how.
           </p>
           
           {/* Trust Badges */}
@@ -90,37 +90,54 @@ const Safety = () => {
         </div>
       </section>
 
-      {/* How We Filter */}
+      {/* The Safety Pipeline */}
       <section className="py-20 px-4 bg-secondary/30">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-4xl font-bold text-center mb-12">How Content Gets Approved</h2>
+          <h2 className="text-4xl font-bold text-center mb-4">The Safety Pipeline</h2>
+          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+            For Stories, Journeys, and Learning—same protective system
+          </p>
           <div className="space-y-6">
             <Card className="p-6 flex items-start gap-4">
               <div className="flex-shrink-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">1</div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Parent Selects Content Pack</h3>
-                <p className="text-muted-foreground">You choose from pre-approved packs (Space, Dinosaurs, Math) or upload your own content.</p>
+                <h3 className="font-semibold text-lg mb-2">Parent Allowlist</h3>
+                <p className="text-muted-foreground">You choose topics & packs—stories, learning content, journey templates—all approved by you first.</p>
               </div>
             </Card>
             <Card className="p-6 flex items-start gap-4">
               <div className="flex-shrink-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">2</div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Content is Filtered</h3>
-                <p className="text-muted-foreground">Our system checks for age-appropriateness, tone, and safety. Complex topics are simplified.</p>
+                <h3 className="font-semibold text-lg mb-2">Closed Knowledge Sandbox</h3>
+                <p className="text-muted-foreground">No web access, only approved content. Buddy can't search the internet or pull random information.</p>
               </div>
             </Card>
             <Card className="p-6 flex items-start gap-4">
               <div className="flex-shrink-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">3</div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Child Interacts with Buddy</h3>
-                <p className="text-muted-foreground">Buddy only references approved content. Out-of-scope questions get gentle refusals.</p>
+                <h3 className="font-semibold text-lg mb-2">Generation Guards</h3>
+                <p className="text-muted-foreground">Age-appropriate tone, no sensitive topics (religion, politics, medical advice).</p>
+              </div>
+            </Card>
+            <Card className="p-6 flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">4</div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Grounding & Filters</h3>
+                <p className="text-muted-foreground">Answers cite sources. Toxicity & PII filters prevent harmful or private information.</p>
+              </div>
+            </Card>
+            <Card className="p-6 flex items-start gap-4">
+              <div className="flex-shrink-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">5</div>
+              <div>
+                <h3 className="font-semibold text-lg mb-2">Refusals</h3>
+                <p className="text-muted-foreground">Gentle redirects for out-of-scope questions: "That's not in our topics. Let's pick from dinosaurs, space, or math!"</p>
               </div>
             </Card>
             <Card className="p-6 flex items-start gap-4 border-2 border-success">
-              <div className="flex-shrink-0 w-10 h-10 bg-success text-success-foreground rounded-full flex items-center justify-center font-bold">4</div>
+              <div className="flex-shrink-0 w-10 h-10 bg-success text-success-foreground rounded-full flex items-center justify-center font-bold">6</div>
               <div>
-                <h3 className="font-semibold text-lg mb-2">Parent Reviews Everything</h3>
-                <p className="text-muted-foreground">Check conversation logs anytime. See source citations. Remove content with one click.</p>
+                <h3 className="font-semibold text-lg mb-2">Auditability</h3>
+                <p className="text-muted-foreground">Full parent logs. Review all conversations, see source citations, remove content with one click.</p>
               </div>
             </Card>
           </div>

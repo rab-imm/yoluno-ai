@@ -9,9 +9,10 @@ export const Navigation = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navLinks = [
-    { label: "Story Buddy", path: "/story-buddy" },
-    { label: "Learning Buddy", path: "/learning-buddy" },
-    { label: "Journeys", path: "/marketplace" },
+    { label: "Stories", path: "/stories" },
+    { label: "Journeys", path: "/journeys" },
+    { label: "Learning", path: "/learning" },
+    { label: "Marketplace", path: "/marketplace" },
     { label: "Safety", path: "/safety" },
     { label: "Pricing", path: "/pricing" },
   ];

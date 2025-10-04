@@ -11,20 +11,20 @@ const LearningBuddy = () => {
   const features = [
     {
       icon: Package,
-      title: "Parent-Curated Packs",
+      title: "Choose Topics",
       description: "Dinosaurs, space, math drills, nature — all chosen by you. Only topics you approve.",
-      color: "text-[hsl(var(--learning-primary))]"
+      color: "text-[hsl(var(--curiosity-secondary))]"
     },
     {
       icon: Upload,
       title: "Add Your Own Content",
-      description: "Upload bedtime stories, worksheets, or family folktales. Make it truly personal.",
-      color: "text-accent"
+      description: "Upload worksheets, folktales, or custom lessons. Make it truly personal.",
+      color: "text-[hsl(var(--curiosity-primary))]"
     },
     {
       icon: Eye,
-      title: "Transparent Logs",
-      description: "Review every conversation. See exactly what Buddy said and which pack it came from.",
+      title: "Parent Reviews",
+      description: "See clear answers with source badges. Review all Q&A logs anytime.",
       color: "text-primary"
     }
   ];
@@ -41,32 +41,33 @@ const LearningBuddy = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--learning-bg))] via-background to-[hsl(var(--learning-primary))]/5">
+      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--curiosity-light))] via-background to-[hsl(var(--curiosity-secondary))]/5">
         <div className="container mx-auto max-w-6xl text-center space-y-6">
-          <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--learning-primary))] to-[hsl(var(--learning-secondary))] rounded-3xl mb-4 animate-float">
+          <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] rounded-3xl mb-4 animate-float">
             <Brain className="h-16 w-16 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--learning-primary))] to-[hsl(var(--learning-secondary))] bg-clip-text text-transparent">
-            Curiosity that's safe
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] bg-clip-text text-transparent">
+            Curiosity, safely guided.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            During the day, Buddy becomes a safe exploration companion. Your child asks questions. You control the topics.
+            Buddy answers questions only within the topics you approve—no open web, no surprises.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--learning-primary))] to-[hsl(var(--learning-secondary))] hover:opacity-90">
+            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] hover:opacity-90">
               <Sparkles className="mr-2 h-5 w-5" />
-              Add Your First Pack
+              Add a Learning Pack
             </Button>
-            <Button size="lg" variant="outline" onClick={() => navigate("/pricing")}>
-              See All Packs
+            <Button size="lg" variant="outline" onClick={() => navigate("/marketplace")}>
+              Browse All Packs
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* Parent Controls */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
+          <h2 className="text-4xl font-bold text-center mb-12">Parent Controls</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {features.map((feature) => (
               <Card key={feature.title} className="p-8 hover:shadow-lg transition-shadow text-center">
@@ -79,26 +80,31 @@ const LearningBuddy = () => {
         </div>
       </section>
 
-      {/* Example Q&A */}
+      {/* Transparency */}
       <section className="py-20 px-4 bg-secondary/30">
-        <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl font-bold text-center mb-12">How it works</h2>
-          <div className="space-y-6">
-            <Card className="p-6 border-l-4 border-l-[hsl(var(--learning-primary))]">
+        <div className="container mx-auto max-w-5xl">
+          <h2 className="text-4xl font-bold text-center mb-12">Transparency</h2>
+          <div className="space-y-6 mb-8">
+            <Card className="p-6 border-l-4 border-l-[hsl(var(--curiosity-secondary))]">
               <p className="text-lg font-medium mb-2">Child asks:</p>
               <p className="text-2xl text-muted-foreground italic">"Why do stars twinkle?"</p>
             </Card>
-            <Card className="p-6 bg-[hsl(var(--learning-bg))] border-l-4 border-l-[hsl(var(--learning-secondary))]">
+            <Card className="p-6 bg-[hsl(var(--curiosity-light))] border-l-4 border-l-[hsl(var(--curiosity-primary))]">
               <p className="text-lg font-medium mb-2">Buddy responds:</p>
               <p className="text-xl leading-relaxed">
                 "Because the air around Earth bends starlight as it travels to your eyes! It's like looking at something underwater — 
-                it wiggles a little bit. That's from your <span className="font-semibold text-[hsl(var(--learning-primary))]">Space Pack!</span>"
+                it wiggles a little bit. <span className="inline-flex items-center gap-1 px-2 py-1 bg-[hsl(var(--curiosity-secondary))]/20 rounded text-sm font-semibold">📦 Space Pack</span>"
               </p>
             </Card>
           </div>
-          <p className="text-center text-muted-foreground mt-8 text-lg">
-            Every answer cites its source pack. Parents can review and remove any content.
-          </p>
+          <div className="text-center">
+            <p className="text-lg text-muted-foreground mb-4">
+              Every answer cites the pack/source used. Parent logs show every Q&A.
+            </p>
+            <Button variant="outline" onClick={() => navigate("/safety")}>
+              See How It's Safe
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -124,15 +130,15 @@ const LearningBuddy = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
+      <section className="py-20 px-4">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <h2 className="text-4xl font-bold">Let curiosity bloom safely</h2>
           <p className="text-xl text-muted-foreground">
             Start with 50 free questions per month. Add packs anytime.
           </p>
-          <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
+          <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] hover:opacity-90">
             <Brain className="mr-2 h-5 w-5" />
-            Start Learning Today
+            Add a Learning Pack
           </Button>
         </div>
       </section>
