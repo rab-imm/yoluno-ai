@@ -290,36 +290,38 @@ function ChildChatContent() {
             )
           ) : (
             <>
-              {/* Desktop: Learning Mode */}
-              <LearningMode>
-                <div className="space-y-6">
-                  <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
-                </div>
-              </LearningMode>
+              {mode === "learning" && (
+                <LearningMode>
+                  <div className="space-y-6 mode-transition">
+                    <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} />
+                  </div>
+                </LearningMode>
+              )}
 
-              {/* Desktop: Story Time Mode */}
-              <StoryTimeMode>
-                <div className="space-y-6">
-                  <StoryModeHeader 
-                    title="Story Time Magic"
-                    description="Create wonderful stories and explore your collection"
-                  />
-                  
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div>
-                      <EnhancedStoryBuilder
-                        childId={id!}
-                        childName={child.name}
-                        childAge={child.age || 8}
-                        onComplete={() => setStoryView("library")}
-                      />
-                    </div>
-                    <div>
-                      <StoriesLibrary childId={id!} childName={child.name} />
+              {mode === "story" && (
+                <StoryTimeMode>
+                  <div className="space-y-6 mode-transition">
+                    <StoryModeHeader 
+                      title="Story Time Magic"
+                      description="Create wonderful stories and explore your collection"
+                    />
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <div>
+                        <EnhancedStoryBuilder
+                          childId={id!}
+                          childName={child.name}
+                          childAge={child.age || 8}
+                          onComplete={loadBedtimeStory}
+                        />
+                      </div>
+                      <div>
+                        <StoriesLibrary childId={id!} childName={child.name} />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </StoryTimeMode>
+                </StoryTimeMode>
+              )}
             </>
           )}
         </main>
