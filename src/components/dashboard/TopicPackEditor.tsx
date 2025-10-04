@@ -150,7 +150,7 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
         return;
       }
 
-      if (pack?.is_custom) {
+      if (pack?.is_custom && pack.id) {
         // Update existing custom pack
         const { error } = await supabase
           .from("custom_topic_packs")
@@ -165,7 +165,7 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
         if (error) throw error;
         toast.success("Pack updated successfully!");
       } else {
-        // Create new custom pack
+        // Create new custom pack (including clones)
         const { error } = await supabase
           .from("custom_topic_packs")
           .insert({
@@ -213,18 +213,18 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <ArrowLeft className="w-4 h-4" />
-        </Button>
+      <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold">
-            {pack ? "Edit Topic Pack" : "Create Topic Pack"}
+            {pack?.id ? "Edit Topic Pack" : pack ? "Clone Topic Pack" : "Create Topic Pack"}
           </h2>
           <p className="text-muted-foreground">
-            {pack ? "Modify your custom pack" : "Create a new custom topic pack"}
+            {pack?.id ? "Modify your custom pack" : pack ? "Customize your cloned pack" : "Create a new custom topic pack"}
           </p>
         </div>
+        <Button variant="ghost" onClick={onClose}>
+          Close
+        </Button>
       </div>
 
       <Card>
@@ -462,9 +462,9 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
         </CardContent>
       </Card>
 
-      <div className="flex justify-between">
+      <div className="flex justify-between sticky bottom-0 bg-background pt-4 border-t">
         <div>
-          {pack?.is_custom && (
+          {pack?.is_custom && pack.id && (
             <Button variant="destructive" onClick={handleDelete}>
               Delete Pack
             </Button>

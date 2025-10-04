@@ -4,9 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search, Plus, TrendingUp, Star } from "lucide-react";
+import { Search, Plus, TrendingUp, Star, Copy } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { TopicPackEditor } from "./TopicPackEditor";
 import { TopicAnalytics } from "./TopicAnalytics";
 import { TopicReviewCard } from "./TopicReviewCard";
@@ -31,7 +32,7 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [showEditor, setShowEditor] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingPack, setEditingPack] = useState<TopicPack | null>(null);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
 
@@ -88,48 +89,31 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
 
   const handleCreatePack = () => {
     setEditingPack(null);
-    setShowEditor(true);
+    setDrawerOpen(true);
   };
 
   const handleEditPack = (pack: TopicPack) => {
     setEditingPack(pack);
-    setShowEditor(true);
+    setDrawerOpen(true);
   };
 
-  const handleClonePack = async (pack: TopicPack) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const { error } = await supabase
-      .from("custom_topic_packs")
-      .insert({
-        parent_id: user.id,
-        name: `${pack.name} (Copy)`,
-        description: pack.description,
-        emoji: pack.emoji,
-        topics: pack.topics,
-      });
-
-    if (error) {
-      toast.error("Failed to clone pack");
-      console.error(error);
-    } else {
-      toast.success("Pack cloned successfully!");
-      loadCustomPacks();
-    }
+  const handleClonePack = (pack: TopicPack) => {
+    // Immediately open editor with cloned data (no DB save yet)
+    setEditingPack({
+      ...pack,
+      id: "", // Empty ID indicates new pack
+      name: `${pack.name} (Copy)`,
+      is_custom: true,
+    });
+    setDrawerOpen(true);
+    toast.info("Cloned! Edit and save when ready.");
   };
 
-  if (showEditor) {
-    return (
-      <TopicPackEditor
-        pack={editingPack}
-        onClose={() => {
-          setShowEditor(false);
-          loadCustomPacks();
-        }}
-      />
-    );
-  }
+  const handleCloseEditor = () => {
+    setDrawerOpen(false);
+    setEditingPack(null);
+    loadCustomPacks();
+  };
 
   return (
     <div className="space-y-6">
@@ -220,7 +204,7 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
                           </span>
                         )}
                       </div>
-                      <div className="flex gap-2">
+                       <div className="flex gap-2">
                         {pack.is_custom ? (
                           <Button
                             size="sm"
@@ -235,8 +219,9 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
                             size="sm"
                             variant="outline"
                             onClick={() => handleClonePack(pack)}
-                            className="flex-1"
+                            className="flex-1 gap-2"
                           >
+                            <Copy className="w-4 h-4" />
                             Clone & Customize
                           </Button>
                         )}
@@ -266,6 +251,17 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
           />
         </TabsContent>
       </Tabs>
+
+      <Drawer open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <DrawerContent className="max-h-[90vh]">
+          <div className="overflow-y-auto p-6">
+            <TopicPackEditor
+              pack={editingPack}
+              onClose={handleCloseEditor}
+            />
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 }
