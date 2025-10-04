@@ -11,20 +11,20 @@ const LearningBuddy = () => {
   const features = [
     {
       icon: Package,
-      title: "Choose Topics",
-      description: "Dinosaurs, space, math drills, nature — all chosen by you. Only topics you approve.",
+      title: "You Control the AI Knowledge",
+      description: "Dinosaurs, space, math drills, nature — all chosen by you. AI only knows what you approve.",
       color: "text-[hsl(var(--curiosity-secondary))]"
     },
     {
       icon: Upload,
       title: "Add Your Own Content",
-      description: "Upload worksheets, folktales, or custom lessons. Make it truly personal.",
+      description: "Upload worksheets, folktales, or custom lessons. AI learns only from your approved materials.",
       color: "text-[hsl(var(--curiosity-primary))]"
     },
     {
       icon: Eye,
-      title: "Parent Reviews",
-      description: "See clear answers with source badges. Review all Q&A logs anytime.",
+      title: "Grounded AI Answers",
+      description: "AI cites its source with every answer. No web access. Review all Q&A logs anytime.",
       color: "text-primary"
     }
   ];
@@ -47,10 +47,10 @@ const LearningBuddy = () => {
             <Brain className="h-16 w-16 text-white" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] bg-clip-text text-transparent">
-            Curiosity, safely guided.
+            AI-powered curiosity, safely guided.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Buddy answers questions only within the topics you approve—no open web, no surprises.
+            AI answers questions only within the topics you approve—no open web, no surprises, no unsafe AI generation.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] hover:opacity-90">
@@ -90,16 +90,16 @@ const LearningBuddy = () => {
               <p className="text-2xl text-muted-foreground italic">"Why do stars twinkle?"</p>
             </Card>
             <Card className="p-6 bg-[hsl(var(--curiosity-light))] border-l-4 border-l-[hsl(var(--curiosity-primary))]">
-              <p className="text-lg font-medium mb-2">Buddy responds:</p>
+              <p className="text-lg font-medium mb-2">AI responds (grounded in approved content):</p>
               <p className="text-xl leading-relaxed">
                 "Because the air around Earth bends starlight as it travels to your eyes! It's like looking at something underwater — 
-                it wiggles a little bit. <span className="inline-flex items-center gap-1 px-2 py-1 bg-[hsl(var(--curiosity-secondary))]/20 rounded text-sm font-semibold">📦 Space Pack</span>"
+                it wiggles a little bit. <span className="inline-flex items-center gap-1 px-2 py-1 bg-[hsl(var(--curiosity-secondary))]/20 rounded text-sm font-semibold">📦 Space Pack (AI Source)</span>"
               </p>
             </Card>
           </div>
           <div className="text-center">
             <p className="text-lg text-muted-foreground mb-4">
-              Every answer cites the pack/source used. Parent logs show every Q&A.
+              Every AI answer cites the pack/source used. AI never accesses the web. Parent logs show every Q&A.
             </p>
             <Button variant="outline" onClick={() => navigate("/safety")}>
               See How It's Safe

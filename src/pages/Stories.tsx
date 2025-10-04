@@ -11,23 +11,23 @@ const StoryBuddy = () => {
   const features = [
     {
       icon: BookOpen,
-      title: "Personalized Every Time",
-      description: "Stories crafted with your child's name, their favorite characters, and your family values woven throughout."
+      title: "You Control the AI",
+      description: "Choose themes, characters, values, and tone. AI creates a unique personalized story every time."
     },
     {
       icon: Headphones,
-      title: "Beautiful Narration",
-      description: "Gentle, child-friendly voices bring each story to life with warmth and emotion."
+      title: "AI-Generated Narration",
+      description: "Choose from soothing AI voices. Perfect for winding down or listening while reading."
     },
     {
       icon: Sparkles,
       title: "AI-Crafted Illustrations",
-      description: "Every story comes with beautiful storybook-style artwork that captures the magic."
+      description: "AI generates soft, age-appropriate visuals that match the story and spark imagination."
     },
     {
       icon: Mic,
-      title: "Your Voice Intro",
-      description: "Record a short greeting: 'Hi Sara, Daddy misses you — here's tonight's story.'"
+      title: "Your Voice + AI",
+      description: "Record a short greeting: 'Hi Sara, Daddy misses you' — then AI tells tonight's story."
     }
   ];
 
@@ -42,10 +42,10 @@ const StoryBuddy = () => {
             <BookOpen className="h-16 w-16 text-white" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))] bg-clip-text text-transparent">
-            Bring bedtime to life — every night, from you.
+            AI-generated stories that bring bedtime to life — every night, from you.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Stories crafted with your child's name, your values, and their world—narrated with gentle voices and illustrated visuals.
+            AI crafts personalized stories with your child's name, your values, and their world—narrated with gentle AI voices and illustrated with AI-generated visuals.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))] hover:opacity-90">

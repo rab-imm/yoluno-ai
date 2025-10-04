@@ -46,10 +46,10 @@ const Journeys = () => {
             <Target className="h-16 w-16 text-white" />
           </div>
           <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] bg-clip-text text-transparent">
-            Help your child grow—one tiny step at a time.
+            AI helps your child grow—one personalized step at a time.
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            From brushing teeth to mastering multiplication, Buddy guides daily missions and celebrates progress—then reinforces it at bedtime.
+            From brushing teeth to mastering multiplication, AI generates personalized daily missions and celebrates progress—then reinforces it with AI-generated bedtime stories.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
             <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] hover:opacity-90">
@@ -80,18 +80,18 @@ const Journeys = () => {
             </Card>
             <Card className="p-6 text-center">
               <div className="w-12 h-12 bg-[hsl(var(--growth-primary))] text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">3</div>
-              <h3 className="font-semibold mb-2">Daily Mission</h3>
-              <p className="text-sm text-muted-foreground">Light, age-appropriate action each day</p>
+              <h3 className="font-semibold mb-2">AI-Generated Daily Mission</h3>
+              <p className="text-sm text-muted-foreground">AI creates light, age-appropriate actions tailored to your child</p>
             </Card>
             <Card className="p-6 text-center">
               <div className="w-12 h-12 bg-[hsl(var(--growth-primary))] text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">4</div>
-              <h3 className="font-semibold mb-2">Positive Reinforcement</h3>
-              <p className="text-sm text-muted-foreground">Stickers, badges, praise from Buddy</p>
+              <h3 className="font-semibold mb-2">AI-Powered Positive Reinforcement</h3>
+              <p className="text-sm text-muted-foreground">AI generates personalized stickers, badges, and praise</p>
             </Card>
             <Card className="p-6 text-center">
               <div className="w-12 h-12 bg-[hsl(var(--growth-primary))] text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">5</div>
-              <h3 className="font-semibold mb-2">Story Reinforcement</h3>
-              <p className="text-sm text-muted-foreground">Bedtime narrative echoes the day's mission</p>
+              <h3 className="font-semibold mb-2">AI Story Reinforcement</h3>
+              <p className="text-sm text-muted-foreground">AI-generated bedtime stories echo the day's mission</p>
             </Card>
           </div>
         </div>
@@ -149,9 +149,9 @@ const Journeys = () => {
       <section className="py-20 px-4 bg-gradient-to-br from-success/5 to-[hsl(var(--growth-primary))]/5">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
           <Heart className="h-16 w-16 text-[hsl(var(--growth-primary))] mx-auto" />
-          <h2 className="text-3xl font-bold">No negative framing. Just encouragement.</h2>
+          <h2 className="text-3xl font-bold">AI uses only positive language</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            No guilt, no sensitive tracking. Every mission is designed to celebrate effort and progress, not perfection.
+            No negative framing, guilt, or sensitive tracking. AI missions celebrate effort and progress, not perfection.
           </p>
         </div>
       </section>

@@ -15,8 +15,8 @@ const Index = () => {
     {
       icon: BookOpen,
       title: "Imagination",
-      subtitle: "Stories that sound like love",
-      description: "Nightly stories where your child is the hero—narrated with gentle voices and beautiful art. Parent chooses themes, Buddy creates & narrates, save favorites.",
+      subtitle: "AI-generated stories that sound like love",
+      description: "AI creates nightly stories where your child is the hero—narrated with AI-generated gentle voices and beautiful art. Parent chooses themes, AI creates & narrates, save favorites.",
       color: "from-[hsl(var(--imagination-primary))] to-[hsl(var(--imagination-secondary))]",
       cta: "Make Tonight's Story",
       path: "/stories"
@@ -24,8 +24,8 @@ const Index = () => {
     {
       icon: Target,
       title: "Growth",
-      subtitle: "Good habits, one tiny step at a time",
-      description: "Daily missions that build big habits—kindness, reading, responsibility. Buddy sends missions + positive reinforcement, bedtime stories reinforce progress.",
+      subtitle: "AI creates good habits, one tiny step at a time",
+      description: "AI generates personalized daily missions that build big habits—kindness, reading, responsibility. AI sends missions + positive reinforcement, AI-generated bedtime stories reinforce progress.",
       color: "from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))]",
       cta: "Start a Journey",
       path: "/journeys"
@@ -33,8 +33,8 @@ const Index = () => {
     {
       icon: Lightbulb,
       title: "Curiosity",
-      subtitle: "Answers you can trust",
-      description: "Safe exploration in parent-curated topics. You choose topics & packs, Buddy answers within sandbox, parent can view & manage logs.",
+      subtitle: "AI answers you can trust",
+      description: "Safe AI-powered exploration in parent-curated topics. You choose topics & packs, AI answers only within your approved sandbox—no web access, ever. Parent can view & manage all Q&A logs.",
       color: "from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))]",
       cta: "Add a Learning Pack",
       path: "/learning"
@@ -52,12 +52,12 @@ const Index = () => {
             <div className="inline-block p-4 bg-gradient-to-br from-primary to-accent rounded-3xl mb-4 animate-float">
               <Shield className="h-16 w-16 text-white" />
             </div>
-            <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              One safe AI buddy for your child — imagination, growth, and curiosity in one place.
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Personalized bedtime stories, guided habit journeys, and safe learning—always within the boundaries you choose.
-            </p>
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            Safe AI-powered companion for your child — imagination, growth, and curiosity.
+          </h1>
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            AI generates personalized bedtime stories, creates guided habit journeys, and answers questions safely—always within the boundaries you choose.
+          </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
                 <Sparkles className="mr-2 h-5 w-5" />
@@ -119,21 +119,21 @@ const Index = () => {
             <Card className="p-6 text-center">
               <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">1</div>
               <h3 className="font-semibold text-lg mb-2">You Choose</h3>
-              <p className="text-muted-foreground">What Buddy knows: themes, topics, goals—all parent-approved.</p>
+              <p className="text-muted-foreground">What the AI knows: themes, topics, goals—all parent-approved.</p>
             </Card>
             <Card className="p-6 text-center">
               <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">2</div>
-              <h3 className="font-semibold text-lg mb-2">Buddy Creates</h3>
-              <p className="text-muted-foreground">Stories, missions, or safe answers—always in your sandbox.</p>
+              <h3 className="font-semibold text-lg mb-2">AI Generates</h3>
+              <p className="text-muted-foreground">Stories, missions, or safe answers—AI works only within your approved sandbox. No web access.</p>
             </Card>
             <Card className="p-6 text-center">
               <div className="flex-shrink-0 w-12 h-12 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">3</div>
               <h3 className="font-semibold text-lg mb-2">Your Child Connects</h3>
-              <p className="text-muted-foreground">Listens, learns, and grows every day.</p>
+              <p className="text-muted-foreground">Listens, learns, and grows every day—powered by safe AI.</p>
             </Card>
           </div>
           <p className="text-center text-sm text-muted-foreground mt-8 italic">
-            Every response cites its approved source. No web browsing. No freestyle.
+            AI generates content only from parent-approved sources. Every answer cites its source. No web browsing. No freestyle AI generation.
           </p>
         </div>
       </section>
@@ -143,27 +143,27 @@ const Index = () => {
         <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <Shield className="h-16 w-16 text-primary mx-auto mb-4" />
-            <h2 className="text-4xl font-bold mb-4">Safe by design.</h2>
+            <h2 className="text-4xl font-bold mb-4">AI with Guardrails</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Every pillar—Stories, Journeys, Learning—operates within your controlled environment.
+              Every AI interaction—Stories, Journeys, Learning—flows through our safety pipeline.
             </p>
           </div>
           <div className="grid md:grid-cols-2 gap-6">
             <Card className="p-6">
-              <h3 className="font-semibold text-lg mb-2">🔒 Locked Sandbox AI</h3>
-              <p className="text-muted-foreground">No open internet, no random answers. Only your approved packs.</p>
+              <h3 className="font-semibold text-lg mb-2">🔒 Locked AI Sandbox—No Web Access</h3>
+              <p className="text-muted-foreground">AI can't browse the internet or access external sites. Only your approved packs.</p>
             </Card>
             <Card className="p-6">
-              <h3 className="font-semibold text-lg mb-2">👤 Parent Controls</h3>
-              <p className="text-muted-foreground">Allowlist topics, remove packs any time, review all logs.</p>
+              <h3 className="font-semibold text-lg mb-2">👤 Parent-Controlled AI Knowledge</h3>
+              <p className="text-muted-foreground">Allowlist topics, remove packs any time, control what AI knows.</p>
             </Card>
             <Card className="p-6">
-              <h3 className="font-semibold text-lg mb-2">😊 Gentle Language</h3>
-              <p className="text-muted-foreground">Age-appropriate content with refusal templates for sensitive topics.</p>
+              <h3 className="font-semibold text-lg mb-2">😊 AI-Generated Gentle Language</h3>
+              <p className="text-muted-foreground">AI uses age-appropriate tone with built-in refusal templates for sensitive topics.</p>
             </Card>
             <Card className="p-6">
-              <h3 className="font-semibold text-lg mb-2">👁️ Full Transparency</h3>
-              <p className="text-muted-foreground">Every answer cites its source. Parents can view & manage everything.</p>
+              <h3 className="font-semibold text-lg mb-2">👁️ Transparent AI Logs</h3>
+              <p className="text-muted-foreground">Every AI answer cites its source. Parents can view & manage all AI interactions.</p>
             </Card>
           </div>
           <div className="text-center mt-8">
@@ -227,9 +227,9 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-20 px-4 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
         <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Make bedtime magical. Build great habits. Keep learning safe.</h2>
+          <h2 className="text-4xl font-bold">Safe AI that makes bedtime magical, builds great habits, and keeps learning protected.</h2>
           <p className="text-xl text-muted-foreground">
-            Start with 2 free stories, 1 journey, and 50 learning questions. No credit card required.
+            Start with 2 free AI-generated stories, 1 AI-guided journey, and 50 AI-powered learning questions. No credit card required.
           </p>
           <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
             <Sparkles className="mr-2 h-5 w-5" />
