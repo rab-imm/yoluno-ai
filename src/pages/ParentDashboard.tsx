@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, LogOut, Users } from "lucide-react";
+import { Plus, LogOut, Users, BookOpen, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
@@ -14,6 +14,8 @@ import { ContentModerationLog } from "@/components/dashboard/ContentModerationLo
 import { TopicLibrary } from "@/components/dashboard/TopicLibrary";
 import { ContentLibrary } from "@/components/dashboard/ContentLibrary";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 export default function ParentDashboard() {
   const navigate = useNavigate();
@@ -22,6 +24,7 @@ export default function ParentDashboard() {
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showStoryWizard, setShowStoryWizard] = useState(false);
 
   useEffect(() => {
     checkAuth();
@@ -99,6 +102,34 @@ export default function ParentDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid gap-6">
+          {/* Story Buddy Hero Section */}
+          {children.length > 0 && selectedChildId && (
+            <Card className="bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 text-white border-0">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <BookOpen className="h-8 w-8" />
+                  <div>
+                    <CardTitle className="text-2xl">🌙 Tonight's Bedtime Story</CardTitle>
+                    <CardDescription className="text-white/90">
+                      Create a magical story for {children.find(c => c.id === selectedChildId)?.name} in just 2 minutes
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Button 
+                  size="lg" 
+                  variant="secondary" 
+                  onClick={() => setShowStoryWizard(true)}
+                  className="bg-white text-purple-600 hover:bg-white/90"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  Start Story Wizard
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           <Card>
             <CardHeader>
               <CardTitle>Child Profiles</CardTitle>
@@ -203,6 +234,22 @@ export default function ParentDashboard() {
       />
 
       <WelcomeDialog open={showWelcome} onComplete={handleWelcomeComplete} />
+
+      <Dialog open={showStoryWizard} onOpenChange={setShowStoryWizard}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
+          {selectedChildId && (
+            <EnhancedStoryBuilder
+              childId={selectedChildId}
+              childName={children.find(c => c.id === selectedChildId)?.name || ""}
+              childAge={children.find(c => c.id === selectedChildId)?.age || 8}
+              onComplete={() => {
+                setShowStoryWizard(false);
+                toast.success("Story created successfully! 🎉");
+              }}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -201,31 +201,73 @@ export type Database = {
       }
       child_stories: {
         Row: {
+          audio_content: string | null
+          audio_url: string | null
+          bedtime_ready: boolean | null
+          characters: Json | null
           child_id: string
           content: string
           created_at: string
+          duration_seconds: number | null
           id: string
+          illustration_style: string | null
+          illustrations: Json | null
           is_favorite: boolean
+          mood: string | null
+          narration_voice: string | null
+          parent_intro_url: string | null
           prompt: string
+          scenes: Json | null
+          story_length: string | null
+          theme: string | null
           title: string
+          values: string[] | null
         }
         Insert: {
+          audio_content?: string | null
+          audio_url?: string | null
+          bedtime_ready?: boolean | null
+          characters?: Json | null
           child_id: string
           content: string
           created_at?: string
+          duration_seconds?: number | null
           id?: string
+          illustration_style?: string | null
+          illustrations?: Json | null
           is_favorite?: boolean
+          mood?: string | null
+          narration_voice?: string | null
+          parent_intro_url?: string | null
           prompt: string
+          scenes?: Json | null
+          story_length?: string | null
+          theme?: string | null
           title: string
+          values?: string[] | null
         }
         Update: {
+          audio_content?: string | null
+          audio_url?: string | null
+          bedtime_ready?: boolean | null
+          characters?: Json | null
           child_id?: string
           content?: string
           created_at?: string
+          duration_seconds?: number | null
           id?: string
+          illustration_style?: string | null
+          illustrations?: Json | null
           is_favorite?: boolean
+          mood?: string | null
+          narration_voice?: string | null
+          parent_intro_url?: string | null
           prompt?: string
+          scenes?: Json | null
+          story_length?: string | null
+          theme?: string | null
           title?: string
+          values?: string[] | null
         }
         Relationships: [
           {
@@ -495,6 +537,63 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      story_themes: {
+        Row: {
+          age_appropriate: string[] | null
+          created_at: string | null
+          description: string
+          emoji: string
+          id: string
+          name: string
+        }
+        Insert: {
+          age_appropriate?: string[] | null
+          created_at?: string | null
+          description: string
+          emoji: string
+          id?: string
+          name: string
+        }
+        Update: {
+          age_appropriate?: string[] | null
+          created_at?: string | null
+          description?: string
+          emoji?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      story_usage: {
+        Row: {
+          created_at: string | null
+          id: string
+          month: string
+          parent_id: string
+          story_count: number | null
+          tier: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          month: string
+          parent_id: string
+          story_count?: number | null
+          tier?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          month?: string
+          parent_id?: string
+          story_count?: number | null
+          tier?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
       }
       topic_analytics: {
         Row: {

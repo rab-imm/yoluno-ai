@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Settings } from "lucide-react";
+import { ArrowLeft, Settings, Moon } from "lucide-react";
 import { toast } from "sonner";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
@@ -12,7 +12,9 @@ import { StoryMode } from "@/components/stories/StoryMode";
 import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
 import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
 import { AccessoriesManager } from "@/components/dashboard/AccessoriesManager";
+import { BedtimeMode } from "@/components/stories/BedtimeMode";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Sheet,
   SheetContent,
@@ -29,9 +31,12 @@ export default function ChildChat() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
+  const [bedtimeStory, setBedtimeStory] = useState<any>(null);
+  const [showBedtime, setShowBedtime] = useState(false);
 
   useEffect(() => {
     loadChild();
+    loadBedtimeStory();
   }, [id]);
 
   const loadChild = async () => {
@@ -54,6 +59,25 @@ export default function ChildChat() {
 
     setChild(data);
     setLoading(false);
+  };
+
+  const loadBedtimeStory = async () => {
+    if (!id) return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const { data } = await supabase
+      .from("child_stories")
+      .select("*")
+      .eq("child_id", id)
+      .eq("bedtime_ready", true)
+      .gte("created_at", today)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single();
+
+    if (data) {
+      setBedtimeStory(data);
+    }
   };
 
   const updatePersonality = async (mode: string) => {
@@ -144,6 +168,45 @@ export default function ChildChat() {
       </header>
 
       <main className="container mx-auto px-4 py-6 space-y-6">
+        {/* Bedtime Story Card */}
+        {bedtimeStory && (
+          <Card className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white border-0">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Moon className="w-6 h-6" />
+                Tonight's Bedtime Story
+              </CardTitle>
+              <CardDescription className="text-white/90">
+                Your parent made a special story just for you!
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <img
+                  src={bedtimeStory.illustrations?.[0]?.imageUrl || ""}
+                  alt={bedtimeStory.title}
+                  className="w-20 h-20 rounded-lg object-cover"
+                />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-lg">{bedtimeStory.title}</h3>
+                  <p className="text-sm text-white/80">
+                    {Math.ceil(bedtimeStory.duration_seconds / 60)} minute story
+                  </p>
+                </div>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  onClick={() => setShowBedtime(true)}
+                  className="bg-white text-purple-600 hover:bg-white/90"
+                >
+                  <Moon className="w-5 h-5 mr-2" />
+                  Listen Now
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
           <BadgeDisplay childId={id!} childName={child.name} />
@@ -166,6 +229,15 @@ export default function ChildChat() {
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Bedtime Mode Overlay */}
+      {showBedtime && bedtimeStory && (
+        <BedtimeMode
+          story={bedtimeStory}
+          childName={child.name}
+          onClose={() => setShowBedtime(false)}
+        />
+      )}
     </div>
   );
 }
