@@ -10,6 +10,8 @@ import { X, Plus, Save, ArrowLeft, Edit2, Check, Grid3x3, List, Search, Trash2 }
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PackContentManager } from "./PackContentManager";
 
 interface TopicPack {
   id: string;
@@ -227,7 +229,15 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
         </Button>
       </div>
 
-      <Card>
+      <Tabs defaultValue="details" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="details">Pack Details</TabsTrigger>
+          <TabsTrigger value="topics">Topics ({topics.length})</TabsTrigger>
+          <TabsTrigger value="content">Content</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="details" className="space-y-4">
+          <Card>
         <CardHeader>
           <CardTitle>Pack Details</CardTitle>
           <CardDescription>
@@ -267,9 +277,11 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
             />
           </div>
         </CardContent>
-      </Card>
+          </Card>
+        </TabsContent>
 
-      <Card>
+        <TabsContent value="topics" className="space-y-4">
+          <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -460,7 +472,13 @@ export function TopicPackEditor({ pack, onClose }: TopicPackEditorProps) {
             )}
           </div>
         </CardContent>
-      </Card>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="content" className="space-y-4">
+          <PackContentManager topics={topics} />
+        </TabsContent>
+      </Tabs>
 
       <div className="flex justify-between sticky bottom-0 bg-background pt-4 border-t">
         <div>

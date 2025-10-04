@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Search, Plus, TrendingUp, Star, Copy } from "lucide-react";
+import { Search, Plus, TrendingUp, Star, Copy, Eye } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Drawer, DrawerContent } from "@/components/ui/drawer";
@@ -13,6 +13,7 @@ import { TopicPackEditor } from "./TopicPackEditor";
 import { TopicAnalytics } from "./TopicAnalytics";
 import { TopicReviewCard } from "./TopicReviewCard";
 import { BulkTopicManager } from "./BulkTopicManager";
+import { ContentPreviewDrawer } from "./ContentPreviewDrawer";
 
 interface TopicPack {
   id: string;
@@ -37,6 +38,8 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
   const [editingPack, setEditingPack] = useState<TopicPack | null>(null);
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [activeView, setActiveView] = useState<"library" | "analytics" | "review">("library");
+  const [previewDrawerOpen, setPreviewDrawerOpen] = useState(false);
+  const [previewPack, setPreviewPack] = useState<TopicPack | null>(null);
 
   useEffect(() => {
     loadPacks();
@@ -125,6 +128,11 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
     setDrawerOpen(false);
     setEditingPack(null);
     loadCustomPacks();
+  };
+
+  const handlePreviewContent = (pack: TopicPack) => {
+    setPreviewPack(pack);
+    setPreviewDrawerOpen(true);
   };
 
   return (
@@ -234,6 +242,15 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
                       )}
                     </div>
                     <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handlePreviewContent(pack)}
+                        className="gap-2"
+                      >
+                        <Eye className="w-4 h-4" />
+                        Preview
+                      </Button>
                       {pack.is_custom ? (
                         <Button
                           size="sm"
@@ -251,7 +268,7 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
                           className="flex-1 gap-2"
                         >
                           <Copy className="w-4 h-4" />
-                          Clone & Customize
+                          Clone
                         </Button>
                       )}
                     </div>
@@ -297,6 +314,19 @@ export function TopicLibrary({ childId }: TopicLibraryProps) {
               pack={editingPack}
               onClose={handleCloseEditor}
             />
+          </div>
+        </DrawerContent>
+      </Drawer>
+
+      <Drawer open={previewDrawerOpen} onOpenChange={setPreviewDrawerOpen}>
+        <DrawerContent className="max-h-[90vh]">
+          <div className="overflow-y-auto p-6">
+            {previewPack && (
+              <ContentPreviewDrawer
+                topics={previewPack.topics}
+                packName={previewPack.name}
+              />
+            )}
           </div>
         </DrawerContent>
       </Drawer>
