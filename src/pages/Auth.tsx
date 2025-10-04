@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
-import { Shield, Sparkles } from "lucide-react";
+import { Shield, Sparkles, ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 export default function Auth() {
@@ -83,6 +83,15 @@ export default function Auth() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate("/")}
+            className="absolute top-4 left-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
           <div className="flex justify-center mb-4">
             <div className="p-3 bg-gradient-to-br from-primary to-accent rounded-2xl">
               <Shield className="h-8 w-8 text-white" />
