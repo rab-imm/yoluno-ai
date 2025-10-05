@@ -198,10 +198,10 @@ export function StoryLibrary({ childId, childName }: StoryLibraryProps) {
           {filteredStories.map((story) => (
             <Card key={story.id} className="overflow-hidden hover:shadow-lg transition-shadow">
               {/* Thumbnail */}
-              {story.illustrations?.[0] && (
+              {story.illustrations?.[0]?.imageUrl && (
                 <div className="aspect-video bg-gradient-to-br from-primary/20 to-secondary/20 relative">
                   <img
-                    src={story.illustrations[0]}
+                    src={story.illustrations[0].imageUrl}
                     alt={story.title}
                     className="w-full h-full object-cover"
                   />
@@ -283,11 +283,11 @@ export function StoryLibrary({ childId, childName }: StoryLibraryProps) {
           </DialogHeader>
           <ScrollArea className="max-h-[60vh]">
             <div className="space-y-4 pr-4">
-              {selectedStory?.illustrations?.map((img: string, idx: number) => (
+              {selectedStory?.illustrations?.map((illustration: any, idx: number) => (
                 <img
                   key={idx}
-                  src={img}
-                  alt={`Illustration ${idx + 1}`}
+                  src={illustration.imageUrl}
+                  alt={illustration.description || `Illustration ${idx + 1}`}
                   className="w-full rounded-lg"
                 />
               ))}
