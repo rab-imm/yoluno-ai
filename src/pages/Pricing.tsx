@@ -66,6 +66,48 @@ const Pricing = () => {
     }
   ];
 
+  const familyHistoryTiers = [
+    {
+      name: "Basic",
+      price: "$8",
+      period: "per month",
+      storage: "100 MB",
+      transcription: "60 min/month",
+      features: [
+        "Unlimited family members & relationships",
+        "AI photo captions & face detection",
+        "Audio story recording & transcription",
+        "Document upload & parsing (PDF, Word, images)",
+        "Interactive family tree builder",
+        "Per-child access controls with age gating"
+      ]
+    },
+    {
+      name: "Plus",
+      price: "$18",
+      period: "per month",
+      storage: "500 MB",
+      transcription: "150 min/month",
+      features: [
+        "All Basic features",
+        "5x more storage for larger photo archives",
+        "2.5x more transcription time"
+      ]
+    },
+    {
+      name: "Pro",
+      price: "$35",
+      period: "per month",
+      storage: "2 GB",
+      transcription: "300 min/month",
+      features: [
+        "All Plus features",
+        "20x storage for extensive family archives",
+        "5x transcription for comprehensive oral histories"
+      ]
+    }
+  ];
+
   const addons = [
     { name: "Premium Story Pack", price: "$5", description: "10 additional premium stories" },
     { name: "Premium Journey Template", price: "$5", description: "Professionally crafted journey with 30+ missions" },
@@ -177,7 +219,63 @@ const Pricing = () => {
         </div>
       </section>
 
-      {/* Add-Ons */}
+      {/* Family History Add-On */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-12">
+            <div className="inline-block bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-semibold mb-4">
+              NEW ADD-ON
+            </div>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">Family History</h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Preserve your family stories and let your child discover their heritage through AI-powered conversations
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            {familyHistoryTiers.map((tier) => (
+              <Card key={tier.name} className="p-6 hover:shadow-lg transition-shadow">
+                <h3 className="text-xl font-bold mb-2">{tier.name}</h3>
+                <div className="flex items-baseline gap-1 mb-4">
+                  <span className="text-3xl font-bold">{tier.price}</span>
+                  <span className="text-muted-foreground">/{tier.period}</span>
+                </div>
+                <div className="mb-4">
+                  <div className="text-sm font-semibold text-primary">{tier.storage} storage</div>
+                  <div className="text-sm font-semibold text-primary">{tier.transcription} transcription</div>
+                </div>
+                <ul className="space-y-2 mb-6">
+                  {tier.features.map((feature) => (
+                    <li key={feature} className="flex items-start gap-2 text-sm">
+                      <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button variant="outline" className="w-full" onClick={() => navigate("/auth")}>
+                  Add to Plan
+                </Button>
+              </Card>
+            ))}
+          </div>
+          
+          <Card className="p-6 bg-gradient-to-br from-background to-primary/5">
+            <div className="flex items-start gap-4">
+              <Book className="h-8 w-8 text-primary flex-shrink-0" />
+              <div>
+                <h3 className="font-semibold text-lg mb-2">How It Enhances the AI Buddy Experience</h3>
+                <p className="text-muted-foreground">
+                  Your child can ask their AI buddy questions like "Tell me about Grandma Rose" or "What did Great-Grandpa do?" 
+                  and receive warm, age-appropriate responses with family photos and stories. Build your family tree, 
+                  record oral histories, and upload photos—all while maintaining control over what each child can access based on their age.
+                </p>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </section>
+
+      {/* Other Add-Ons */}
       <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0">
           <img 
@@ -187,7 +285,7 @@ const Pricing = () => {
           />
         </div>
         <div className="container mx-auto max-w-4xl relative z-10">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Add-Ons</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Other Add-Ons</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {addons.map((addon) => (
               <Card key={addon.name} className="p-6 hover:shadow-md transition-shadow">

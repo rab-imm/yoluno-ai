@@ -19,6 +19,7 @@ import { JourneyOnboardingCard } from "@/components/journey/JourneyOnboardingCar
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { FamilyHistoryManager } from "@/components/dashboard/FamilyHistoryManager";
 
 export default function ParentDashboard() {
   const navigate = useNavigate();
@@ -222,12 +223,13 @@ export default function ParentDashboard() {
                       return (
                         <div key={child.id}>
                           <Tabs defaultValue="insights" className="w-full">
-                            <TabsList className="grid w-full grid-cols-7">
+                            <TabsList className="grid w-full grid-cols-8">
                               <TabsTrigger value="insights">Learning Insights</TabsTrigger>
                               <TabsTrigger value="topics">Topics</TabsTrigger>
                               <TabsTrigger value="library">Topic Library</TabsTrigger>
                               <TabsTrigger value="journeys">Goal Journeys</TabsTrigger>
                               <TabsTrigger value="stories">Story Library</TabsTrigger>
+                              <TabsTrigger value="family">Family History</TabsTrigger>
                               <TabsTrigger value="content">Content Review</TabsTrigger>
                               <TabsTrigger value="safety">Safety Monitor</TabsTrigger>
                             </TabsList>
@@ -254,6 +256,10 @@ export default function ParentDashboard() {
 
                             <TabsContent value="stories" className="space-y-4 mt-4">
                               <StoryLibrary childId={selectedChild.id} childName={selectedChild.name} />
+                            </TabsContent>
+
+                            <TabsContent value="family" className="space-y-4 mt-4">
+                              <FamilyHistoryManager />
                             </TabsContent>
 
                             <TabsContent value="content" className="space-y-4 mt-4">

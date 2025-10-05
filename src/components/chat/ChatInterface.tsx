@@ -34,6 +34,7 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   created_at: string;
+  photos?: string[]; // Array of photo IDs from family history
 }
 
 export function ChatInterface({ childId, childName, childAvatar = "🤖", personalityMode = "curious_explorer" }: ChatInterfaceProps) {
@@ -201,11 +202,20 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
 
       if (error) throw error;
 
+      // Extract photo IDs from response [PHOTO:uuid] format
+      const photoIds: string[] = [];
+      const photoRegex = /\[PHOTO:([^\]]+)\]/g;
+      let match;
+      while ((match = photoRegex.exec(data.message)) !== null) {
+        photoIds.push(match[1]);
+      }
+
       const assistantMessage: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
         content: data.message,
         created_at: new Date().toISOString(),
+        photos: photoIds.length > 0 ? photoIds : undefined,
       };
 
       setMessages((prev) => [...prev, assistantMessage]);

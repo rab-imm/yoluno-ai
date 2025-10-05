@@ -370,6 +370,57 @@ AGE GUIDANCE (Child is ${childAge} years old - Upper Elementary):
 
     const relevantTopics = findRelevantTopics(message);
 
+    // Check for family history context if enabled
+    let familyContext = '';
+    const familyKeywords = ['family', 'grandma', 'grandpa', 'grandfather', 'grandmother', 'ancestor', 'relative', 'uncle', 'aunt', 'cousin'];
+    const hasFamilyQuery = familyKeywords.some(keyword => messageLower.includes(keyword));
+    
+    if (hasFamilyQuery) {
+      try {
+        const familyResponse = await fetch(`${supabaseUrl}/functions/v1/get-family-context`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            childId: childId,
+            query: message
+          })
+        });
+        
+        const familyData = await familyResponse.json();
+        
+        if (familyData.hasAccess && familyData.context) {
+          familyContext = '\n\nFAMILY HISTORY CONTEXT:\n';
+          
+          if (familyData.context.members && familyData.context.members.length > 0) {
+            familyContext += 'Family Members:\n';
+            familyData.context.members.forEach((member: any) => {
+              familyContext += `- ${member.name} (${member.relationship || 'family member'}): ${member.bio || ''}\n`;
+            });
+          }
+          
+          if (familyData.context.stories && familyData.context.stories.length > 0) {
+            familyContext += '\nFamily Stories:\n';
+            familyData.context.stories.forEach((story: any) => {
+              familyContext += `- ${story.title}: ${story.ai_summary}\n`;
+            });
+          }
+          
+          if (familyData.context.photos && familyData.context.photos.length > 0) {
+            familyContext += '\nFamily Photos:\n';
+            familyData.context.photos.forEach((photo: any) => {
+              familyContext += `- Photo [ID:${photo.id}]: ${photo.ai_caption}\n`;
+            });
+            familyContext += '\nIMPORTANT: When mentioning these photos, include their IDs in the format [PHOTO:id] so the child can see them!\n';
+          }
+        }
+      } catch (familyError) {
+        console.error('Error fetching family context:', familyError);
+      }
+    }
+
     // Build memory context string
     let memoryContext = '';
     
@@ -397,7 +448,7 @@ AGE GUIDANCE (Child is ${childAge} years old - Upper Elementary):
 ${ageGuidance}
 
 PERSONALITY MODE: ${personalityMode.replace('_', ' ').toUpperCase()}
-${personalityInstruction}${memoryContext}${summaryContext}
+${personalityInstruction}${memoryContext}${summaryContext}${familyContext}
 
 CRITICAL SAFETY RULES:
 1. NEVER discuss violence, weapons, scary content, drugs, alcohol, or inappropriate topics
