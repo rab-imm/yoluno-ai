@@ -173,6 +173,28 @@ const Pricing = () => {
           />
         </div>
         <div className="container mx-auto max-w-7xl relative z-10">
+          {/* Trust Banner */}
+          <Card className="p-6 mb-12 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-950/20 dark:to-blue-950/20 border-emerald-200 dark:border-emerald-800">
+            <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-semibold">
+              <div className="flex items-center gap-2">
+                <Check className="h-5 w-5 text-emerald-600" />
+                <span>No ads. No data resale.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-5 w-5 text-emerald-600" />
+                <span>Your family's stories stay yours.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-5 w-5 text-emerald-600" />
+                <span>COPPA-certified.</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Check className="h-5 w-5 text-emerald-600" />
+                <span>30-day money-back guarantee.</span>
+              </div>
+            </div>
+          </Card>
+
           <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <Card 
@@ -211,8 +233,18 @@ const Pricing = () => {
                   variant={plan.popular ? "default" : "outline"}
                   size="lg"
                 >
-                  {plan.cta}
+                  {plan.name === "Free" ? "Start Sampler Free" : plan.name === "Standard" ? "Subscribe $15/mo" : "Subscribe $25/mo"}
                 </Button>
+                {plan.name === "Standard" && (
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    or $120/year (save 20%)
+                  </p>
+                )}
+                {plan.name === "Premium" && (
+                  <p className="text-xs text-center text-muted-foreground mt-2">
+                    or $180/year (save 25%)
+                  </p>
+                )}
               </Card>
             ))}
           </div>

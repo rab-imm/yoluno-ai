@@ -52,11 +52,14 @@ const About = () => {
           <div className="inline-block p-3 bg-gradient-to-br from-primary to-child-primary rounded-3xl mb-4">
             <Heart className="h-12 w-12 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Why we built Paliyo AI</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Meet the Team Behind Paliyo: Parents, Builders, Dreamers</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            We're parents too. We saw our kids exploring AI tools that weren't built for them. 
-            Unsafe, unfiltered, unpredictable. That wasn't good enough.
+            Founded by a mom of three and an AI ethicist, we're on a mission to make tech a family ally—not a wildcard. Backed by xAI-inspired tech for smarts, powered by heart for safety.
           </p>
+          <Button size="lg" onClick={() => navigate("/features")} className="shadow-lg">
+            <Sparkles className="mr-2 h-5 w-5" />
+            Meet Us in Action: Start Free Demo
+          </Button>
         </div>
       </section>
 
@@ -167,16 +170,24 @@ const About = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/5 to-secondary/5">
         <div className="container mx-auto max-w-4xl text-center space-y-5">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold">Join our mission</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Get Involved: Beta Test New Features</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Help us create a safer, more magical digital childhood. Start with our free plan today.
+            Join our community of parents shaping the future of safe AI for children. Early access, exclusive features, and direct impact.
           </p>
-          <Button size="lg" onClick={() => navigate("/auth")} className="text-lg">
-            <Users className="mr-2 h-5 w-5" />
-            Start Free Today
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg shadow-lg">
+              <Users className="mr-2 h-5 w-5" />
+              Start Free Today
+            </Button>
+            <Button size="lg" variant="outline" onClick={() => navigate("/support")} className="text-lg">
+              Join Beta Program
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Free trial includes all features · No credit card required
+          </p>
         </div>
       </section>
 

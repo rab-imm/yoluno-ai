@@ -4,7 +4,7 @@ import { Footer } from "@/components/landing/Footer";
 import { VideoEmbed } from "@/components/landing/VideoEmbed";
 import { TrustBadge } from "@/components/landing/TrustBadge";
 import { useNavigate } from "react-router-dom";
-import { Shield, Lock, Eye, UserCheck, Ban, FileCheck, Heart } from "lucide-react";
+import { Shield, Lock, Eye, UserCheck, Ban, FileCheck, Heart, Check } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import safetyHeroBg from "@/assets/safety-hero-bg.jpg";
 import parentDashboard from "@/assets/parent-dashboard.jpg";
@@ -190,13 +190,96 @@ const Safety = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             We've published a detailed Safety Charter outlining our commitments, technical safeguards, and privacy practices.
           </p>
-          <div className="flex gap-4 justify-center">
-            <Button size="lg" variant="outline">
+          <div className="flex gap-4 justify-center flex-wrap">
+            <Button size="lg" variant="outline" onClick={() => navigate("/coppa")}>
               Read Full Charter
             </Button>
             <Button size="lg" onClick={() => navigate("/auth")}>
-              Start Free Trial
+              Start Safe Trial
             </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Transparency in Action Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
+        <div className="container mx-auto max-w-6xl">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-4">Transparency in Action</h2>
+          <p className="text-lg text-muted-foreground text-center mb-12 max-w-2xl mx-auto">
+            Full logs with timestamps, sentiment analysis, and export tools. Plus, proactive alerts: "New topic suggested—approve?"
+          </p>
+          <div className="grid lg:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <Card className="p-6">
+                <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-primary" />
+                  What You See
+                </h3>
+                <ul className="space-y-2 text-sm text-muted-foreground">
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span>Every question your child asks</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span>Every AI-generated response with source citations</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span>Sentiment analysis (happy, curious, confused)</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span>Timestamp and duration of each session</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
+                    <span>Topics discussed and packs referenced</span>
+                  </li>
+                </ul>
+              </Card>
+              <Button size="lg" className="w-full" onClick={() => navigate("/auth")}>
+                View Real Logs: Free Demo
+              </Button>
+            </div>
+            <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
+              <div className="space-y-4">
+                <div className="flex items-start gap-3 pb-4 border-b">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">
+                    C
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold">Child</span>
+                      <span className="text-xs text-muted-foreground">7:32 PM</span>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">Curious</span>
+                    </div>
+                    <p className="text-sm">"Why do stars twinkle?"</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-secondary/50 flex items-center justify-center text-xs font-bold">
+                    P
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm font-semibold">Paliyo</span>
+                      <span className="text-xs text-muted-foreground">7:32 PM</span>
+                    </div>
+                    <p className="text-sm mb-2">
+                      "Great question! Stars twinkle because their light passes through Earth's atmosphere, which is always moving. It's like looking at something through water—the light bends and shimmers!"
+                    </p>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Shield className="h-3 w-3" />
+                      <span>Source: Space Basics Pack</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="mt-4 pt-4 border-t text-center">
+                <p className="text-xs text-muted-foreground italic">Sample conversation log (redacted for demo)</p>
+              </div>
+            </Card>
           </div>
         </div>
       </section>
