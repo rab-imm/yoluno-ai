@@ -156,6 +156,7 @@ const Pricing = () => {
             src={pricingHeroBg} 
             alt="Family value and pricing"
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
         </div>
@@ -174,6 +175,7 @@ const Pricing = () => {
             src={pricingTiers} 
             alt="Pricing plan tiers"
             className="w-full h-full object-cover opacity-15"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-7xl relative z-10">
@@ -276,6 +278,7 @@ const Pricing = () => {
               src={familyHistoryPreview} 
               alt="Family History add-on showing family tree builder and photo library"
               className="w-full h-auto"
+              loading="lazy"
             />
           </div>
           
@@ -329,6 +332,7 @@ const Pricing = () => {
             src={pricingAddons} 
             alt="Add-ons and extras"
             className="w-full h-full object-cover opacity-20"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-4xl relative z-10">
@@ -359,6 +363,7 @@ const Pricing = () => {
             src={faqSection} 
             alt="Frequently asked questions"
             className="w-full h-full object-cover opacity-15"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-3xl relative z-10">
@@ -381,6 +386,7 @@ const Pricing = () => {
             src={ctaBackground} 
             alt="Start free today"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
         </div>

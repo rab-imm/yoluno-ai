@@ -46,6 +46,7 @@ const StoryBuddy = () => {
             src={storiesHeroBg} 
             alt="Child reading magical storybook"
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
         </div>
@@ -93,6 +94,7 @@ const StoryBuddy = () => {
             src={familyStorytime} 
             alt="Family storytime together"
             className="w-full h-full object-cover opacity-20"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
@@ -115,6 +117,7 @@ const StoryBuddy = () => {
             src={storyLibrary} 
             alt="Story library collection"
             className="w-full h-full object-cover opacity-20"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-5xl text-center space-y-5 relative z-10">
@@ -155,6 +158,7 @@ const StoryBuddy = () => {
             src={ctaBackground} 
             alt="Start your first story"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
         </div>
