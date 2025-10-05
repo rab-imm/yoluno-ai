@@ -9,73 +9,139 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Shield, Sparkles, ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
+import type { Session } from "@supabase/supabase-js";
 
 export default function Auth() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    checkAuth();
-  }, []);
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setSession(session);
+        if (session) {
+          navigate("/dashboard");
+        }
+      }
+    );
 
-  const checkAuth = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-      navigate("/parent");
-    }
-  };
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) {
+        navigate("/dashboard");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+    
     setLoading(true);
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/parent`,
-      },
-    });
+    try {
+      const { error, data } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      toast.success("Account created! Please check your email to verify.");
+      if (error) {
+        if (error.message.includes("already registered")) {
+          toast.error("This email is already registered. Please sign in instead.");
+        } else {
+          toast.error(error.message);
+        }
+      } else if (data.user) {
+        toast.success("Account created! You can now sign in.");
+        // Clear form
+        setEmail("");
+        setPassword("");
+      }
+    } catch (error: any) {
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Signup error:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    if (!password) {
+      toast.error("Please enter your password");
+      return;
+    }
+    
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { error, data } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      toast.error(error.message);
-    } else {
-      navigate("/parent");
+      if (error) {
+        if (error.message.includes("Invalid login credentials")) {
+          toast.error("Invalid email or password. Please try again.");
+        } else if (error.message.includes("Email not confirmed")) {
+          toast.error("Please verify your email before signing in.");
+        } else {
+          toast.error(error.message);
+        }
+      } else if (data.session) {
+        toast.success("Welcome back!");
+        // Navigation handled by onAuthStateChange
+      }
+    } catch (error: any) {
+      toast.error("An unexpected error occurred. Please try again.");
+      console.error("Signin error:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const handleGoogleSignIn = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/parent`,
-      },
-    });
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/dashboard`,
+        },
+      });
 
-    if (error) {
-      toast.error(error.message);
+      if (error) {
+        toast.error(error.message);
+      }
+    } catch (error: any) {
+      toast.error("Google sign-in failed. Please try again.");
+      console.error("Google signin error:", error);
     }
   };
 
