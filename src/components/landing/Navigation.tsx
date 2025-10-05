@@ -31,7 +31,7 @@ export const Navigation = () => {
             <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="font-bold text-lg hidden sm:inline">Safe AI Buddy</span>
+            <span className="font-bold text-lg hidden sm:inline">Paliyo AI</span>
           </button>
 
           {/* Desktop Navigation */}

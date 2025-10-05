@@ -219,7 +219,7 @@ const Index = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
           <VideoEmbed 
-            title="See Safe AI Buddy in Action"
+            title="See Paliyo AI in Action"
             description="Watch how parents create personalized bedtime stories, set up habit journeys, and curate safe learning environments"
           />
         </div>

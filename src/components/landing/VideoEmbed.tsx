@@ -9,7 +9,7 @@ interface VideoEmbedProps {
 }
 
 export const VideoEmbed = ({ 
-  title = "See Safe AI Buddy in Action",
+  title = "See Paliyo AI in Action",
   description = "Watch how parents create safe, personalized experiences for their children",
   placeholderText = "Demo video coming soon"
 }: VideoEmbedProps) => {
@@ -21,7 +21,7 @@ export const VideoEmbed = ({
       <Card className="aspect-video w-full max-w-4xl mx-auto bg-gradient-to-br from-primary/3 to-accent/3 flex items-center justify-center border-2 border-dashed border-border relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors">
         <img 
           src={videoPlaceholder} 
-          alt="Parent and child using Safe AI Buddy together"
+          alt="Parent and child using Paliyo AI together"
           className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-60 transition-opacity"
         />
         <div className="text-center space-y-4 z-10">

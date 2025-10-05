@@ -32,7 +32,7 @@ export const Footer = () => {
               <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold">Safe AI Buddy</span>
+              <span className="font-bold">Paliyo AI</span>
             </div>
             <p className="text-sm text-muted-foreground">
               AI you can trust with your children. Safe by design.
@@ -60,7 +60,7 @@ export const Footer = () => {
         </div>
 
         <div className="pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© 2025 Safe AI Buddy for Kids. Built with care for curious minds.</p>
+          <p>© 2025 Paliyo AI. Built with care for curious minds.</p>
         </div>
       </div>
     </footer>

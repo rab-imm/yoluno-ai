@@ -97,7 +97,7 @@ export default function Auth() {
               <Shield className="h-8 w-8 text-white" />
             </div>
           </div>
-          <CardTitle className="text-2xl">Safe AI Buddy for Kids</CardTitle>
+          <CardTitle className="text-2xl">Paliyo AI</CardTitle>
           <CardDescription>
             Create a secure AI companion for your children
           </CardDescription>

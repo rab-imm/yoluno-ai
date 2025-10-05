@@ -52,7 +52,7 @@ const About = () => {
           <div className="inline-block p-3 bg-gradient-to-br from-primary to-child-primary rounded-3xl mb-4">
             <Heart className="h-12 w-12 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Why we built Safe AI Buddy</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Why we built Paliyo AI</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             We're parents too. We saw our kids exploring AI tools that weren't built for them. 
             Unsafe, unfiltered, unpredictable. That wasn't good enough.
