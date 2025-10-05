@@ -259,7 +259,7 @@ function ChildChatContent() {
                   <div className="flex gap-2 mb-4">
                     <Button
                       onClick={() => setStoryView("create")}
-                      className="flex-1 transition-all"
+                      className="flex-1 transition-all min-h-[48px]"
                       style={storyView === "create" ? {
                         background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
                         color: "white"
@@ -270,7 +270,7 @@ function ChildChatContent() {
                     </Button>
                     <Button
                       onClick={() => setStoryView("library")}
-                      className="flex-1 transition-all"
+                      className="flex-1 transition-all min-h-[48px]"
                       style={storyView === "library" ? {
                         background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
                         color: "white"

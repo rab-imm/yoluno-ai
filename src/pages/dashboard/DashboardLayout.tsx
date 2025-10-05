@@ -51,12 +51,12 @@ export default function DashboardLayout() {
         <DashboardSidebar />
         <div className="flex-1 flex flex-col">
           <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="flex h-14 items-center gap-4 px-4">
-              <SidebarTrigger />
-              <h1 className="text-lg font-semibold">{getPageTitle()}</h1>
+            <div className="flex h-14 items-center gap-3 md:gap-4 px-3 md:px-4">
+              <SidebarTrigger className="min-h-[44px] min-w-[44px]" />
+              <h1 className="text-base md:text-lg font-semibold truncate">{getPageTitle()}</h1>
             </div>
           </header>
-          <main className="flex-1 p-6 overflow-auto">
+          <main className="flex-1 p-4 md:p-6 overflow-auto">
             <Outlet />
           </main>
         </div>

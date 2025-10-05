@@ -228,6 +228,10 @@ All colors MUST be HSL.
     padding-bottom: env(safe-area-inset-bottom);
   }
   
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
+  }
+  
   /* Hover scale utility */
   .hover-scale-102 {
     transition: transform 0.2s ease;
@@ -235,5 +239,13 @@ All colors MUST be HSL.
   
   .hover-scale-102:hover {
     transform: scale(1.02);
+  }
+  
+  /* Touch-friendly minimum sizes */
+  @media (max-width: 768px) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
   }
 }

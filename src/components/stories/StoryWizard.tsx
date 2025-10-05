@@ -137,15 +137,15 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
 
   return (
     <Card className="w-full max-w-3xl mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
+      <CardHeader className="p-4 md:p-6">
+        <CardTitle className="flex items-center gap-2 text-xl md:text-2xl">
           <Sparkles 
             className="w-5 h-5" 
             style={{ color: 'hsl(var(--story-magic))' }}
           />
           Create Tonight's Story
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-sm md:text-base">
           Step {step} of 4 - Let's create a magical bedtime story for {childName}
         </CardDescription>
         <div className="flex gap-2 mt-4">
@@ -161,7 +161,7 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 md:space-y-6 p-4 md:p-6">
         {validationError && (
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
@@ -328,25 +328,26 @@ export function StoryWizard({ childId, childName, childAge, onComplete, onCancel
           </div>
         )}
 
-        <div className="flex gap-2 pt-4">
+        <div className="flex flex-wrap gap-2 pt-4">
           {step > 1 && (
-            <Button variant="outline" onClick={() => setStep(step - 1)}>
+            <Button variant="outline" onClick={() => setStep(step - 1)} className="min-h-[44px]">
               <ChevronLeft className="w-4 h-4 mr-2" />
               Back
             </Button>
           )}
-          <Button variant="ghost" onClick={onCancel} className="ml-auto">
+          <Button variant="ghost" onClick={onCancel} className="ml-auto min-h-[44px]">
             Cancel
           </Button>
           {step < 4 ? (
-            <Button onClick={handleNext}>
+            <Button onClick={handleNext} className="min-h-[44px]">
               Next
               <ChevronRight className="w-4 h-4 ml-2" />
             </Button>
           ) : (
-            <Button onClick={handleComplete}>
+            <Button onClick={handleComplete} className="min-h-[44px]">
               <Sparkles className="w-4 h-4 mr-2" />
-              Generate Story
+              <span className="hidden sm:inline">Generate Story</span>
+              <span className="sm:hidden">Generate</span>
             </Button>
           )}
         </div>

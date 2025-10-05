@@ -348,7 +348,7 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && !loading && handleSend()}
               placeholder="Type your message..."
-              className="text-base md:text-lg rounded-2xl"
+              className="text-base md:text-lg rounded-2xl min-h-[44px]"
               disabled={loading || isListening}
             />
             <Button
@@ -357,7 +357,7 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
               variant={isListening ? "destructive" : "secondary"}
               size="lg"
               title="Voice input"
-              className="shrink-0"
+              className="shrink-0 min-h-[44px] min-w-[44px]"
             >
               <Mic className={`h-4 w-4 md:h-5 md:w-5 ${isListening ? "animate-pulse" : ""}`} />
             </Button>
@@ -368,7 +368,7 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
                 background: loading || !input.trim() ? undefined : "linear-gradient(135deg, hsl(var(--learning-primary)), hsl(var(--learning-secondary)))"
               }}
               size="lg"
-              className="shrink-0"
+              className="shrink-0 min-h-[44px] min-w-[44px]"
             >
               <Send className="h-4 w-4 md:h-5 md:w-5" />
             </Button>
