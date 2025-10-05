@@ -51,20 +51,20 @@ const Safety = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-success/5">
-        <div className="container mx-auto max-w-6xl text-center space-y-6">
-          <div className="inline-block p-4 bg-gradient-to-br from-primary to-success rounded-3xl mb-4 animate-float">
-            <Shield className="h-16 w-16 text-white" />
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/3 via-background to-success/3">
+        <div className="container mx-auto max-w-6xl text-center space-y-5">
+          <div className="inline-block p-3 bg-gradient-to-br from-primary to-success rounded-3xl mb-4">
+            <Shield className="h-12 w-12 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
             AI safety isn't a setting. It's the system.
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             Every AI interaction—stories, journeys, learning—flows through our six-layer AI safety pipeline.
           </p>
           
           {/* Trust Badges */}
-          <div className="flex flex-wrap justify-center gap-3 pt-6">
+          <div className="flex flex-wrap justify-center gap-2 pt-4">
             {safetyFeatures.map((feature) => (
               <TrustBadge key={feature.text} icon={feature.icon} text={feature.text} />
             ))}
@@ -73,16 +73,16 @@ const Safety = () => {
       </section>
 
       {/* The 4 Pillars */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-16">Our Safety Pillars</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-12">Our Safety Pillars</h2>
+          <div className="grid md:grid-cols-2 gap-6">
             {pillars.map((pillar) => (
-              <Card key={pillar.title} className="p-8 hover:shadow-lg transition-shadow">
+              <Card key={pillar.title} className="p-6 hover:shadow-md transition-shadow">
                 <div className={`inline-block p-3 bg-gradient-to-br ${pillar.color} rounded-2xl mb-4`}>
                   <pillar.icon className="h-8 w-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-semibold mb-4">{pillar.title}</h3>
+                <h3 className="text-xl md:text-2xl font-heading font-semibold mb-4">{pillar.title}</h3>
                 <p className="text-muted-foreground leading-relaxed">{pillar.description}</p>
               </Card>
             ))}
@@ -91,9 +91,9 @@ const Safety = () => {
       </section>
 
       {/* The Safety Pipeline */}
-      <section className="py-20 px-4 bg-secondary/30">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-4xl font-bold text-center mb-4">The AI Safety Pipeline</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-3">The AI Safety Pipeline</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
             For AI-generated Stories, Journeys, and Learning—same protective AI system
           </p>
@@ -145,7 +145,7 @@ const Safety = () => {
       </section>
 
       {/* Demo Video */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
           <VideoEmbed 
             title="See Our Safety Features in Action"
@@ -156,10 +156,10 @@ const Safety = () => {
       </section>
 
       {/* Safety Charter */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <FileCheck className="h-16 w-16 text-primary mx-auto" />
-          <h2 className="text-4xl font-bold">Our Safety Charter</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/5 to-accent/5">
+        <div className="container mx-auto max-w-4xl text-center space-y-5">
+          <FileCheck className="h-12 w-12 text-primary mx-auto" />
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Our Safety Charter</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             We've published a detailed Safety Charter outlining our commitments, technical safeguards, and privacy practices.
           </p>
@@ -175,11 +175,11 @@ const Safety = () => {
       </section>
 
       {/* Parent Controls Preview */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-4xl font-bold text-center mb-12">Parent Controls Dashboard</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Parent Controls Dashboard</h2>
           <Card className="p-12 bg-gradient-to-br from-secondary/50 to-muted/30 text-center">
-            <Eye className="h-20 w-20 text-primary mx-auto mb-6" />
+            <Eye className="h-16 w-16 text-primary mx-auto mb-6" />
             <p className="text-xl text-muted-foreground mb-6">
               Full visibility into conversations, content packs, and usage patterns
             </p>
@@ -191,9 +191,9 @@ const Safety = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Try it risk-free</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
+        <div className="container mx-auto max-w-4xl text-center space-y-5">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Try it risk-free</h2>
           <p className="text-xl text-muted-foreground">
             Start with our free plan. See our safety features in action. No credit card required.
           </p>

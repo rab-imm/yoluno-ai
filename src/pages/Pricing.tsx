@@ -99,9 +99,9 @@ const Pricing = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-accent/5">
-        <div className="container mx-auto max-w-6xl text-center space-y-6">
-          <h1 className="text-5xl md:text-6xl font-bold">Simple plans. Family-friendly pricing.</h1>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/3 via-background to-accent/3">
+        <div className="container mx-auto max-w-6xl text-center space-y-5">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Simple plans. Family-friendly pricing.</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             No hidden fees. No ads. No data resale. Just safe, magical experiences for your children.
           </p>
@@ -109,14 +109,14 @@ const Pricing = () => {
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <Card 
                 key={plan.name}
-                className={`p-8 flex flex-col relative ${
-                  plan.popular ? "border-2 border-primary shadow-lg scale-105" : ""
+                className={`p-6 flex flex-col relative ${
+                  plan.popular ? "border-2 border-primary shadow-lg scale-102" : ""
                 }`}
               >
                 {plan.popular && (
@@ -126,7 +126,7 @@ const Pricing = () => {
                 )}
                 
                 <div className="mb-6">
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+                  <h3 className="text-xl md:text-2xl font-heading font-bold mb-2">{plan.name}</h3>
                   <div className="flex items-baseline gap-1 mb-2">
                     <span className="text-4xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">/{plan.period}</span>
@@ -158,12 +158,12 @@ const Pricing = () => {
       </section>
 
       {/* Add-Ons */}
-      <section className="py-20 px-4 bg-secondary/30">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl font-bold text-center mb-12">Add-Ons</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Add-Ons</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {addons.map((addon) => (
-              <Card key={addon.name} className="p-6 hover:shadow-lg transition-shadow">
+              <Card key={addon.name} className="p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-4">
                   <div>
                     <h3 className="font-semibold text-lg">{addon.name}</h3>
@@ -181,9 +181,9 @@ const Pricing = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-4xl font-bold text-center mb-12">Frequently Asked Questions</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Frequently Asked Questions</h2>
           <div className="space-y-6">
             {faqs.map((faq) => (
               <Card key={faq.question} className="p-6">
@@ -196,9 +196,9 @@ const Pricing = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Start tonight for free</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
+        <div className="container mx-auto max-w-4xl text-center space-y-5">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Start tonight for free</h2>
           <p className="text-xl text-muted-foreground">
             2 stories, 1 journey, 50 learning questions—free. No credit card required.
           </p>

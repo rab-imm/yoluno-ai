@@ -40,18 +40,18 @@ const Journeys = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--growth-light))] via-background to-[hsl(var(--growth-primary))]/5">
-        <div className="container mx-auto max-w-6xl text-center space-y-6">
-          <div className="inline-block p-4 bg-gradient-to-br from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] rounded-3xl mb-4 animate-float">
-            <Target className="h-16 w-16 text-white" />
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[hsl(var(--growth-light))] via-background to-[hsl(var(--growth-primary))]/3">
+        <div className="container mx-auto max-w-6xl text-center space-y-5">
+          <div className="inline-block p-3 bg-gradient-to-br from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] rounded-3xl mb-4">
+            <Target className="h-12 w-12 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold bg-gradient-to-r from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] bg-clip-text text-transparent">
             AI helps your child grow—one personalized step at a time.
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
             From brushing teeth to mastering multiplication, AI generates personalized daily missions and celebrates progress—then reinforces it with AI-generated bedtime stories.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
             <Button size="lg" onClick={() => navigate("/auth")} className="text-lg bg-gradient-to-r from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] hover:opacity-90">
               <Target className="mr-2 h-5 w-5" />
               Start a Journey
@@ -64,9 +64,9 @@ const Journeys = () => {
       </section>
 
       {/* How Journeys Work */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-12">How Journeys Work</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">How Journeys Work</h2>
           <div className="grid md:grid-cols-5 gap-6">
             <Card className="p-6 text-center">
               <div className="w-12 h-12 bg-[hsl(var(--growth-primary))] text-white rounded-full flex items-center justify-center font-bold text-xl mx-auto mb-4">1</div>
@@ -98,16 +98,16 @@ const Journeys = () => {
       </section>
 
       {/* Example Journeys */}
-      <section className="py-20 px-4 bg-secondary/30">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-12">Example Journeys</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Example Journeys</h2>
+          <div className="grid md:grid-cols-2 gap-6">
             {examples.map((example) => (
-              <Card key={example.title} className="p-8 hover:shadow-lg transition-shadow">
+              <Card key={example.title} className="p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
                   <div className="text-5xl">{example.icon}</div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-semibold mb-2">{example.title}</h3>
+                    <h3 className="text-xl md:text-2xl font-heading font-semibold mb-2">{example.title}</h3>
                     <p className="text-muted-foreground mb-3">{example.description}</p>
                     <div className="flex items-center gap-2 text-sm text-[hsl(var(--growth-primary))] font-medium">
                       <Calendar className="h-4 w-4" />
@@ -122,9 +122,9 @@ const Journeys = () => {
       </section>
 
       {/* Parent Dashboard Preview */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-5xl">
-          <h2 className="text-4xl font-bold text-center mb-12">Parent Dashboard</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Parent Dashboard</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="p-6 text-center">
               <TrendingUp className="h-12 w-12 text-[hsl(var(--growth-primary))] mx-auto mb-4" />
@@ -146,10 +146,10 @@ const Journeys = () => {
       </section>
 
       {/* Safety Note */}
-      <section className="py-20 px-4 bg-gradient-to-br from-success/5 to-[hsl(var(--growth-primary))]/5">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <Heart className="h-16 w-16 text-[hsl(var(--growth-primary))] mx-auto" />
-          <h2 className="text-3xl font-bold">AI uses only positive language</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-success/5 to-[hsl(var(--growth-primary))]/5">
+        <div className="container mx-auto max-w-4xl text-center space-y-5">
+          <Heart className="h-12 w-12 text-[hsl(var(--growth-primary))] mx-auto" />
+          <h2 className="text-2xl md:text-3xl font-heading font-bold">AI uses only positive language</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             No negative framing, guilt, or sensitive tracking. AI missions celebrate effort and progress, not perfection.
           </p>
@@ -157,9 +157,9 @@ const Journeys = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Start your first journey today</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-4xl text-center space-y-5">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Start your first journey today</h2>
           <p className="text-xl text-muted-foreground">
             1 active journey included in the free plan. Unlock more with paid plans.
           </p>
