@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import pricingHeroBg from "@/assets/pricing-hero-bg.jpg";
 import pricingAddons from "@/assets/pricing-addons.jpg";
 import pricingTiers from "@/assets/pricing-tiers.jpg";
+import faqSection from "@/assets/faq-section.jpg";
+import ctaBackground from "@/assets/cta-background.jpg";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -206,8 +208,15 @@ const Pricing = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-3xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={faqSection} 
+            alt="Frequently asked questions"
+            className="w-full h-full object-cover opacity-15"
+          />
+        </div>
+        <div className="container mx-auto max-w-3xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Frequently Asked Questions</h2>
           <div className="space-y-6">
             {faqs.map((faq) => (
@@ -221,8 +230,16 @@ const Pricing = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={ctaBackground} 
+            alt="Start free today"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Start tonight for free</h2>
           <p className="text-xl text-muted-foreground">
             2 stories, 1 journey, 50 learning questions—free. No credit card required.

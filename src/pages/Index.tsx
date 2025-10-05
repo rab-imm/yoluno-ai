@@ -12,6 +12,9 @@ import growthImg from "@/assets/growth-pillar.jpg";
 import curiosityImg from "@/assets/curiosity-pillar.jpg";
 import heroBackground from "@/assets/homepage-hero-bg.jpg";
 import familyConnection from "@/assets/family-connection.jpg";
+import howItWorks from "@/assets/how-it-works.jpg";
+import testimonialsBg from "@/assets/testimonials-bg.jpg";
+import ctaBackground from "@/assets/cta-background.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -133,8 +136,15 @@ const Index = () => {
       </section>
 
       {/* How It Works */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={howItWorks} 
+            alt="How it works process"
+            className="w-full h-full object-cover opacity-15"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-3">How It Works</h2>
           <p className="text-muted-foreground text-center mb-10 max-w-2xl mx-auto">
             Applies to all three pillars: Stories, Journeys, and Learning
@@ -216,8 +226,15 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-6xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={testimonialsBg} 
+            alt="Happy families testimonials"
+            className="w-full h-full object-cover opacity-15"
+          />
+        </div>
+        <div className="container mx-auto max-w-6xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">What Parents Are Saying</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <Testimonial
@@ -256,8 +273,16 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={ctaBackground} 
+            alt="Start your journey"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Safe AI that makes bedtime magical, builds great habits, and keeps learning protected.</h2>
           <p className="text-lg text-muted-foreground">
             Start with 2 free AI-generated stories, 1 AI-guided journey, and 50 AI-powered learning questions. No credit card required.

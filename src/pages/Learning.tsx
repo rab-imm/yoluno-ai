@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card";
 import learningHeroBg from "@/assets/learning-hero-bg.jpg";
 import learningPacks from "@/assets/learning-packs.jpg";
 import qaTransparency from "@/assets/qa-transparency.jpg";
+import ctaBackground from "@/assets/cta-background.jpg";
 
 const LearningBuddy = () => {
   const navigate = useNavigate();
@@ -155,8 +156,16 @@ const LearningBuddy = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={ctaBackground} 
+            alt="Add learning pack"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Let curiosity bloom safely</h2>
           <p className="text-xl text-muted-foreground">
             Start with 50 free questions per month. Add packs anytime.

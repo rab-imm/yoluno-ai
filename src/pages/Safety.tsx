@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/card";
 import safetyHeroBg from "@/assets/safety-hero-bg.jpg";
 import parentDashboard from "@/assets/parent-dashboard.jpg";
 import safetyPipeline from "@/assets/safety-pipeline.jpg";
+import trustCare from "@/assets/trust-care.jpg";
+import ctaBackground from "@/assets/cta-background.jpg";
 
 const Safety = () => {
   const navigate = useNavigate();
@@ -174,8 +176,15 @@ const Safety = () => {
       </section>
 
       {/* Safety Charter */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/5 to-accent/5">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={trustCare} 
+            alt="Trust and care"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <FileCheck className="h-12 w-12 text-primary mx-auto" />
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Our Safety Charter</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -218,8 +227,16 @@ const Safety = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-child-primary/10 to-child-secondary/10">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={ctaBackground} 
+            alt="Try risk-free"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Try it risk-free</h2>
           <p className="text-xl text-muted-foreground">
             Start with our free plan. See our safety features in action. No credit card required.

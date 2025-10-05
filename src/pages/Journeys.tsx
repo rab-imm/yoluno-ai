@@ -6,6 +6,7 @@ import { Target, Award, TrendingUp, Calendar, Heart, CheckCircle } from "lucide-
 import { Card } from "@/components/ui/card";
 import journeysHeroBg from "@/assets/journeys-hero-updated.jpg";
 import journeyProgress from "@/assets/journey-progress.jpg";
+import ctaBackground from "@/assets/cta-background.jpg";
 
 const Journeys = () => {
   const navigate = useNavigate();
@@ -174,8 +175,16 @@ const Journeys = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={ctaBackground} 
+            alt="Start your journey"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Start your first journey today</h2>
           <p className="text-xl text-muted-foreground">
             1 active journey included in the free plan. Unlock more with paid plans.
