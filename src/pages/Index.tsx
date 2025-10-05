@@ -64,7 +64,7 @@ const Index = () => {
             alt="Magical bedtime scene"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/85 to-background/90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/60 via-background/50 to-background/60" />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center space-y-5">
