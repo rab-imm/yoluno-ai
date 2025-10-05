@@ -1,84 +1,137 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
+
 interface BuddyAvatarProps {
-  size?: "sm" | "md" | "lg";
-  avatar?: string;
+  avatar: string; // Can be emoji or avatar_library_id
   customAvatarUrl?: string;
-  isThinking?: boolean;
+  avatarLibraryId?: string;
   isSpeaking?: boolean;
+  className?: string;
+  size?: "sm" | "md" | "lg" | "xl";
   expression?: "neutral" | "happy" | "thinking" | "excited";
 }
 
-export function BuddyAvatar({ 
-  size = "md", 
-  avatar = "🤖", 
+export function BuddyAvatar({
+  avatar,
   customAvatarUrl,
-  isThinking = false,
+  avatarLibraryId,
   isSpeaking = false,
-  expression = "neutral"
+  className,
+  size = "md",
+  expression: propExpression,
 }: BuddyAvatarProps) {
+  // Use propExpression if provided, otherwise determine based on isSpeaking
+  const expression = propExpression || (isSpeaking ? "excited" : "neutral");
+
+  // Fetch avatar from library if avatarLibraryId is provided
+  const { data: avatarData } = useQuery({
+    queryKey: ["avatar-library-single", avatarLibraryId],
+    queryFn: async () => {
+      if (!avatarLibraryId) return null;
+      
+      const { data, error } = await supabase
+        .from("avatar_library")
+        .select("*")
+        .eq("id", avatarLibraryId)
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!avatarLibraryId,
+    staleTime: 10 * 60 * 1000,
+  });
+
   const sizeClasses = {
-    sm: "w-10 h-10 text-2xl",
-    md: "w-16 h-16 text-4xl",
-    lg: "w-24 h-24 text-6xl",
+    sm: "w-12 h-12 text-2xl",
+    md: "w-16 h-16 text-3xl",
+    lg: "w-24 h-24 text-4xl",
+    xl: "w-32 h-32 text-5xl",
   };
 
-  // Animation classes based on state
-  const getAnimationClass = () => {
-    if (isThinking) return "animate-bounce";
-    if (isSpeaking) return "animate-pulse";
-    return "animate-float";
-  };
-
-  // Expression-based styling
-  const getExpressionStyle = () => {
-    switch (expression) {
-      case "happy":
-        return "from-yellow-200 to-child-primary/30 shadow-yellow-300/50";
-      case "thinking":
-        return "from-blue-200 to-child-primary/30 shadow-blue-300/50";
-      case "excited":
-        return "from-pink-200 to-child-primary/30 shadow-pink-300/50";
-      default:
-        return "from-white to-child-primary/20";
+  // Priority: avatarData > customAvatarUrl > emoji
+  const getAvatarSource = () => {
+    if (avatarData) {
+      // Get the correct expression from avatar library
+      const expressionKey = `avatar_${expression}` as keyof typeof avatarData;
+      return avatarData[expressionKey] as string;
     }
+    if (customAvatarUrl) {
+      return customAvatarUrl;
+    }
+    return null;
   };
 
-  // Speaking animation with pulsing ring
-  const speakingRing = isSpeaking ? (
-    <div className="absolute inset-0 rounded-full border-4 border-child-primary/50 animate-ping" />
-  ) : null;
+  const avatarSource = getAvatarSource();
 
-  return (
-    <div className="relative">
-      {speakingRing}
-      <div
-        className={`
-          ${sizeClasses[size]} 
-          rounded-full 
-          bg-gradient-to-br 
-          ${getExpressionStyle()}
-          flex items-center justify-center 
-          shadow-lg 
-          ${getAnimationClass()}
-          transition-all duration-300
-          relative
-          overflow-hidden
-        `}
+  if (avatarSource) {
+    return (
+      <motion.div
+        className={cn(
+          "rounded-full overflow-hidden shadow-2xl relative",
+          sizeClasses[size],
+          className
+        )}
+        animate={{
+          scale: isSpeaking ? [1, 1.05, 1] : 1,
+          rotate: isSpeaking ? [0, -2, 2, 0] : 0,
+        }}
+        transition={{
+          duration: 0.6,
+          repeat: isSpeaking ? Infinity : 0,
+          ease: "easeInOut",
+        }}
+        style={{
+          border: avatarData
+            ? `4px solid ${avatarData.primary_color}`
+            : "4px solid hsl(var(--child-accent))",
+          boxShadow: isSpeaking
+            ? `0 0 30px ${avatarData?.primary_color || "hsl(var(--child-primary))"}`
+            : undefined,
+        }}
       >
-        {customAvatarUrl ? (
-          <img 
-            src={customAvatarUrl} 
-            alt="Buddy avatar" 
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <span className="relative z-10">{avatar}</span>
-        )}
+        <img
+          src={avatarSource}
+          alt="Buddy avatar"
+          className="w-full h-full object-cover"
+        />
         
-        {/* Breathing effect */}
-        {!isThinking && !isSpeaking && (
-          <div className="absolute inset-0 bg-white/20 animate-[pulse_4s_ease-in-out_infinite]" />
+        {/* Speaking indicator */}
+        {isSpeaking && (
+          <motion.div
+            className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 1, 0] }}
+            transition={{ duration: 1, repeat: Infinity }}
+          />
         )}
-      </div>
-    </div>
+      </motion.div>
+    );
+  }
+
+  // Fallback to emoji
+  return (
+    <motion.div
+      className={cn(
+        "rounded-full flex items-center justify-center",
+        "bg-gradient-to-br from-child-primary to-child-secondary",
+        "border-4 border-child-accent shadow-xl",
+        sizeClasses[size],
+        className
+      )}
+      animate={{
+        scale: isSpeaking ? [1, 1.1, 1] : expression === "thinking" ? [1, 1.05, 1] : 1,
+      }}
+      transition={{
+        duration: 0.5,
+        repeat: isSpeaking || expression === "thinking" ? Infinity : 0,
+      }}
+    >
+      <span className={expression === "thinking" ? "animate-pulse" : ""}>
+        {avatar}
+      </span>
+    </motion.div>
   );
 }

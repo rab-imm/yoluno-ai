@@ -16,7 +16,8 @@ interface CreateChildDialogProps {
 export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChildDialogProps) {
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
-  const [avatar, setAvatar] = useState("🤖");
+  const [avatarLibraryId, setAvatarLibraryId] = useState("");
+  const [avatarData, setAvatarData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +35,10 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
       parent_id: user.id,
       name,
       age: parseInt(age),
-      avatar,
+      avatar: avatarData?.character_slug || "robot-pup",
+      avatar_library_id: avatarLibraryId || null,
+      use_library_avatar: !!avatarLibraryId,
+      personality_mode: "curious",
     });
 
     if (error) {
@@ -46,7 +50,8 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
     toast.success(`Created profile for ${name}! 🎉`);
     setName("");
     setAge("");
-    setAvatar("🤖");
+    setAvatarLibraryId("");
+    setAvatarData(null);
     onSuccess();
     onOpenChange(false);
     setLoading(false);
@@ -62,7 +67,13 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <AvatarSelector selectedAvatar={avatar} onSelect={setAvatar} />
+          <AvatarSelector 
+            selectedAvatarId={avatarLibraryId} 
+            onSelect={(id, data) => {
+              setAvatarLibraryId(id);
+              setAvatarData(data);
+            }} 
+          />
           
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>

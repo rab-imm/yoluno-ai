@@ -254,9 +254,8 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
               size="sm" 
               avatar={childAvatar} 
               customAvatarUrl={customAvatarUrl}
-              isThinking={loading} 
               isSpeaking={speaking}
-              expression={expression}
+              expression={loading ? "thinking" : expression}
             />
             <div>
               <h3 className="font-semibold">Chatting with {childName}'s Buddy</h3>
@@ -313,7 +312,6 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
                 size="sm" 
                 avatar={childAvatar} 
                 customAvatarUrl={customAvatarUrl}
-                isThinking={true}
                 expression="thinking"
               />
               <div className="bg-gradient-to-r from-child-primary/10 to-child-secondary/10 rounded-2xl p-4">

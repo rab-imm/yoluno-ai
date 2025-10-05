@@ -20,7 +20,10 @@ export type Database = {
           accessory_type: string
           child_id: string | null
           id: string
+          image_url: string | null
           is_equipped: boolean | null
+          position_x: number | null
+          position_y: number | null
           unlocked_at: string | null
         }
         Insert: {
@@ -28,7 +31,10 @@ export type Database = {
           accessory_type: string
           child_id?: string | null
           id?: string
+          image_url?: string | null
           is_equipped?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
           unlocked_at?: string | null
         }
         Update: {
@@ -36,7 +42,10 @@ export type Database = {
           accessory_type?: string
           child_id?: string | null
           id?: string
+          image_url?: string | null
           is_equipped?: boolean | null
+          position_x?: number | null
+          position_y?: number | null
           unlocked_at?: string | null
         }
         Relationships: [
@@ -48,6 +57,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      avatar_library: {
+        Row: {
+          avatar_excited: string
+          avatar_happy: string
+          avatar_neutral: string
+          avatar_thinking: string
+          category: string
+          character_name: string
+          character_slug: string
+          created_at: string | null
+          description: string | null
+          id: string
+          primary_color: string | null
+          secondary_color: string | null
+        }
+        Insert: {
+          avatar_excited: string
+          avatar_happy: string
+          avatar_neutral: string
+          avatar_thinking: string
+          category: string
+          character_name: string
+          character_slug: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+        }
+        Update: {
+          avatar_excited?: string
+          avatar_happy?: string
+          avatar_neutral?: string
+          avatar_thinking?: string
+          category?: string
+          character_name?: string
+          character_slug?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          primary_color?: string | null
+          secondary_color?: string | null
+        }
+        Relationships: []
       }
       chat_messages: {
         Row: {
@@ -159,6 +213,7 @@ export type Database = {
           age: number
           avatar: string | null
           avatar_expression: string | null
+          avatar_library_id: string | null
           created_at: string
           custom_avatar_url: string | null
           id: string
@@ -168,11 +223,13 @@ export type Database = {
           personality_mode: string
           streak_days: number
           updated_at: string
+          use_library_avatar: boolean | null
         }
         Insert: {
           age: number
           avatar?: string | null
           avatar_expression?: string | null
+          avatar_library_id?: string | null
           created_at?: string
           custom_avatar_url?: string | null
           id?: string
@@ -182,11 +239,13 @@ export type Database = {
           personality_mode?: string
           streak_days?: number
           updated_at?: string
+          use_library_avatar?: boolean | null
         }
         Update: {
           age?: number
           avatar?: string | null
           avatar_expression?: string | null
+          avatar_library_id?: string | null
           created_at?: string
           custom_avatar_url?: string | null
           id?: string
@@ -196,8 +255,17 @@ export type Database = {
           personality_mode?: string
           streak_days?: number
           updated_at?: string
+          use_library_avatar?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "child_profiles_avatar_library_id_fkey"
+            columns: ["avatar_library_id"]
+            isOneToOne: false
+            referencedRelation: "avatar_library"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       child_stories: {
         Row: {
@@ -1244,6 +1312,48 @@ export type Database = {
           id?: string
           name?: string
           topics?: string[]
+        }
+        Relationships: []
+      }
+      ui_icons: {
+        Row: {
+          category: string
+          created_at: string | null
+          description: string | null
+          has_animation: boolean | null
+          icon_gradient: string | null
+          icon_name: string
+          icon_primary: string
+          icon_secondary: string | null
+          icon_slug: string
+          id: string
+          size_px: number | null
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          description?: string | null
+          has_animation?: boolean | null
+          icon_gradient?: string | null
+          icon_name: string
+          icon_primary: string
+          icon_secondary?: string | null
+          icon_slug: string
+          id?: string
+          size_px?: number | null
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          has_animation?: boolean | null
+          icon_gradient?: string | null
+          icon_name?: string
+          icon_primary?: string
+          icon_secondary?: string | null
+          icon_slug?: string
+          id?: string
+          size_px?: number | null
         }
         Relationships: []
       }

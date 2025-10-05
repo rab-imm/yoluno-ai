@@ -7,6 +7,7 @@ import { useChildActivities } from "@/hooks/dashboard/useChildActivities";
 import { formatDistanceToNow } from "date-fns";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
+import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 
 interface EnhancedChildCardProps {
   child: any;
@@ -34,11 +35,15 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
             <div className="relative">
               <motion.div
                 whileHover={{ scale: 1.15, rotate: 5 }}
-                className="h-24 w-24 rounded-full bg-gradient-to-br from-primary via-accent to-primary p-1.5 shadow-xl"
+                className="relative"
               >
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-card text-6xl shadow-inner">
-                  {child.avatar || "👦"}
-                </div>
+                <BuddyAvatar
+                  avatar={child.avatar || "👦"}
+                  customAvatarUrl={child.custom_avatar_url}
+                  avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
+                  size="xl"
+                  expression="neutral"
+                />
               </motion.div>
               {child.streak_days > 0 && (
                 <motion.div
