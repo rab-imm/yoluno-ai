@@ -5,7 +5,6 @@ import { MessageSquare, BookOpen, Target, Rocket, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useChildActivities } from "@/hooks/dashboard/useChildActivities";
 import { formatDistanceToNow } from "date-fns";
-import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 
@@ -22,21 +21,16 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
   const progressPercentage = Math.min((totalActivities / 10) * 100, 100);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.1 }}
-      whileHover={{ y: -5 }}
+    <div 
+      className="animate-fade-in hover:-translate-y-1 transition-transform duration-300"
+      style={{ animationDelay: `${index * 100}ms` }}
     >
       <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/40 bg-gradient-to-br from-card to-card/50 overflow-hidden">
         <CardHeader className="pb-4 p-4 md:p-6 bg-gradient-to-br from-primary/5 to-accent/5">
           <div className="flex items-center gap-4">
             {/* Enhanced Avatar */}
             <div className="relative">
-              <motion.div
-                whileHover={{ scale: 1.15, rotate: 5 }}
-                className="relative"
-              >
+              <div className="relative hover:scale-110 hover:rotate-3 transition-transform duration-300">
                 <BuddyAvatar
                   avatar={child.avatar || "👦"}
                   customAvatarUrl={child.custom_avatar_url}
@@ -44,17 +38,13 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                   size="xl"
                   expression="neutral"
                 />
-              </motion.div>
+              </div>
               {child.streak_days > 0 && (
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className="absolute -bottom-2 -right-2"
-                >
+                <div className="absolute -bottom-2 -right-2 animate-pulse">
                   <Badge className="shadow-lg bg-gradient-to-r from-orange-500 to-red-500 text-white border-2 border-white px-2 py-1">
                     🔥 {child.streak_days}
                   </Badge>
-                </motion.div>
+                </div>
               )}
             </div>
 
@@ -88,30 +78,21 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
               {/* Stats Grid */}
               <div className="grid grid-cols-3 gap-2 md:gap-3 rounded-xl bg-gradient-to-br from-muted/80 to-muted/40 p-3 md:p-5 border border-primary/10">
                 <div className="text-center">
-                  <motion.div
-                    whileHover={{ scale: 1.15 }}
-                    className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
-                  >
+                  <div className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent hover:scale-110 transition-transform duration-200">
                     {activities?.totalMessages || 0}
-                  </motion.div>
+                  </div>
                   <div className="text-xs text-muted-foreground font-medium mt-1">Messages</div>
                 </div>
                 <div className="text-center">
-                  <motion.div
-                    whileHover={{ scale: 1.15 }}
-                    className="text-4xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"
-                  >
+                  <div className="text-4xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent hover:scale-110 transition-transform duration-200">
                     {activities?.totalStories || 0}
-                  </motion.div>
+                  </div>
                   <div className="text-xs text-muted-foreground font-medium mt-1">Stories</div>
                 </div>
                 <div className="text-center">
-                  <motion.div
-                    whileHover={{ scale: 1.15 }}
-                    className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent"
-                  >
+                  <div className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent hover:scale-110 transition-transform duration-200">
                     {activities?.activeJourneys || 0}
-                  </motion.div>
+                  </div>
                   <div className="text-xs text-muted-foreground font-medium mt-1">Journeys</div>
                 </div>
               </div>
@@ -168,6 +149,6 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
           )}
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }
