@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +8,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, Trash2, Eye, Moon, Search, Calendar, Sparkles } from "lucide-react";
-import { toast } from "sonner";
 import { format } from "date-fns";
+import { useStories } from "@/hooks/dashboard/useStories";
 
 interface Story {
   id: string;
@@ -31,110 +30,53 @@ interface StoryLibraryProps {
 }
 
 export function StoryLibrary({ childId, childName }: StoryLibraryProps) {
-  const [stories, setStories] = useState<Story[]>([]);
-  const [filteredStories, setFilteredStories] = useState<Story[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { stories, isLoading, toggleFavorite, deleteStory } = useStories(childId);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterTheme, setFilterTheme] = useState<string>("all");
   const [filterFavorites, setFilterFavorites] = useState(false);
   const [selectedStory, setSelectedStory] = useState<Story | null>(null);
   const [storyToDelete, setStoryToDelete] = useState<Story | null>(null);
 
-  useEffect(() => {
-    loadStories();
-  }, [childId]);
-
-  useEffect(() => {
-    applyFilters();
-  }, [stories, searchQuery, filterTheme, filterFavorites]);
-
-  const loadStories = async () => {
-    try {
-      const { data, error } = await supabase
-        .from("child_stories")
-        .select("*")
-        .eq("child_id", childId)
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setStories(data || []);
-    } catch (error) {
-      console.error("Error loading stories:", error);
-      toast.error("Failed to load stories");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const applyFilters = () => {
+  // Memoized filtering for performance
+  const filteredStories = useMemo(() => {
     let filtered = [...stories];
 
-    // Search filter
     if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (story) =>
-          story.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          story.content.toLowerCase().includes(searchQuery.toLowerCase())
+          story.title.toLowerCase().includes(query) ||
+          story.content.toLowerCase().includes(query)
       );
     }
 
-    // Theme filter
     if (filterTheme !== "all") {
       filtered = filtered.filter((story) => story.theme === filterTheme);
     }
 
-    // Favorites filter
     if (filterFavorites) {
       filtered = filtered.filter((story) => story.is_favorite);
     }
 
-    setFilteredStories(filtered);
+    return filtered;
+  }, [stories, searchQuery, filterTheme, filterFavorites]);
+
+  const themes = useMemo(
+    () => Array.from(new Set(stories.map((s) => s.theme).filter(Boolean))),
+    [stories]
+  );
+
+  const handleToggleFavorite = (storyId: string, currentValue: boolean) => {
+    toggleFavorite({ storyId, currentValue });
   };
 
-  const toggleFavorite = async (storyId: string, currentValue: boolean) => {
-    try {
-      const { error } = await supabase
-        .from("child_stories")
-        .update({ is_favorite: !currentValue })
-        .eq("id", storyId);
-
-      if (error) throw error;
-
-      setStories(
-        stories.map((s) =>
-          s.id === storyId ? { ...s, is_favorite: !currentValue } : s
-        )
-      );
-      toast.success(currentValue ? "Removed from favorites" : "Added to favorites");
-    } catch (error) {
-      console.error("Error toggling favorite:", error);
-      toast.error("Failed to update favorite status");
-    }
-  };
-
-  const deleteStory = async () => {
+  const handleDeleteStory = () => {
     if (!storyToDelete) return;
-
-    try {
-      const { error } = await supabase
-        .from("child_stories")
-        .delete()
-        .eq("id", storyToDelete.id);
-
-      if (error) throw error;
-
-      setStories(stories.filter((s) => s.id !== storyToDelete.id));
-      toast.success("Story deleted");
-      setStoryToDelete(null);
-    } catch (error) {
-      console.error("Error deleting story:", error);
-      toast.error("Failed to delete story");
-    }
+    deleteStory(storyToDelete.id);
+    setStoryToDelete(null);
   };
 
-  const themes = Array.from(new Set(stories.map((s) => s.theme).filter(Boolean)));
-
-  if (loading) {
+  if (isLoading) {
     return <div className="text-center py-8">Loading stories...</div>;
   }
 
@@ -253,7 +195,7 @@ export function StoryLibrary({ childId, childName }: StoryLibraryProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => toggleFavorite(story.id, story.is_favorite)}
+                    onClick={() => handleToggleFavorite(story.id, story.is_favorite)}
                   >
                     <Heart
                       className={`w-4 h-4 ${
@@ -309,7 +251,7 @@ export function StoryLibrary({ childId, childName }: StoryLibraryProps) {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={deleteStory}>Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDeleteStory}>Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

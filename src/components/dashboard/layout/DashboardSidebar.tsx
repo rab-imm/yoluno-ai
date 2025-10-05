@@ -33,7 +33,7 @@ const sections = [
   {
     label: "Overview",
     items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, noChildId: true },
     ],
   },
   {
@@ -59,7 +59,7 @@ const sections = [
   {
     label: "Family",
     items: [
-      { title: "Family History", url: "/dashboard/family", icon: Users },
+      { title: "Family History", url: "/dashboard/family", icon: Users, noChildId: true },
     ],
   },
   {
@@ -98,7 +98,7 @@ export function DashboardSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {section.items.map((item) => {
-                  const url = childId && item.url !== "/dashboard" 
+                  const url = childId && !item.noChildId
                     ? `${item.url}/${childId}` 
                     : item.url;
                   
