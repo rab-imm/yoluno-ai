@@ -55,7 +55,7 @@ function ChildChatContent() {
 
   const loadChild = async () => {
     if (!id) {
-      navigate("/parent");
+      navigate("/dashboard");
       return;
     }
 
@@ -67,7 +67,7 @@ function ChildChatContent() {
 
     if (error || !data) {
       toast.error("Child profile not found");
-      navigate("/parent");
+      navigate("/dashboard");
       return;
     }
 
@@ -124,7 +124,7 @@ function ChildChatContent() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(fromLauncher ? "/kids" : "/parent")}
+              onClick={() => navigate(fromLauncher ? "/kids" : "/dashboard")}
               className="text-white hover:bg-white/20 shrink-0"
               title={fromLauncher ? "Back to Profile Selection" : "Back to Dashboard"}
             >

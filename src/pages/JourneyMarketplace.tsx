@@ -98,7 +98,7 @@ export default function JourneyMarketplace() {
         .eq("id", template.id);
 
       toast.success("Template added! Create your journey from Parent Dashboard");
-      navigate("/parent");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error using template:", error);
       toast.error("Failed to use template");
@@ -304,7 +304,7 @@ export default function JourneyMarketplace() {
             <p className="text-sm text-muted-foreground mb-4">
               Enable sharing for any of your journeys in the Parent Dashboard to help other families discover what works.
             </p>
-            <Button onClick={() => navigate("/parent")}>
+            <Button onClick={() => navigate("/dashboard")}>
               Go to Dashboard
             </Button>
           </CardContent>

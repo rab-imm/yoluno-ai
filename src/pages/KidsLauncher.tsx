@@ -71,7 +71,7 @@ export default function KidsLauncher() {
           <h2 className="text-2xl md:text-3xl font-bold">No profiles yet!</h2>
           <p className="text-lg">Ask your parent to create a profile for you.</p>
           <button
-            onClick={() => navigate("/parent")}
+            onClick={() => navigate("/dashboard")}
             className="mt-6 px-6 py-3 bg-white text-primary rounded-full font-semibold hover-scale"
           >
             Go to Parent Dashboard
@@ -146,7 +146,7 @@ export default function KidsLauncher() {
         {/* Footer */}
         <div className="text-center mt-12">
           <button
-            onClick={() => navigate("/parent")}
+            onClick={() => navigate("/dashboard")}
             className="text-white/80 hover:text-white underline text-sm md:text-base"
           >
             Parent Dashboard →

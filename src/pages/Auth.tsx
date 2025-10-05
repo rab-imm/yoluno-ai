@@ -19,11 +19,15 @@ export default function Auth() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
+    console.log("[Auth] Setting up auth state listener");
+    
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
+        console.log("[Auth] Auth state changed:", event, "Session:", !!session);
         setSession(session);
         if (session) {
+          console.log("[Auth] Session found, navigating to dashboard");
           navigate("/dashboard");
         }
       }
@@ -31,13 +35,18 @@ export default function Auth() {
 
     // THEN check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log("[Auth] Initial session check:", !!session);
       setSession(session);
       if (session) {
+        console.log("[Auth] Existing session found, navigating to dashboard");
         navigate("/dashboard");
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      console.log("[Auth] Cleaning up auth listener");
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handleSignUp = async (e: React.FormEvent) => {
@@ -88,6 +97,8 @@ export default function Auth() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    console.log("[Auth] Sign in attempt started");
+    
     // Validation
     if (!email || !email.includes("@")) {
       toast.error("Please enter a valid email address");
@@ -102,12 +113,16 @@ export default function Auth() {
     setLoading(true);
 
     try {
+      console.log("[Auth] Calling signInWithPassword");
       const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
+      console.log("[Auth] Sign in response:", { error: !!error, hasSession: !!data.session });
+
       if (error) {
+        console.error("[Auth] Sign in error:", error);
         if (error.message.includes("Invalid login credentials")) {
           toast.error("Invalid email or password. Please try again.");
         } else if (error.message.includes("Email not confirmed")) {
@@ -116,12 +131,13 @@ export default function Auth() {
           toast.error(error.message);
         }
       } else if (data.session) {
+        console.log("[Auth] Sign in successful!");
         toast.success("Welcome back!");
         // Navigation handled by onAuthStateChange
       }
     } catch (error: any) {
+      console.error("[Auth] Unexpected sign in error:", error);
       toast.error("An unexpected error occurred. Please try again.");
-      console.error("Signin error:", error);
     } finally {
       setLoading(false);
     }
