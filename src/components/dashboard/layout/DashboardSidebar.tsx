@@ -28,6 +28,7 @@ import { ChildSwitcher } from "./ChildSwitcher";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
 
 const sections = [
   {
@@ -74,6 +75,7 @@ const sections = [
 export function DashboardSidebar() {
   const { state } = useSidebar();
   const { childId } = useParams();
+  const { children } = useChildProfiles();
   const navigate = useNavigate();
   const isCollapsed = state === "collapsed";
 
@@ -84,6 +86,9 @@ export function DashboardSidebar() {
 
   const getNavClassName = ({ isActive }: { isActive: boolean }) =>
     isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "";
+
+  // Use first child as fallback if no childId in URL
+  const activeChildId = childId || children[0]?.id;
 
   return (
     <Sidebar collapsible="icon">
@@ -98,13 +103,18 @@ export function DashboardSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 {section.items.map((item) => {
-                  const url = childId && !item.noChildId
-                    ? `${item.url}/${childId}` 
-                    : item.url;
+                  // For items that need childId, use activeChildId or disable
+                  const url = item.noChildId 
+                    ? item.url 
+                    : activeChildId 
+                    ? `${item.url}/${activeChildId}`
+                    : item.url; // Fallback to base URL if no children
+                  
+                  const isDisabled = !item.noChildId && !activeChildId;
                   
                   return (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild>
+                      <SidebarMenuButton asChild disabled={isDisabled}>
                         <NavLink to={url} end className={getNavClassName}>
                           <item.icon className="h-4 w-4" />
                           {!isCollapsed && <span>{item.title}</span>}

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, BookOpen, Target, MessageSquare, Sparkles, Loader2 } from "lucide-react";
+import { Plus, BookOpen, Target, MessageSquare, Loader2 } from "lucide-react";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
 import { useChildActivities } from "@/hooks/dashboard/useChildActivities";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";

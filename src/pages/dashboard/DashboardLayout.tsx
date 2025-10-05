@@ -13,7 +13,7 @@ export default function DashboardLayout() {
 
   useEffect(() => {
     checkAuth();
-  }, []);
+  }, [navigate]);
 
   const checkAuth = async () => {
     const { data: { session } } = await supabase.auth.getSession();
