@@ -8,6 +8,7 @@ import { Shield, Lock, Eye, UserCheck, Ban, FileCheck, Heart } from "lucide-reac
 import { Card } from "@/components/ui/card";
 import safetyHeroBg from "@/assets/safety-hero-bg.jpg";
 import parentDashboard from "@/assets/parent-dashboard.jpg";
+import safetyPipeline from "@/assets/safety-pipeline.jpg";
 
 const Safety = () => {
   const navigate = useNavigate();
@@ -101,8 +102,15 @@ const Safety = () => {
       </section>
 
       {/* The Safety Pipeline */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={safetyPipeline} 
+            alt="Multi-layer safety pipeline"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-3">The AI Safety Pipeline</h2>
           <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
             For AI-generated Stories, Journeys, and Learning—same protective AI system

@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Headphones, Sparkles, Heart, Library, Mic, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import storiesHeroBg from "@/assets/stories-hero-bg.jpg";
+import storyLibrary from "@/assets/story-library-section.jpg";
+import familyStorytime from "@/assets/family-storytime.jpg";
 
 const StoryBuddy = () => {
   const navigate = useNavigate();
@@ -84,8 +86,15 @@ const StoryBuddy = () => {
       </section>
 
       {/* Stay Close Section */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-4xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={familyStorytime} 
+            alt="Family storytime together"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
           <Heart className="h-12 w-12 text-accent mx-auto" />
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Stay close, even away</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -99,8 +108,15 @@ const StoryBuddy = () => {
       </section>
 
       {/* Library & Keepsakes */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-5xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={storyLibrary} 
+            alt="Story library collection"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl text-center space-y-5 relative z-10">
           <Library className="h-12 w-12 text-[hsl(var(--imagination-primary))] mx-auto" />
           <h2 className="text-3xl md:text-4xl font-heading font-bold">Library & Keepsakes</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">

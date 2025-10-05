@@ -4,7 +4,8 @@ import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Target, Award, TrendingUp, Calendar, Heart, CheckCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
-import journeysHeroBg from "@/assets/journeys-hero-bg.jpg";
+import journeysHeroBg from "@/assets/journeys-hero-updated.jpg";
+import journeyProgress from "@/assets/journey-progress.jpg";
 
 const Journeys = () => {
   const navigate = useNavigate();
@@ -131,8 +132,15 @@ const Journeys = () => {
       </section>
 
       {/* Parent Dashboard Preview */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={journeyProgress} 
+            alt="Journey progress tracking"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Parent Dashboard</h2>
           <div className="grid md:grid-cols-3 gap-6">
             <Card className="p-6 text-center">

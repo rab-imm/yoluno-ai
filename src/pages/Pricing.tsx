@@ -6,6 +6,7 @@ import { Check, Sparkles, Book } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import pricingHeroBg from "@/assets/pricing-hero-bg.jpg";
 import pricingAddons from "@/assets/pricing-addons.jpg";
+import pricingTiers from "@/assets/pricing-tiers.jpg";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -119,8 +120,15 @@ const Pricing = () => {
       </section>
 
       {/* Pricing Cards */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-7xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={pricingTiers} 
+            alt="Pricing plan tiers"
+            className="w-full h-full object-cover opacity-15"
+          />
+        </div>
+        <div className="container mx-auto max-w-7xl relative z-10">
           <div className="grid md:grid-cols-3 gap-6">
             {plans.map((plan) => (
               <Card 

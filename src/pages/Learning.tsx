@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { Brain, Package, Upload, Eye, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import learningHeroBg from "@/assets/learning-hero-bg.jpg";
+import learningPacks from "@/assets/learning-packs.jpg";
+import qaTransparency from "@/assets/qa-transparency.jpg";
 
 const LearningBuddy = () => {
   const navigate = useNavigate();
@@ -90,8 +92,15 @@ const LearningBuddy = () => {
       </section>
 
       {/* Transparency */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={qaTransparency} 
+            alt="Question and answer transparency"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Transparency</h2>
           <div className="space-y-6 mb-8">
             <Card className="p-6 border-l-4 border-l-[hsl(var(--curiosity-secondary))]">
@@ -118,8 +127,15 @@ const LearningBuddy = () => {
       </section>
 
       {/* Sample Packs */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={learningPacks} 
+            alt="Learning content packs"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Popular Learning Packs</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {packs.map((pack) => (
