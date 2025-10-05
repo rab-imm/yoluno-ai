@@ -7,7 +7,7 @@ interface TrustBadgeProps {
 
 export const TrustBadge = ({ icon: Icon, text }: TrustBadgeProps) => {
   return (
-    <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary rounded-full border border-border/50">
+    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-secondary rounded-full border border-border/50">
       <Icon className="h-4 w-4 text-primary" />
       <span className="text-sm font-medium text-foreground">{text}</span>
     </div>

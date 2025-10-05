@@ -11,7 +11,7 @@ interface TestimonialProps {
 
 export const Testimonial = ({ quote, author, role, avatarFallback }: TestimonialProps) => {
   return (
-    <Card className="p-6 bg-card hover:shadow-lg transition-shadow relative">
+    <Card className="p-6 bg-card hover:shadow-md transition-shadow relative">
       <Quote className="h-8 w-8 text-accent/20 absolute top-4 right-4" />
       <div className="flex items-start gap-4 mb-4">
         <Avatar className="h-12 w-12 border-2 border-accent/20">

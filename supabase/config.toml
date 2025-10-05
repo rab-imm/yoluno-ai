@@ -29,3 +29,9 @@ verify_jwt = false
 
 [functions.buddy-mission-encouragement]
 verify_jwt = false
+
+[functions.match-content]
+verify_jwt = false
+
+[functions.generate-website-image]
+verify_jwt = false

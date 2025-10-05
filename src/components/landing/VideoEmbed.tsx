@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { PlayCircle } from "lucide-react";
+import videoPlaceholder from "@/assets/video-demo-placeholder.jpg";
 
 interface VideoEmbedProps {
   title?: string;
@@ -13,16 +14,20 @@ export const VideoEmbed = ({
   placeholderText = "Demo video coming soon"
 }: VideoEmbedProps) => {
   return (
-    <div className="space-y-4">
-      {title && <h3 className="text-2xl font-bold text-center">{title}</h3>}
+    <div className="space-y-3">
+      {title && <h3 className="text-xl md:text-2xl font-heading font-bold text-center">{title}</h3>}
       {description && <p className="text-muted-foreground text-center max-w-2xl mx-auto">{description}</p>}
       
-      <Card className="aspect-video w-full max-w-4xl mx-auto bg-gradient-to-br from-primary/5 to-accent/5 flex items-center justify-center border-2 border-dashed border-border relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors">
+      <Card className="aspect-video w-full max-w-4xl mx-auto bg-gradient-to-br from-primary/3 to-accent/3 flex items-center justify-center border-2 border-dashed border-border relative overflow-hidden group cursor-pointer hover:border-primary/50 transition-colors">
+        <img 
+          src={videoPlaceholder} 
+          alt="Parent and child using Safe AI Buddy together"
+          className="absolute inset-0 w-full h-full object-cover opacity-50 group-hover:opacity-60 transition-opacity"
+        />
         <div className="text-center space-y-4 z-10">
-          <PlayCircle className="h-20 w-20 text-primary mx-auto group-hover:scale-110 transition-transform" />
-          <p className="text-lg font-medium text-muted-foreground">{placeholderText}</p>
+          <PlayCircle className="h-20 w-20 text-primary mx-auto group-hover:scale-110 transition-transform drop-shadow-lg" />
+          <p className="text-lg font-medium text-foreground drop-shadow-md">{placeholderText}</p>
         </div>
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 opacity-0 group-hover:opacity-100 transition-opacity" />
       </Card>
     </div>
   );
