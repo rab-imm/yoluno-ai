@@ -1,28 +1,42 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Shield, Menu, X } from "lucide-react";
+import { Shield, Menu, X, ChevronDown, Sparkles, Heart, Sun, Home } from "lucide-react";
 import { useState } from "react";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu";
 
 export const Navigation = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
 
-  const navLinks = [
-    { label: "Stories", path: "/stories" },
-    { label: "Journeys", path: "/journeys" },
-    { label: "Learning", path: "/learning" },
-    { label: "Marketplace", path: "/" },
-    { label: "Safety", path: "/safety" },
-    { label: "Pricing", path: "/pricing" },
+  const featureLinks = [
+    { label: "Stories", path: "/features/stories", icon: Sparkles, color: "text-purple-500" },
+    { label: "Journeys", path: "/features/journeys", icon: Heart, color: "text-pink-500" },
+    { label: "Learning", path: "/features/learning", icon: Sun, color: "text-amber-500" },
+    { label: "Family History", path: "/features/family", icon: Home, color: "text-emerald-500", premium: true },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const mainLinks = [
+    { label: "Safety", path: "/safety" },
+    { label: "Pricing", path: "/pricing" },
+    { label: "About", path: "/about" },
+    { label: "Blog", path: "/blog" },
+    { label: "Support", path: "/support" },
+  ];
+
+  const isActive = (path: string) => location.pathname === path || location.pathname.startsWith(path);
 
   return (
-    <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+    <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-14">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <button
             onClick={() => navigate("/")}
@@ -31,17 +45,69 @@ export const Navigation = () => {
             <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="font-bold text-lg hidden sm:inline">Paliyo AI</span>
+            <span className="font-bold text-xl">Paliyo</span>
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
+          <div className="hidden lg:flex items-center gap-1">
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger 
+                    className={`${isActive('/features') ? 'text-primary' : ''}`}
+                  >
+                    Features
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="w-[400px] p-4">
+                      <div className="mb-3">
+                        <h3 className="text-sm font-semibold mb-1">Discover Paliyo</h3>
+                        <p className="text-xs text-muted-foreground">Explore features for kids and parents</p>
+                      </div>
+                      <div className="grid gap-2">
+                        {featureLinks.map((link) => {
+                          const IconComponent = link.icon;
+                          return (
+                            <button
+                              key={link.path}
+                              onClick={() => navigate(link.path)}
+                              className="flex items-start gap-3 p-3 rounded-lg hover:bg-secondary transition-colors text-left group"
+                            >
+                              <IconComponent className={`h-5 w-5 mt-0.5 ${link.color}`} />
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium group-hover:text-primary transition-colors">
+                                    {link.label}
+                                  </span>
+                                  {link.premium && (
+                                    <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                                      Premium
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </button>
+                          );
+                        })}
+                        <button
+                          onClick={() => navigate("/features")}
+                          className="mt-2 text-sm text-primary hover:underline"
+                        >
+                          View All Features →
+                        </button>
+                      </div>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+
+            {mainLinks.map((link) => (
               <button
                 key={link.path}
                 onClick={() => navigate(link.path)}
-                className={`text-sm font-medium transition-colors hover:text-primary ${
-                  isActive(link.path) ? "text-primary" : "text-muted-foreground"
+                className={`px-3 py-2 text-sm font-medium transition-colors hover:text-primary rounded-md ${
+                  isActive(link.path) ? "text-primary bg-primary/5" : "text-muted-foreground"
                 }`}
               >
                 {link.label}
@@ -50,18 +116,18 @@ export const Navigation = () => {
           </div>
 
           {/* Desktop CTA Buttons */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
             <Button variant="ghost" onClick={() => navigate("/auth")}>
-              Parent Sign In
+              Login
             </Button>
-            <Button onClick={() => navigate("/auth")}>
+            <Button onClick={() => navigate("/auth")} className="shadow-lg">
               Start Free
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2"
+            className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -74,8 +140,45 @@ export const Navigation = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-3 border-t animate-fade-in">
-            {navLinks.map((link) => (
+          <div className="lg:hidden py-4 space-y-2 border-t animate-fade-in">
+            {/* Features Dropdown */}
+            <div className="space-y-2">
+              <button
+                onClick={() => setMobileFeaturesOpen(!mobileFeaturesOpen)}
+                className="flex items-center justify-between w-full px-4 py-2 text-left font-medium hover:bg-secondary rounded-lg transition-colors"
+              >
+                <span>Features</span>
+                <ChevronDown className={`h-4 w-4 transition-transform ${mobileFeaturesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {mobileFeaturesOpen && (
+                <div className="ml-4 space-y-1 animate-fade-in">
+                  {featureLinks.map((link) => {
+                    const IconComponent = link.icon;
+                    return (
+                      <button
+                        key={link.path}
+                        onClick={() => {
+                          navigate(link.path);
+                          setMobileMenuOpen(false);
+                          setMobileFeaturesOpen(false);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-secondary rounded-lg transition-colors"
+                      >
+                        <IconComponent className={`h-4 w-4 ${link.color}`} />
+                        <span>{link.label}</span>
+                        {link.premium && (
+                          <span className="text-xs px-1.5 py-0.5 rounded bg-gradient-to-r from-amber-500 to-orange-500 text-white ml-auto">
+                            Premium
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {mainLinks.map((link) => (
               <button
                 key={link.path}
                 onClick={() => {
@@ -91,9 +194,10 @@ export const Navigation = () => {
                 {link.label}
               </button>
             ))}
-            <div className="flex flex-col gap-2 px-4 pt-2">
+            
+            <div className="flex flex-col gap-2 px-4 pt-4 border-t">
               <Button variant="outline" onClick={() => navigate("/auth")} className="w-full">
-                Parent Sign In
+                Login
               </Button>
               <Button onClick={() => navigate("/auth")} className="w-full">
                 Start Free
