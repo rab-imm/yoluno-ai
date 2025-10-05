@@ -5,6 +5,11 @@ import { BookOpen, Lightbulb, Target, Heart, ChevronDown, ChevronUp, X } from "l
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
+import storiesIllustration from "@/assets/stories-mode-illustration.png";
+import learningIllustration from "@/assets/learning-mode-illustration.png";
+import journeysIllustration from "@/assets/journeys-mode-illustration.png";
+import familyIllustration from "@/assets/family-mode-illustration.png";
 
 const modes = [
   {
@@ -16,6 +21,8 @@ const modes = [
     action: "Create Your First Story",
     route: "/dashboard/stories",
     stat: "10,000+ stories created",
+    illustration: storiesIllustration,
+    requiresChild: true,
   },
   {
     icon: Lightbulb,
@@ -26,6 +33,8 @@ const modes = [
     action: "Manage Topics",
     route: "/dashboard/topics",
     stat: "500+ topics available",
+    illustration: learningIllustration,
+    requiresChild: true,
   },
   {
     icon: Target,
@@ -33,9 +42,11 @@ const modes = [
     emoji: "🎯",
     description: "Build character with daily missions and habit tracking",
     gradient: "from-blue-500 to-cyan-500",
-    action: "Start New Journey",
-    route: "/dashboard/journeys",
+    action: "Browse Journeys",
+    route: "/marketplace",
     stat: "50+ journey templates",
+    illustration: journeysIllustration,
+    requiresChild: false,
   },
   {
     icon: Heart,
@@ -47,11 +58,16 @@ const modes = [
     route: "/dashboard/family",
     stat: "Premium feature",
     isPremium: true,
+    illustration: familyIllustration,
+    requiresChild: false,
   },
 ];
 
 export function ProductExplainerPanel() {
   const navigate = useNavigate();
+  const { children } = useChildProfiles();
+  const firstChildId = children[0]?.id;
+  
   const [isCollapsed, setIsCollapsed] = useState(() => {
     const saved = localStorage.getItem("productExplainerCollapsed");
     return saved === "true";
@@ -71,6 +87,14 @@ export function ProductExplainerPanel() {
     localStorage.setItem("productExplainerDismissed", "true");
   };
 
+  const handleNavigate = (mode: typeof modes[0]) => {
+    if (mode.requiresChild && firstChildId) {
+      navigate(`${mode.route}/${firstChildId}`);
+    } else {
+      navigate(mode.route);
+    }
+  };
+
   if (isDismissed) return null;
 
   return (
@@ -79,7 +103,7 @@ export function ProductExplainerPanel() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <Card className="border-2 border-primary/20 shadow-lg">
+      <Card className="border-2 border-primary/20 shadow-lg bg-gradient-to-br from-card to-card/50">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -121,33 +145,43 @@ export function ProductExplainerPanel() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="group relative overflow-hidden rounded-xl border bg-card p-5 hover:shadow-lg transition-shadow"
+                    className="group relative overflow-hidden rounded-xl border-2 bg-card p-6 hover:shadow-2xl transition-all duration-300 hover:scale-[1.02] hover:border-primary/30"
                   >
                     <div className={`absolute inset-0 bg-gradient-to-br ${mode.gradient} opacity-5 group-hover:opacity-10 transition-opacity`} />
                     
-                    <div className="relative space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className={`rounded-lg bg-gradient-to-br ${mode.gradient} p-2 text-white shadow-md`}>
-                            <mode.icon className="h-5 w-5" />
+                    <div className="relative space-y-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <div className={`rounded-xl bg-gradient-to-br ${mode.gradient} p-3 text-white shadow-lg group-hover:scale-110 transition-transform`}>
+                              <mode.icon className="h-6 w-6" />
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-lg flex items-center gap-2">
+                                {mode.emoji} {mode.title}
+                                {mode.isPremium && <Badge variant="secondary" className="text-xs">Premium</Badge>}
+                              </h4>
+                              <p className="text-xs text-muted-foreground">{mode.stat}</p>
+                            </div>
                           </div>
-                          <div>
-                            <h4 className="font-semibold flex items-center gap-2">
-                              {mode.emoji} {mode.title}
-                              {mode.isPremium && <Badge variant="secondary" className="text-xs">Premium</Badge>}
-                            </h4>
-                            <p className="text-xs text-muted-foreground mt-1">{mode.stat}</p>
-                          </div>
+                        </div>
+                        
+                        <div className="w-20 h-20 rounded-lg overflow-hidden shadow-md flex-shrink-0">
+                          <img 
+                            src={mode.illustration} 
+                            alt={mode.title}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       </div>
                       
-                      <p className="text-sm text-muted-foreground">{mode.description}</p>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{mode.description}</p>
                       
                       <Button
                         size="sm"
-                        variant="outline"
-                        onClick={() => navigate(mode.route)}
-                        className="w-full hover:bg-muted"
+                        onClick={() => handleNavigate(mode)}
+                        disabled={mode.requiresChild && !firstChildId}
+                        className={`w-full bg-gradient-to-r ${mode.gradient} hover:opacity-90 text-white font-semibold shadow-md hover:shadow-lg transition-all`}
                       >
                         {mode.action}
                       </Button>

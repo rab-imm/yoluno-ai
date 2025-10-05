@@ -41,34 +41,34 @@ export function ActivityFeed() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
     >
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Activity className="h-5 w-5" />
+      <Card className="border-2 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Activity className="h-6 w-6 text-primary" />
             Recent Activity
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-4">
+            <div className="space-y-3">
               {activities.map((activity, index) => (
                 <motion.div
                   key={activity.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex gap-4 rounded-lg border bg-card p-4 hover:shadow-md transition-shadow"
+                  className="flex gap-4 rounded-xl border-2 bg-gradient-to-br from-card to-card/50 p-4 hover:shadow-lg transition-all hover:scale-[1.02] hover:border-primary/30"
                 >
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-xl">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-2xl shadow-md flex-shrink-0">
                     {activity.icon}
                   </div>
                   <div className="flex-1 space-y-1">
-                    <p className="text-sm font-medium leading-none">
-                      <span className="text-primary font-semibold">{activity.childName}</span>
+                    <p className="text-sm font-medium leading-relaxed">
+                      <span className="text-primary font-bold">{activity.childName}</span>
                       {" "}
                       {activity.description}
                     </p>
-                    <p className="text-xs text-muted-foreground">{activity.relativeTime}</p>
+                    <p className="text-xs text-muted-foreground font-medium">{activity.relativeTime}</p>
                   </div>
                 </motion.div>
               ))}

@@ -25,17 +25,18 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1 }}
+      whileHover={{ y: -5 }}
     >
-      <Card className="group hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border-2 hover:border-primary/30">
-        <CardHeader className="pb-3">
+      <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/40 bg-gradient-to-br from-card to-card/50 overflow-hidden">
+        <CardHeader className="pb-4 bg-gradient-to-br from-primary/5 to-accent/5">
           <div className="flex items-center gap-4">
             {/* Enhanced Avatar */}
             <div className="relative">
               <motion.div
-                whileHover={{ scale: 1.1, rotate: 5 }}
-                className="h-20 w-20 rounded-full bg-gradient-to-br from-primary/20 via-accent/20 to-primary/20 p-1 shadow-lg"
+                whileHover={{ scale: 1.15, rotate: 5 }}
+                className="h-24 w-24 rounded-full bg-gradient-to-br from-primary via-accent to-primary p-1.5 shadow-xl"
               >
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-card text-5xl">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-card text-6xl shadow-inner">
                   {child.avatar || "👦"}
                 </div>
               </motion.div>
@@ -43,9 +44,9 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                 <motion.div
                   animate={{ scale: [1, 1.2, 1] }}
                   transition={{ repeat: Infinity, duration: 2 }}
-                  className="absolute -bottom-1 -right-1"
+                  className="absolute -bottom-2 -right-2"
                 >
-                  <Badge variant="secondary" className="shadow-lg">
+                  <Badge className="shadow-lg bg-gradient-to-r from-orange-500 to-red-500 text-white border-2 border-white px-2 py-1">
                     🔥 {child.streak_days}
                   </Badge>
                 </motion.div>
@@ -54,9 +55,9 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
 
             {/* Name and Info */}
             <div className="flex-1">
-              <h3 className="text-2xl font-bold">{child.name}</h3>
-              <p className="text-sm text-muted-foreground">Age {child.age}</p>
-              <Badge variant="outline" className="mt-1 text-xs">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{child.name}</h3>
+              <p className="text-sm text-muted-foreground font-medium">Age {child.age}</p>
+              <Badge variant="outline" className="mt-2 text-xs font-semibold border-primary/30">
                 {child.personality_mode.replace(/_/g, " ")}
               </Badge>
             </div>
@@ -80,50 +81,49 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 rounded-lg bg-muted/50 p-4">
+              <div className="grid grid-cols-3 gap-3 rounded-xl bg-gradient-to-br from-muted/80 to-muted/40 p-5 border border-primary/10">
                 <div className="text-center">
                   <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className="text-3xl font-bold text-primary"
+                    whileHover={{ scale: 1.15 }}
+                    className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
                   >
                     {activities?.totalMessages || 0}
                   </motion.div>
-                  <div className="text-xs text-muted-foreground">Messages</div>
+                  <div className="text-xs text-muted-foreground font-medium mt-1">Messages</div>
                 </div>
                 <div className="text-center">
                   <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className="text-3xl font-bold text-primary"
+                    whileHover={{ scale: 1.15 }}
+                    className="text-4xl font-bold bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent"
                   >
                     {activities?.totalStories || 0}
                   </motion.div>
-                  <div className="text-xs text-muted-foreground">Stories</div>
+                  <div className="text-xs text-muted-foreground font-medium mt-1">Stories</div>
                 </div>
                 <div className="text-center">
                   <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className="text-3xl font-bold text-primary"
+                    whileHover={{ scale: 1.15 }}
+                    className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent"
                   >
                     {activities?.activeJourneys || 0}
                   </motion.div>
-                  <div className="text-xs text-muted-foreground">Journeys</div>
+                  <div className="text-xs text-muted-foreground font-medium mt-1">Journeys</div>
                 </div>
               </div>
 
               {/* Last Active */}
               {activities?.lastActive && (
-                <div className="text-center text-sm text-muted-foreground pt-2 border-t">
+                <div className="text-center text-sm text-muted-foreground pt-3 border-t font-medium">
                   Last active {formatDistanceToNow(new Date(activities.lastActive), { addSuffix: true })}
                 </div>
               )}
 
               {/* Quick Actions */}
-              <div className="grid grid-cols-2 gap-2 pt-2">
+              <div className="grid grid-cols-2 gap-3 pt-3">
                 <Button
-                  variant="outline"
                   size="sm"
                   onClick={() => navigate(`/child/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:scale-105"
                 >
                   <Rocket className="mr-2 h-4 w-4" />
                   Launch Chat
@@ -132,7 +132,7 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/insights/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105"
                 >
                   <MessageSquare className="mr-2 h-4 w-4" />
                   Insights
@@ -141,7 +141,7 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/stories/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105"
                 >
                   <BookOpen className="mr-2 h-4 w-4" />
                   Stories
@@ -150,7 +150,7 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/journeys/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-colors"
+                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105"
                 >
                   <Target className="mr-2 h-4 w-4" />
                   Journeys

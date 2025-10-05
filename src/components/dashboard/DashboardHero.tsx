@@ -3,6 +3,7 @@ import { Sparkles, Rocket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardGreeting } from "@/hooks/dashboard/useDashboardGreeting";
 import { motion } from "framer-motion";
+import heroBackground from "@/assets/dashboard-hero-bg.jpg";
 
 export function DashboardHero() {
   const navigate = useNavigate();
@@ -13,8 +14,16 @@ export function DashboardHero() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/90 to-accent p-8 text-primary-foreground shadow-xl"
+      className="relative overflow-hidden rounded-2xl shadow-2xl"
+      style={{
+        backgroundImage: `url(${heroBackground})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
     >
+      {/* Overlay for text readability */}
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/95 via-primary/90 to-accent/90 backdrop-blur-sm" />
+      
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-10 left-10 h-32 w-32 animate-pulse rounded-full bg-white blur-3xl" />
@@ -22,13 +31,13 @@ export function DashboardHero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-        <div className="flex-1 space-y-2">
+      <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between p-8">
+        <div className="flex-1 space-y-3">
           <motion.h1
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-4xl font-bold"
+            className="text-5xl font-bold text-white drop-shadow-lg"
           >
             {greeting}! {emoji}
           </motion.h1>
@@ -36,7 +45,7 @@ export function DashboardHero() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-lg opacity-95"
+            className="text-xl text-white/95 drop-shadow-md max-w-2xl"
           >
             {message}
           </motion.p>
@@ -51,7 +60,7 @@ export function DashboardHero() {
           <Button
             size="lg"
             onClick={() => navigate("/kids")}
-            className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+            className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all hover:scale-105 font-semibold"
           >
             <Rocket className="mr-2 h-5 w-5" />
             Launch Kids Mode
@@ -59,8 +68,8 @@ export function DashboardHero() {
           <Button
             size="lg"
             variant="outline"
-            onClick={() => navigate("/journeys")}
-            className="border-white/50 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm"
+            onClick={() => navigate("/marketplace")}
+            className="border-white/50 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm font-semibold hover:scale-105 transition-all"
           >
             <Sparkles className="mr-2 h-5 w-5" />
             Browse Journeys
