@@ -4,6 +4,11 @@ import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Heart, Sun, Home } from "lucide-react";
+import featuresHero from "@/assets/features-overview-hero.jpg";
+import storiesIcon from "@/assets/stories-feature-icon.jpg";
+import journeysIcon from "@/assets/journeys-feature-icon.jpg";
+import learningIcon from "@/assets/learning-feature-icon.jpg";
+import familyIcon from "@/assets/family-feature-icon.jpg";
 
 const Features = () => {
   const navigate = useNavigate();
@@ -14,21 +19,24 @@ const Features = () => {
       title: "Stories",
       description: "Bedtime tales crafted just for them, where they're the brave explorer or clever inventor. Narrated in soothing voices, with pauses for their input—ending in dreams, not screens.",
       path: "/features/stories",
-      color: "text-purple-400"
+      color: "text-purple-400",
+      image: storiesIcon
     },
     {
       icon: Heart,
       title: "Journeys",
       description: "Bite-sized daily missions to nurture habits like kindness or tidying up. Earn badges, track streaks, and celebrate wins with virtual high-fives that build real confidence.",
       path: "/features/journeys",
-      color: "text-pink-400"
+      color: "text-pink-400",
+      image: journeysIcon
     },
     {
       icon: Sun,
       title: "Learning",
       description: "Endless 'why' and 'how' answered safely. From 'Why do stars twinkle?' to 'How do plants grow?'—pulled from curated packs you approve, with fun facts and follow-up questions.",
       path: "/features/learning",
-      color: "text-amber-400"
+      color: "text-amber-400",
+      image: learningIcon
     },
     {
       icon: Home,
@@ -36,7 +44,8 @@ const Features = () => {
       description: "Chat with echoes of your family's past. 'Tell me about Grandma's adventures'—and Paliyo shares stories from your uploaded memories, keeping heritage alive in their voice.",
       path: "/features/family",
       color: "text-emerald-400",
-      premium: true
+      premium: true,
+      image: familyIcon
     }
   ];
 
@@ -45,12 +54,20 @@ const Features = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 px-4">
-        <div className="max-w-6xl mx-auto text-center">
+      <section className="relative pt-32 pb-20 px-4 overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={featuresHero} 
+            alt="Paliyo's 4 core features - Stories, Journeys, Learning, and Family History"
+            className="w-full h-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
+        </div>
+        <div className="max-w-6xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
             Discover Paliyo's World
           </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
+          <p className="text-xl md:text-2xl text-foreground/90 mb-8 max-w-3xl mx-auto drop-shadow-lg">
             Where Kids Explore and Parents Empower. Dive deeper into the modes that make Paliyo indispensable.
           </p>
           <Button 
@@ -81,11 +98,17 @@ const Features = () => {
                   onClick={() => navigate(feature.path)}
                 >
                   {feature.premium && (
-                    <span className="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                    <span className="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white z-10">
                       Premium
                     </span>
                   )}
-                  <IconComponent className={`h-12 w-12 mb-4 ${feature.color}`} />
+                  <div className="aspect-[4/3] rounded-lg overflow-hidden mb-4">
+                    <img 
+                      src={feature.image} 
+                      alt={`${feature.title} feature icon`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
                   <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>
                   <p className="text-muted-foreground mb-4 leading-relaxed">
                     {feature.description}

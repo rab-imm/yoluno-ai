@@ -2,13 +2,17 @@ import { Button } from "@/components/ui/button";
 import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
-import { Check, Sparkles, Book } from "lucide-react";
+import { Check, Sparkles, Book, Shield } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import pricingHeroBg from "@/assets/pricing-hero-bg.jpg";
 import pricingAddons from "@/assets/pricing-addons.jpg";
 import pricingTiers from "@/assets/pricing-tiers.jpg";
 import faqSection from "@/assets/faq-section.jpg";
 import ctaBackground from "@/assets/cta-background.jpg";
+import coppaBadge from "@/assets/coppa-certified-badge.png";
+import kidsafeBadge from "@/assets/kidsafe-certified-badge.png";
+import encryptedBadge from "@/assets/encrypted-secure-badge.png";
+import familyHistoryPreview from "@/assets/family-history-addon-preview.jpg";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -175,22 +179,25 @@ const Pricing = () => {
         <div className="container mx-auto max-w-7xl relative z-10">
           {/* Trust Banner */}
           <Card className="p-6 mb-12 bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-950/20 dark:to-blue-950/20 border-emerald-200 dark:border-emerald-800">
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-semibold">
-              <div className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-600" />
-                <span>No ads. No data resale.</span>
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm font-semibold">
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-emerald-600" />
+                  <span>No ads. No data resale.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-emerald-600" />
+                  <span>Your family's stories stay yours.</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-5 w-5 text-emerald-600" />
+                  <span>30-day money-back guarantee.</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-600" />
-                <span>Your family's stories stay yours.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-600" />
-                <span>COPPA-certified.</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Check className="h-5 w-5 text-emerald-600" />
-                <span>30-day money-back guarantee.</span>
+              <div className="flex items-center gap-4">
+                <img src={coppaBadge} alt="COPPA Certified" className="h-12 w-12 object-contain" />
+                <img src={kidsafeBadge} alt="kidSAFE Certified" className="h-12 w-12 object-contain" />
+                <img src={encryptedBadge} alt="Encrypted & Secure" className="h-12 w-12 object-contain" />
               </div>
             </div>
           </Card>
@@ -262,6 +269,14 @@ const Pricing = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Preserve your family stories and let your child discover their heritage through AI-powered conversations
             </p>
+          </div>
+          
+          <div className="rounded-2xl overflow-hidden shadow-xl mb-8">
+            <img 
+              src={familyHistoryPreview} 
+              alt="Family History add-on showing family tree builder and photo library"
+              className="w-full h-auto"
+            />
           </div>
           
           <div className="grid md:grid-cols-3 gap-6 mb-8">

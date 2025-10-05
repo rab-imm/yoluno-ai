@@ -7,6 +7,9 @@ import { Card } from "@/components/ui/card";
 import aboutHeroBg from "@/assets/about-hero-bg.jpg";
 import missionValues from "@/assets/mission-values.jpg";
 import whatWeBuilt from "@/assets/what-we-built.jpg";
+import founderTeam from "@/assets/founder-team-photo.jpg";
+import productDashboard from "@/assets/product-dashboard-overview.jpg";
+import productMobile from "@/assets/product-mobile-view.jpg";
 
 const About = () => {
   const navigate = useNavigate();
@@ -65,8 +68,16 @@ const About = () => {
 
       {/* Story */}
       <section className="py-20 px-4">
-        <div className="container mx-auto max-w-3xl">
-          <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="rounded-2xl overflow-hidden shadow-xl">
+              <img 
+                src={founderTeam} 
+                alt="Paliyo founding team - parents and builders working together"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
             <p className="text-xl leading-relaxed">
               Like many parents, we watched our children grow up surrounded by technology. We saw the wonder in their eyes 
               when they discovered something new, the questions that never stopped, the bedtime stories that sparked their imagination.
@@ -75,9 +86,10 @@ const About = () => {
               But when AI assistants became mainstream, we felt uneasy. These tools were powerful, but they weren't designed 
               for children. No filters. No boundaries. No way for parents to control what their kids were exposed to.
             </p>
-            <p className="text-xl leading-relaxed">
-              So we built something different. An AI companion designed from the ground up for children, with parents in complete control.
-            </p>
+              <p className="text-xl leading-relaxed">
+                So we built something different. An AI companion designed from the ground up for children, with parents in complete control.
+              </p>
+            </div>
           </div>
         </div>
       </section>
@@ -135,8 +147,26 @@ const About = () => {
             className="w-full h-full object-cover opacity-20"
           />
         </div>
-        <div className="container mx-auto max-w-4xl relative z-10">
+        <div className="container mx-auto max-w-6xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">What We Built</h2>
+          
+          <div className="grid lg:grid-cols-2 gap-8 mb-8">
+            <div className="rounded-xl overflow-hidden shadow-xl">
+              <img 
+                src={productDashboard} 
+                alt="Paliyo product dashboard showing parent controls and features"
+                className="w-full h-auto"
+              />
+            </div>
+            <div className="rounded-xl overflow-hidden shadow-xl flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
+              <img 
+                src={productMobile} 
+                alt="Paliyo mobile app showing child-friendly interface"
+                className="w-2/3 h-auto"
+              />
+            </div>
+          </div>
+          
           <div className="space-y-6">
             <Card className="p-6">
               <h3 className="text-xl md:text-2xl font-heading font-semibold mb-3 flex items-center gap-3">

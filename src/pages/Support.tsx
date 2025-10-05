@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { MessageCircle, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import supportChatInterface from "@/assets/support-chat-interface.jpg";
 
 const Support = () => {
   const navigate = useNavigate();
@@ -211,8 +212,15 @@ const Support = () => {
                 </div>
               </Card>
 
-              <Card className="p-6">
+              <Card className="p-6 overflow-hidden">
                 <h3 className="text-xl font-bold mb-4">Live Chat</h3>
+                <div className="rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={supportChatInterface} 
+                    alt="Friendly support chat interface"
+                    className="w-full h-auto"
+                  />
+                </div>
                 <p className="text-muted-foreground mb-4">
                   Get instant help from our support team. Available 24/7 for all your questions.
                 </p>
