@@ -105,19 +105,19 @@ const Index = () => {
             alt="Magical bedtime scene"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/85 to-background/90" />
+          <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-black/30 to-black/40" />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center space-y-6">
             <div className="inline-block p-3 bg-gradient-to-br from-primary to-accent rounded-3xl mb-4 animate-bounce-gentle">
               <Shield className="h-12 w-12 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight drop-shadow-lg">
               One Safe AI Companion for Your Child—
               <br className="hidden md:block" />
               and a Co-Pilot for You as a Parent
             </h1>
-            <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
               From bedtime stories where your little one stars as the hero, to daily habit missions that build quiet confidence, to unlocking family memories with a simple question—Paliyo handles it all. Safe, conversational, and always under your watchful eye.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
@@ -140,7 +140,7 @@ const Index = () => {
             </div>
 
             {/* Split-screen preview note */}
-            <p className="text-sm text-muted-foreground pt-4 italic">
+            <p className="text-sm text-white/80 pt-4 italic drop-shadow">
               <span className="font-semibold">For Kids:</span> Magic Awaits · <span className="font-semibold">For Parents:</span> Control & Insights
             </p>
           </div>
