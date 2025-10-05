@@ -9,7 +9,7 @@ interface ActivitySummary {
   lastActive: string | null;
 }
 
-export function useChildActivities(childId: string) {
+export function useChildActivities(childId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: ["child-activities", childId],
     queryFn: async (): Promise<ActivitySummary> => {
@@ -46,6 +46,7 @@ export function useChildActivities(childId: string) {
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-    enabled: !!childId,
+    enabled: !!childId && enabled,
+    refetchOnMount: true,
   });
 }
