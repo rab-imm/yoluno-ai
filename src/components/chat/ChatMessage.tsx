@@ -11,9 +11,11 @@ interface ChatMessageProps {
   };
   childAvatar?: string;
   customAvatarUrl?: string;
+  avatarLibraryId?: string;
+  useLibraryAvatar?: boolean;
 }
 
-export function ChatMessage({ message, childAvatar = "🤖", customAvatarUrl }: ChatMessageProps) {
+export function ChatMessage({ message, childAvatar = "🤖", customAvatarUrl, avatarLibraryId, useLibraryAvatar }: ChatMessageProps) {
   const isUser = message.role === "user";
   const timestamp = message.created_at 
     ? new Date(message.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -55,6 +57,8 @@ export function ChatMessage({ message, childAvatar = "🤖", customAvatarUrl }: 
           size="sm" 
           avatar={childAvatar} 
           customAvatarUrl={customAvatarUrl}
+          avatarLibraryId={useLibraryAvatar ? avatarLibraryId : undefined}
+          expression="neutral"
         />
       )}
       <div className="flex flex-col gap-1 max-w-[80%]">

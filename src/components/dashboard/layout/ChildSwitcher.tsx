@@ -1,3 +1,4 @@
+import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronsUpDown, Plus } from "lucide-react";
@@ -31,8 +32,18 @@ export function ChildSwitcher() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-10 w-10">
-            {selectedChild?.avatar || "👤"}
+          <Button variant="ghost" size="icon" className="h-12 w-12 rounded-full">
+            {selectedChild ? (
+              <BuddyAvatar
+                avatar={selectedChild.avatar}
+                customAvatarUrl={selectedChild.custom_avatar_url}
+                avatarLibraryId={selectedChild.use_library_avatar ? selectedChild.avatar_library_id : undefined}
+                size="sm"
+                className="w-10 h-10"
+              />
+            ) : (
+              <span className="text-xl">👤</span>
+            )}
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" className="w-56">
@@ -42,8 +53,15 @@ export function ChildSwitcher() {
             <DropdownMenuItem
               key={child.id}
               onClick={() => handleSelectChild(child.id)}
+              className="flex items-center gap-2"
             >
-              <span className="mr-2">{child.avatar}</span>
+              <BuddyAvatar
+                avatar={child.avatar}
+                customAvatarUrl={child.custom_avatar_url}
+                avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
+                size="sm"
+                className="w-6 h-6"
+              />
               {child.name}
             </DropdownMenuItem>
           ))}
@@ -65,8 +83,18 @@ export function ChildSwitcher() {
             variant="ghost"
             className="w-full justify-between h-auto py-2 px-3"
           >
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{selectedChild?.avatar || "👤"}</span>
+            <div className="flex items-center gap-3">
+              {selectedChild ? (
+                <BuddyAvatar
+                  avatar={selectedChild.avatar}
+                  customAvatarUrl={selectedChild.custom_avatar_url}
+                  avatarLibraryId={selectedChild.use_library_avatar ? selectedChild.avatar_library_id : undefined}
+                  size="sm"
+                  className="w-10 h-10"
+                />
+              ) : (
+                <span className="text-2xl">👤</span>
+              )}
               <div className="flex flex-col items-start">
                 <span className="text-sm font-medium">
                   {selectedChild?.name || "Select Child"}
@@ -88,9 +116,15 @@ export function ChildSwitcher() {
             <DropdownMenuItem
               key={child.id}
               onClick={() => handleSelectChild(child.id)}
-              className="flex items-center gap-2 py-2"
+              className="flex items-center gap-3 py-2"
             >
-              <span className="text-xl">{child.avatar}</span>
+              <BuddyAvatar
+                avatar={child.avatar}
+                customAvatarUrl={child.custom_avatar_url}
+                avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
+                size="sm"
+                className="w-10 h-10"
+              />
               <div className="flex flex-col">
                 <span className="font-medium">{child.name}</span>
                 <span className="text-xs text-muted-foreground">

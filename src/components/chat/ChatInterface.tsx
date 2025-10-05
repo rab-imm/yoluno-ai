@@ -44,6 +44,8 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
   const [isListening, setIsListening] = useState(false);
   const [autoSpeak, setAutoSpeak] = useState(true);
   const [customAvatarUrl, setCustomAvatarUrl] = useState<string | undefined>();
+  const [avatarLibraryId, setAvatarLibraryId] = useState<string | undefined>();
+  const [useLibraryAvatar, setUseLibraryAvatar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const { speak, stop, speaking } = useTextToSpeech();
@@ -107,12 +109,20 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
   const loadCustomAvatar = async () => {
     const { data } = await supabase
       .from("child_profiles")
-      .select("custom_avatar_url")
+      .select("custom_avatar_url, avatar_library_id, use_library_avatar")
       .eq("id", childId)
       .single();
     
-    if (data?.custom_avatar_url) {
-      setCustomAvatarUrl(data.custom_avatar_url);
+    if (data) {
+      if (data.custom_avatar_url) {
+        setCustomAvatarUrl(data.custom_avatar_url);
+      }
+      if (data.avatar_library_id) {
+        setAvatarLibraryId(data.avatar_library_id);
+      }
+      if (data.use_library_avatar !== undefined) {
+        setUseLibraryAvatar(data.use_library_avatar);
+      }
     }
   };
 
@@ -254,6 +264,7 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
               size="sm" 
               avatar={childAvatar} 
               customAvatarUrl={customAvatarUrl}
+              avatarLibraryId={useLibraryAvatar ? avatarLibraryId : undefined}
               isSpeaking={speaking}
               expression={loading ? "thinking" : expression}
             />
@@ -304,6 +315,8 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
               message={message} 
               childAvatar={childAvatar}
               customAvatarUrl={customAvatarUrl}
+              avatarLibraryId={avatarLibraryId}
+              useLibraryAvatar={useLibraryAvatar}
             />
           ))}
           {loading && (
@@ -312,6 +325,7 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
                 size="sm" 
                 avatar={childAvatar} 
                 customAvatarUrl={customAvatarUrl}
+                avatarLibraryId={useLibraryAvatar ? avatarLibraryId : undefined}
                 expression="thinking"
               />
               <div className="bg-gradient-to-r from-child-primary/10 to-child-secondary/10 rounded-2xl p-4">

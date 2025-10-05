@@ -83,17 +83,23 @@ Target Audience: Children ages 5-12 years old
 Safety: Completely child-safe, friendly, non-threatening, joyful
 Quality: Ultra high resolution, production-ready character asset`;
 
-  const response = await fetch("https://api.lovable.app/generate-image", {
+  const lovableApiKey = Deno.env.get("LOVABLE_API_KEY");
+  
+  const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")}`,
+      Authorization: `Bearer ${lovableApiKey}`,
     },
     body: JSON.stringify({
-      prompt,
-      width: 512,
-      height: 512,
-      model: "google/gemini-2.5-pro-image-preview",
+      model: "google/gemini-2.5-flash-image-preview",
+      messages: [
+        {
+          role: "user",
+          content: prompt
+        }
+      ],
+      modalities: ["image", "text"]
     }),
   });
 
@@ -102,10 +108,14 @@ Quality: Ultra high resolution, production-ready character asset`;
     throw new Error(`Image generation failed: ${error}`);
   }
 
-  const blob = await response.blob();
-  const arrayBuffer = await blob.arrayBuffer();
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)));
-  return `data:image/png;base64,${base64}`;
+  const data = await response.json();
+  const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+  
+  if (!imageUrl) {
+    throw new Error("No image returned from API");
+  }
+
+  return imageUrl;
 }
 
 serve(async (req) => {

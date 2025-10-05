@@ -8,6 +8,8 @@ export interface ChildProfile {
   age: number;
   avatar: string;
   custom_avatar_url?: string;
+  avatar_library_id?: string;
+  use_library_avatar?: boolean;
   personality_mode: string;
   streak_days: number;
   last_chat_date?: string;
