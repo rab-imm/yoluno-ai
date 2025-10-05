@@ -4,12 +4,13 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { DashboardSidebar } from "@/components/dashboard/layout/DashboardSidebar";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isLoading } = useChildProfiles();
+  const { isLoading, error } = useChildProfiles();
 
   useEffect(() => {
     checkAuth();
@@ -41,6 +42,18 @@ export default function DashboardLayout() {
     return (
       <div className="flex h-screen items-center justify-center">
         <Skeleton className="h-12 w-48" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-screen items-center justify-center p-4">
+        <div className="text-center space-y-4">
+          <h2 className="text-xl font-semibold text-destructive">Failed to load dashboard</h2>
+          <p className="text-muted-foreground">Please try refreshing the page</p>
+          <Button onClick={() => window.location.reload()}>Refresh</Button>
+        </div>
       </div>
     );
   }
