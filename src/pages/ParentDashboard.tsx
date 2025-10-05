@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -7,19 +7,22 @@ import { Plus, LogOut, Users, BookOpen, Sparkles, TrendingUp } from "lucide-reac
 import { toast } from "sonner";
 import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
-import { TopicManager } from "@/components/dashboard/TopicManager";
-import { ParentInsights } from "@/components/dashboard/ParentInsights";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
-import { ContentModerationLog } from "@/components/dashboard/ContentModerationLog";
-import { TopicLibrary } from "@/components/dashboard/TopicLibrary";
-import { ContentLibrary } from "@/components/dashboard/ContentLibrary";
-import { StoryLibrary } from "@/components/dashboard/StoryLibrary";
-import { GoalJourneyManager } from "@/components/dashboard/GoalJourneyManager";
 import { JourneyOnboardingCard } from "@/components/journey/JourneyOnboardingCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { FamilyHistoryManager } from "@/components/dashboard/FamilyHistoryManager";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load heavy dashboard components
+const TopicManager = lazy(() => import("@/components/dashboard/TopicManager").then(m => ({ default: m.TopicManager })));
+const ParentInsights = lazy(() => import("@/components/dashboard/ParentInsights").then(m => ({ default: m.ParentInsights })));
+const ContentModerationLog = lazy(() => import("@/components/dashboard/ContentModerationLog").then(m => ({ default: m.ContentModerationLog })));
+const TopicLibrary = lazy(() => import("@/components/dashboard/TopicLibrary").then(m => ({ default: m.TopicLibrary })));
+const ContentLibrary = lazy(() => import("@/components/dashboard/ContentLibrary").then(m => ({ default: m.ContentLibrary })));
+const StoryLibrary = lazy(() => import("@/components/dashboard/StoryLibrary").then(m => ({ default: m.StoryLibrary })));
+const GoalJourneyManager = lazy(() => import("@/components/dashboard/GoalJourneyManager").then(m => ({ default: m.GoalJourneyManager })));
+const FamilyHistoryManager = lazy(() => import("@/components/dashboard/FamilyHistoryManager").then(m => ({ default: m.FamilyHistoryManager })));
+const EnhancedStoryBuilder = lazy(() => import("@/components/stories/EnhancedStoryBuilder").then(m => ({ default: m.EnhancedStoryBuilder })));
 
 export default function ParentDashboard() {
   const navigate = useNavigate();
@@ -235,42 +238,58 @@ export default function ParentDashboard() {
                             </TabsList>
                             
                             <TabsContent value="insights" className="space-y-4 mt-4">
-                              <ParentInsights childId={selectedChild.id} childName={selectedChild.name} />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <ParentInsights childId={selectedChild.id} childName={selectedChild.name} />
+                              </Suspense>
                             </TabsContent>
                             
                             <TabsContent value="topics" className="space-y-4 mt-4">
-                              <TopicManager childId={selectedChild.id} />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <TopicManager childId={selectedChild.id} />
+                              </Suspense>
                             </TabsContent>
 
                             <TabsContent value="library" className="space-y-4 mt-4">
-                              <TopicLibrary childId={selectedChild.id} />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <TopicLibrary childId={selectedChild.id} />
+                              </Suspense>
                             </TabsContent>
 
                             <TabsContent value="journeys" className="space-y-4 mt-4">
-                              <GoalJourneyManager 
-                                childId={selectedChild.id} 
-                                childName={selectedChild.name}
-                                childAge={selectedChild.age}
-                              />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <GoalJourneyManager 
+                                  childId={selectedChild.id} 
+                                  childName={selectedChild.name}
+                                  childAge={selectedChild.age}
+                                />
+                              </Suspense>
                             </TabsContent>
 
                             <TabsContent value="stories" className="space-y-4 mt-4">
-                              <StoryLibrary childId={selectedChild.id} childName={selectedChild.name} />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <StoryLibrary childId={selectedChild.id} childName={selectedChild.name} />
+                              </Suspense>
                             </TabsContent>
 
                             <TabsContent value="family" className="space-y-4 mt-4">
-                              <FamilyHistoryManager />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <FamilyHistoryManager />
+                              </Suspense>
                             </TabsContent>
 
                             <TabsContent value="content" className="space-y-4 mt-4">
-                              <ContentLibrary childId={selectedChild.id} childName={selectedChild.name} />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <ContentLibrary childId={selectedChild.id} childName={selectedChild.name} />
+                              </Suspense>
                             </TabsContent>
                             
                             <TabsContent value="safety" className="space-y-4 mt-4">
-                              <ContentModerationLog 
-                                childId={selectedChild.id} 
-                                childName={selectedChild.name}
-                              />
+                              <Suspense fallback={<Skeleton className="h-[300px] w-full" />}>
+                                <ContentModerationLog 
+                                  childId={selectedChild.id} 
+                                  childName={selectedChild.name}
+                                />
+                              </Suspense>
                             </TabsContent>
                           </Tabs>
                         </div>
@@ -295,15 +314,17 @@ export default function ParentDashboard() {
       <Dialog open={showStoryWizard} onOpenChange={setShowStoryWizard}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-0">
           {selectedChildId && (
-            <EnhancedStoryBuilder
-              childId={selectedChildId}
-              childName={children.find(c => c.id === selectedChildId)?.name || ""}
-              childAge={children.find(c => c.id === selectedChildId)?.age || 8}
-              onComplete={() => {
-                setShowStoryWizard(false);
-                toast.success("Story created successfully! 🎉");
-              }}
-            />
+            <Suspense fallback={<div className="p-8 text-center"><Skeleton className="h-[400px] w-full" /></div>}>
+              <EnhancedStoryBuilder
+                childId={selectedChildId}
+                childName={children.find(c => c.id === selectedChildId)?.name || ""}
+                childAge={children.find(c => c.id === selectedChildId)?.age || 8}
+                onComplete={() => {
+                  setShowStoryWizard(false);
+                  toast.success("Story created successfully! 🎉");
+                }}
+              />
+            </Suspense>
           )}
         </DialogContent>
       </Dialog>

@@ -60,6 +60,7 @@ const Features = () => {
             src={featuresHero} 
             alt="Paliyo's 4 core features - Stories, Journeys, Learning, and Family History"
             className="w-full h-full object-cover opacity-30"
+            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/60 to-background" />
         </div>
@@ -107,6 +108,7 @@ const Features = () => {
                       src={feature.image} 
                       alt={`${feature.title} feature icon`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-2xl font-bold mb-3">{feature.title}</h3>

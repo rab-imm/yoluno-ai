@@ -195,9 +195,9 @@ const Pricing = () => {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <img src={coppaBadge} alt="COPPA Certified" className="h-12 w-12 object-contain" />
-                <img src={kidsafeBadge} alt="kidSAFE Certified" className="h-12 w-12 object-contain" />
-                <img src={encryptedBadge} alt="Encrypted & Secure" className="h-12 w-12 object-contain" />
+                <img src={coppaBadge} alt="COPPA Certified" className="h-12 w-12 object-contain" loading="lazy" />
+                <img src={kidsafeBadge} alt="kidSAFE Certified" className="h-12 w-12 object-contain" loading="lazy" />
+                <img src={encryptedBadge} alt="Encrypted & Secure" className="h-12 w-12 object-contain" loading="lazy" />
               </div>
             </div>
           </Card>

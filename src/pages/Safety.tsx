@@ -64,6 +64,7 @@ const Safety = () => {
             src={safetyHeroBg} 
             alt="Protective safety shield"
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
         </div>
@@ -118,6 +119,7 @@ const Safety = () => {
               src={safetyFlowchart} 
               alt="6-layer AI safety pipeline flowchart showing Intent Analysis, Context Check, Content Filter, Tone Guard, Parent Override, and Audit Trail"
               className="w-full h-auto"
+              loading="lazy"
             />
           </div>
           <div className="space-y-6">
@@ -185,6 +187,7 @@ const Safety = () => {
             src={trustCare} 
             alt="Trust and care"
             className="w-full h-full object-cover opacity-20"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
@@ -251,6 +254,7 @@ const Safety = () => {
                   src={moderationDashboard} 
                   alt="Content moderation dashboard showing conversation logs and safety indicators"
                   className="w-full h-auto"
+                  loading="lazy"
                 />
               </div>
               <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
@@ -306,6 +310,7 @@ const Safety = () => {
                 src={parentDashboard} 
                 alt="Parent dashboard preview"
                 className="w-full h-full object-cover opacity-30"
+                loading="lazy"
               />
             </div>
             <div className="relative z-10 text-center">
@@ -328,6 +333,7 @@ const Safety = () => {
             src={ctaBackground} 
             alt="Try risk-free"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/85 via-background/80 to-background/85" />
         </div>

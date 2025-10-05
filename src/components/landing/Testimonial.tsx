@@ -16,7 +16,7 @@ export const Testimonial = ({ quote, author, role, avatarFallback, avatarImage }
       <Quote className="h-8 w-8 text-accent/20 absolute top-4 right-4" />
       <div className="flex items-start gap-4 mb-4">
         <Avatar className="h-12 w-12 border-2 border-accent/20">
-          {avatarImage && <AvatarImage src={avatarImage} alt={author} />}
+          {avatarImage && <AvatarImage src={avatarImage} alt={author} loading="lazy" />}
           <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-semibold">
             {avatarFallback}
           </AvatarFallback>

@@ -127,6 +127,7 @@ const Index = () => {
             src={heroBackground} 
             alt="Magical bedtime scene"
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
@@ -214,6 +215,7 @@ const Index = () => {
                 src={whyPaliyoFeatures} 
                 alt="Paliyo's 4 core features - child interacting with AI companion and parent monitoring dashboard"
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
           </div>
@@ -244,6 +246,7 @@ const Index = () => {
                       src={feature.image} 
                       alt={`${feature.title} feature illustration`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
@@ -290,6 +293,7 @@ const Index = () => {
                       src={feature.image} 
                       alt={`${feature.title} dashboard interface`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      loading="lazy"
                     />
                   </div>
                   <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
@@ -368,6 +372,7 @@ const Index = () => {
             src={testimonialsBg} 
             alt="Happy families"
             className="w-full h-full object-cover opacity-10"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
@@ -438,6 +443,7 @@ const Index = () => {
             src={ctaBackground} 
             alt="Start your journey"
             className="w-full h-full object-cover"
+            loading="lazy"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/85 to-background/90" />
         </div>

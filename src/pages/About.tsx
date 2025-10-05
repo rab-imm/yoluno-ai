@@ -48,6 +48,7 @@ const About = () => {
             src={aboutHeroBg} 
             alt="Diverse families together"
             className="w-full h-full object-cover"
+            fetchPriority="high"
           />
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
         </div>
@@ -75,6 +76,7 @@ const About = () => {
                 src={founderTeam} 
                 alt="Paliyo founding team - parents and builders working together"
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             </div>
             <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
@@ -101,6 +103,7 @@ const About = () => {
             src={missionValues} 
             alt="Mission and values"
             className="w-full h-full object-cover opacity-20"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
@@ -145,6 +148,7 @@ const About = () => {
             src={whatWeBuilt} 
             alt="What we built together"
             className="w-full h-full object-cover opacity-20"
+            loading="lazy"
           />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
@@ -156,6 +160,7 @@ const About = () => {
                 src={productDashboard} 
                 alt="Paliyo product dashboard showing parent controls and features"
                 className="w-full h-auto"
+                loading="lazy"
               />
             </div>
             <div className="rounded-xl overflow-hidden shadow-xl flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
@@ -163,6 +168,7 @@ const About = () => {
                 src={productMobile} 
                 alt="Paliyo mobile app showing child-friendly interface"
                 className="w-2/3 h-auto"
+                loading="lazy"
               />
             </div>
           </div>
