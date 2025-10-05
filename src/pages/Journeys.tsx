@@ -4,6 +4,7 @@ import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Target, Award, TrendingUp, Calendar, Heart, CheckCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import journeysHeroBg from "@/assets/journeys-hero-bg.jpg";
 
 const Journeys = () => {
   const navigate = useNavigate();
@@ -40,8 +41,16 @@ const Journeys = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[hsl(var(--growth-light))] via-background to-[hsl(var(--growth-primary))]/3">
-        <div className="container mx-auto max-w-6xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={journeysHeroBg} 
+            alt="Growth journey path"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/95" />
+        </div>
+        <div className="container mx-auto max-w-6xl text-center space-y-5 relative z-10">
           <div className="inline-block p-3 bg-gradient-to-br from-[hsl(var(--growth-primary))] to-[hsl(var(--growth-secondary))] rounded-3xl mb-4">
             <Target className="h-12 w-12 text-white" />
           </div>

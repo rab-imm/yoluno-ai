@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card";
 import imaginationImg from "@/assets/imagination-pillar.jpg";
 import growthImg from "@/assets/growth-pillar.jpg";
 import curiosityImg from "@/assets/curiosity-pillar.jpg";
+import heroBackground from "@/assets/homepage-hero-bg.jpg";
+import familyConnection from "@/assets/family-connection.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -52,8 +54,16 @@ const Index = () => {
       <Navigation />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary/3 via-background to-accent/3 py-16 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-6xl">
+      <section className="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-0">
+          <img 
+            src={heroBackground} 
+            alt="Magical bedtime scene"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/95" />
+        </div>
+        <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center space-y-5">
             <div className="inline-block p-3 bg-gradient-to-br from-primary to-accent rounded-3xl mb-4">
               <Shield className="h-12 w-12 text-white" />
@@ -153,8 +163,15 @@ const Index = () => {
       </section>
 
       {/* Safety & Trust */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-5xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={familyConnection} 
+            alt="Family connection"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-5xl relative z-10">
           <div className="text-center mb-10">
             <Shield className="h-12 w-12 text-primary mx-auto mb-4" />
             <h2 className="text-3xl md:text-4xl font-heading font-bold mb-3">AI with Guardrails</h2>

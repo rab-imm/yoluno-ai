@@ -4,6 +4,7 @@ import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Brain, Package, Upload, Eye, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import learningHeroBg from "@/assets/learning-hero-bg.jpg";
 
 const LearningBuddy = () => {
   const navigate = useNavigate();
@@ -41,8 +42,16 @@ const LearningBuddy = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[hsl(var(--curiosity-light))] via-background to-[hsl(var(--curiosity-secondary))]/3">
-        <div className="container mx-auto max-w-6xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={learningHeroBg} 
+            alt="Child learning and exploring"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/95" />
+        </div>
+        <div className="container mx-auto max-w-6xl text-center space-y-5 relative z-10">
           <div className="inline-block p-3 bg-gradient-to-br from-[hsl(var(--curiosity-secondary))] to-[hsl(var(--curiosity-primary))] rounded-3xl mb-4">
             <Brain className="h-12 w-12 text-white" />
           </div>

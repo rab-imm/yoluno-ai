@@ -6,6 +6,8 @@ import { TrustBadge } from "@/components/landing/TrustBadge";
 import { useNavigate } from "react-router-dom";
 import { Shield, Lock, Eye, UserCheck, Ban, FileCheck, Heart } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import safetyHeroBg from "@/assets/safety-hero-bg.jpg";
+import parentDashboard from "@/assets/parent-dashboard.jpg";
 
 const Safety = () => {
   const navigate = useNavigate();
@@ -51,8 +53,16 @@ const Safety = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/3 via-background to-success/3">
-        <div className="container mx-auto max-w-6xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={safetyHeroBg} 
+            alt="Protective safety shield"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/95" />
+        </div>
+        <div className="container mx-auto max-w-6xl text-center space-y-5 relative z-10">
           <div className="inline-block p-3 bg-gradient-to-br from-primary to-success rounded-3xl mb-4">
             <Shield className="h-12 w-12 text-white" />
           </div>
@@ -178,14 +188,23 @@ const Safety = () => {
       <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-5xl">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Parent Controls Dashboard</h2>
-          <Card className="p-12 bg-gradient-to-br from-secondary/50 to-muted/30 text-center">
-            <Eye className="h-16 w-16 text-primary mx-auto mb-6" />
+          <Card className="p-12 relative overflow-hidden">
+            <div className="absolute inset-0">
+              <img 
+                src={parentDashboard} 
+                alt="Parent dashboard preview"
+                className="w-full h-full object-cover opacity-30"
+              />
+            </div>
+            <div className="relative z-10 text-center">
+              <Eye className="h-16 w-16 text-primary mx-auto mb-6" />
             <p className="text-xl text-muted-foreground mb-6">
               Full visibility into conversations, content packs, and usage patterns
             </p>
             <Button variant="outline" size="lg" onClick={() => navigate("/auth")}>
               See Dashboard
             </Button>
+            </div>
           </Card>
         </div>
       </section>
