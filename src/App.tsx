@@ -40,6 +40,7 @@ const Stories = lazy(() => import("./pages/dashboard/Stories"));
 const Family = lazy(() => import("./pages/dashboard/Family"));
 const Content = lazy(() => import("./pages/dashboard/Content"));
 const DashboardSafety = lazy(() => import("./pages/dashboard/Safety"));
+const GenerateAvatars = lazy(() => import("./pages/dashboard/GenerateAvatars"));
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center p-8">
@@ -83,6 +84,7 @@ const App = () => (
             <Route path="family" element={<Family />} />
             <Route path="content/:childId" element={<Content />} />
             <Route path="safety/:childId" element={<DashboardSafety />} />
+            <Route path="generate-avatars" element={<GenerateAvatars />} />
           </Route>
 
           {/* Legacy redirect */}
