@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Rocket } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useDashboardGreeting } from "@/hooks/dashboard/useDashboardGreeting";
-import { motion } from "framer-motion";
 import heroBackground from "@/assets/dashboard-hero-bg.jpg";
 
 export function DashboardHero() {
@@ -10,11 +9,8 @@ export function DashboardHero() {
   const { greeting, message, emoji } = useDashboardGreeting();
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="relative overflow-hidden rounded-2xl shadow-2xl"
+    <div
+      className="relative overflow-hidden rounded-2xl shadow-2xl animate-fade-in"
       style={{
         backgroundImage: `url(${heroBackground})`,
         backgroundSize: 'cover',
@@ -33,30 +29,15 @@ export function DashboardHero() {
       {/* Content */}
       <div className="relative z-10 flex flex-col gap-4 md:gap-6 md:flex-row md:items-center md:justify-between p-4 sm:p-6 md:p-8">
         <div className="flex-1 space-y-2 md:space-y-3">
-          <motion.h1
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg"
-          >
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg animate-fade-in">
             {greeting}! {emoji}
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-base sm:text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl"
-          >
+          </h1>
+          <p className="text-base sm:text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl animate-fade-in">
             {message}
-          </motion.p>
+          </p>
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.4 }}
-          className="flex flex-col gap-3 sm:flex-row sm:flex-shrink-0"
-        >
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-shrink-0 animate-fade-in">
           <Button
             size="lg"
             onClick={() => navigate("/kids")}
@@ -74,8 +55,8 @@ export function DashboardHero() {
             <Sparkles className="mr-2 h-5 w-5" />
             Browse Journeys
           </Button>
-        </motion.div>
+        </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

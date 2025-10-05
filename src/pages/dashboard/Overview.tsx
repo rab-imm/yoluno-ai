@@ -9,7 +9,6 @@ import { ProductExplainerPanel } from "@/components/dashboard/ProductExplainerPa
 import { EnhancedChildCard } from "@/components/dashboard/EnhancedChildCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { EngagementPrompts } from "@/components/dashboard/EngagementPrompts";
-import { motion } from "framer-motion";
 
 
 export default function Overview() {
@@ -46,12 +45,7 @@ export default function Overview() {
         <DashboardHero />
         <ProductExplainerPanel />
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-primary/30 bg-muted/50 py-12 md:py-16 px-4"
-        >
+        <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-primary/30 bg-muted/50 py-12 md:py-16 px-4 animate-fade-in">
           <div className="text-center space-y-3 md:space-y-4 max-w-md">
             <div className="text-5xl md:text-6xl mb-3 md:mb-4">👨‍👩‍👧‍👦</div>
             <h2 className="text-2xl md:text-3xl font-bold">Let's Get Started!</h2>
@@ -63,7 +57,7 @@ export default function Overview() {
               Add Your First Child
             </Button>
           </div>
-        </motion.div>
+        </div>
 
         <CreateChildDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} onSuccess={refreshProfiles} />
         <WelcomeDialog open={showWelcome} onComplete={handleWelcomeComplete} />

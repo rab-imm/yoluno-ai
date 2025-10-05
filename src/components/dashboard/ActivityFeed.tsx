@@ -1,7 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGlobalActivity } from "@/hooks/dashboard/useGlobalActivity";
 import { Loader2, Activity } from "lucide-react";
-import { motion } from "framer-motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function ActivityFeed() {
@@ -36,11 +35,7 @@ export function ActivityFeed() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-    >
+    <div className="animate-fade-in">
       <Card className="border-2 shadow-lg">
         <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
           <CardTitle className="flex items-center gap-2 text-xl">
@@ -51,13 +46,10 @@ export function ActivityFeed() {
         <CardContent className="pt-4 md:pt-6 p-4 md:p-6">
           <ScrollArea className="h-[300px] md:h-[400px] pr-2 md:pr-4">
             <div className="space-y-2 md:space-y-3">
-              {activities.map((activity, index) => (
-                <motion.div
+              {activities.map((activity) => (
+                <div
                   key={activity.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex gap-3 md:gap-4 rounded-xl border-2 bg-gradient-to-br from-card to-card/50 p-3 md:p-4 hover:shadow-lg transition-all hover:scale-[1.02] hover:border-primary/30"
+                  className="flex gap-3 md:gap-4 rounded-xl border-2 bg-gradient-to-br from-card to-card/50 p-3 md:p-4 hover:shadow-lg transition-all hover:scale-[1.02] hover:border-primary/30 animate-fade-in"
                 >
                   <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-xl md:text-2xl shadow-md flex-shrink-0">
                     {activity.icon}
@@ -70,12 +62,12 @@ export function ActivityFeed() {
                     </p>
                     <p className="text-xs text-muted-foreground font-medium">{activity.relativeTime}</p>
                   </div>
-                </motion.div>
+                </div>
               ))}
             </div>
           </ScrollArea>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

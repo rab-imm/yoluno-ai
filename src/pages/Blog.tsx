@@ -150,6 +150,7 @@ const Blog = () => {
                         src={post.image} 
                         alt={post.title}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        loading="lazy"
                       />
                     </div>
                     <div className="p-6">

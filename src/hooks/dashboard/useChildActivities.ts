@@ -45,6 +45,7 @@ export function useChildActivities(childId: string) {
       };
     },
     staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
     enabled: !!childId,
   });
 }
