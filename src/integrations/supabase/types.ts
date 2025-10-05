@@ -496,6 +496,229 @@ export type Database = {
         }
         Relationships: []
       }
+      family_history_access: {
+        Row: {
+          age_restriction:
+            | Database["public"]["Enums"]["age_restriction_level"]
+            | null
+          child_id: string
+          created_at: string
+          id: string
+          is_enabled: boolean | null
+          parent_id: string
+          updated_at: string
+        }
+        Insert: {
+          age_restriction?:
+            | Database["public"]["Enums"]["age_restriction_level"]
+            | null
+          child_id: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          parent_id: string
+          updated_at?: string
+        }
+        Update: {
+          age_restriction?:
+            | Database["public"]["Enums"]["age_restriction_level"]
+            | null
+          child_id?: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          parent_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_history_access_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_members: {
+        Row: {
+          bio: string | null
+          birth_date: string | null
+          child_id: string | null
+          created_at: string
+          id: string
+          location: string | null
+          name: string
+          parent_id: string
+          photo_url: string | null
+          relationship: string | null
+          updated_at: string
+        }
+        Insert: {
+          bio?: string | null
+          birth_date?: string | null
+          child_id?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          name: string
+          parent_id: string
+          photo_url?: string | null
+          relationship?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bio?: string | null
+          birth_date?: string | null
+          child_id?: string | null
+          created_at?: string
+          id?: string
+          location?: string | null
+          name?: string
+          parent_id?: string
+          photo_url?: string | null
+          relationship?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_members_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_photos: {
+        Row: {
+          ai_caption: string | null
+          created_at: string
+          date_taken: string | null
+          description: string | null
+          file_size_bytes: number
+          id: string
+          image_url: string
+          linked_member_ids: string[] | null
+          location: string | null
+          parent_id: string
+          updated_at: string
+        }
+        Insert: {
+          ai_caption?: string | null
+          created_at?: string
+          date_taken?: string | null
+          description?: string | null
+          file_size_bytes: number
+          id?: string
+          image_url: string
+          linked_member_ids?: string[] | null
+          location?: string | null
+          parent_id: string
+          updated_at?: string
+        }
+        Update: {
+          ai_caption?: string | null
+          created_at?: string
+          date_taken?: string | null
+          description?: string | null
+          file_size_bytes?: number
+          id?: string
+          image_url?: string
+          linked_member_ids?: string[] | null
+          location?: string | null
+          parent_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      family_relationships: {
+        Row: {
+          created_at: string
+          id: string
+          parent_id: string
+          person_id: string
+          related_person_id: string
+          relationship_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          parent_id: string
+          person_id: string
+          related_person_id: string
+          relationship_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          parent_id?: string
+          person_id?: string
+          related_person_id?: string
+          relationship_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_relationships_person_id_fkey"
+            columns: ["person_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "family_relationships_related_person_id_fkey"
+            columns: ["related_person_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      family_stories: {
+        Row: {
+          ai_summary: string | null
+          content: string | null
+          created_at: string
+          file_url: string | null
+          id: string
+          is_age_sensitive: boolean | null
+          keywords: string[] | null
+          parent_id: string
+          related_member_ids: string[] | null
+          story_type: Database["public"]["Enums"]["family_story_type"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          ai_summary?: string | null
+          content?: string | null
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          is_age_sensitive?: boolean | null
+          keywords?: string[] | null
+          parent_id: string
+          related_member_ids?: string[] | null
+          story_type: Database["public"]["Enums"]["family_story_type"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          ai_summary?: string | null
+          content?: string | null
+          created_at?: string
+          file_url?: string | null
+          id?: string
+          is_age_sensitive?: boolean | null
+          keywords?: string[] | null
+          parent_id?: string
+          related_member_ids?: string[] | null
+          story_type?: Database["public"]["Enums"]["family_story_type"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       goal_journeys: {
         Row: {
           allow_sharing: boolean | null
@@ -791,6 +1014,51 @@ export type Database = {
           },
         ]
       }
+      parent_subscriptions: {
+        Row: {
+          billing_cycle_end: string
+          billing_cycle_start: string
+          created_at: string
+          id: string
+          parent_id: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          storage_limit_mb: number
+          storage_used_mb: number | null
+          subscription_type: Database["public"]["Enums"]["subscription_type"]
+          transcription_limit_minutes: number
+          transcription_used_minutes: number | null
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle_end: string
+          billing_cycle_start: string
+          created_at?: string
+          id?: string
+          parent_id: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          storage_limit_mb: number
+          storage_used_mb?: number | null
+          subscription_type: Database["public"]["Enums"]["subscription_type"]
+          transcription_limit_minutes: number
+          transcription_used_minutes?: number | null
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle_end?: string
+          billing_cycle_start?: string
+          created_at?: string
+          id?: string
+          parent_id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          storage_limit_mb?: number
+          storage_used_mb?: number | null
+          subscription_type?: Database["public"]["Enums"]["subscription_type"]
+          transcription_limit_minutes?: number
+          transcription_used_minutes?: number | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       story_themes: {
         Row: {
           age_appropriate: string[] | null
@@ -992,13 +1260,31 @@ export type Database = {
         Args: { p_child_id: string }
         Returns: undefined
       }
+      check_storage_quota: {
+        Args: { p_file_size_bytes: number; p_parent_id: string }
+        Returns: boolean
+      }
+      check_transcription_quota: {
+        Args: { p_duration_minutes: number; p_parent_id: string }
+        Returns: boolean
+      }
+      reset_monthly_transcription_usage: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       update_child_streak: {
         Args: { p_child_id: string }
         Returns: undefined
       }
     }
     Enums: {
-      [_ in never]: never
+      age_restriction_level: "all" | "age_8_plus" | "age_12_plus"
+      family_story_type: "text" | "audio" | "document"
+      subscription_status: "active" | "cancelled" | "expired"
+      subscription_type:
+        | "family_history_basic"
+        | "family_history_plus"
+        | "family_history_pro"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1125,6 +1411,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      age_restriction_level: ["all", "age_8_plus", "age_12_plus"],
+      family_story_type: ["text", "audio", "document"],
+      subscription_status: ["active", "cancelled", "expired"],
+      subscription_type: [
+        "family_history_basic",
+        "family_history_plus",
+        "family_history_pro",
+      ],
+    },
   },
 } as const
