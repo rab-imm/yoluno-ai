@@ -5,6 +5,8 @@ import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Sun, Globe, Heart, Rocket, Leaf } from "lucide-react";
+import learningPacksGrid from "@/assets/learning-packs-grid.jpg";
+import learningQAInterface from "@/assets/learning-qa-interface.jpg";
 
 const LearningFeature = () => {
   const navigate = useNavigate();
@@ -67,6 +69,14 @@ const LearningFeature = () => {
           <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
             Each pack is parent-customizable and vetted by experts. Over 500 safe facts ready to satisfy endless curiosity.
           </p>
+          
+          <div className="rounded-2xl overflow-hidden shadow-xl mb-8">
+            <img 
+              src={learningPacksGrid} 
+              alt="Grid of colorful learning content packs including Nature, Space, Emotions, and Cultures"
+              className="w-full h-auto"
+            />
+          </div>
           
           <Carousel className="w-full max-w-5xl mx-auto">
             <CarouselContent>
@@ -142,8 +152,12 @@ const LearningFeature = () => {
                 </Button>
               </Card>
             </div>
-            <div className="bg-gradient-to-br from-amber-100 to-blue-100 dark:from-amber-900/20 dark:to-blue-900/20 rounded-lg p-8 aspect-video flex items-center justify-center">
-              <p className="text-muted-foreground">Sample analytics report preview</p>
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <img 
+                src={learningQAInterface} 
+                alt="Child-friendly Q&A interface showing safe learning conversation with AI"
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </div>

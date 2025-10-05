@@ -11,6 +11,8 @@ import parentDashboard from "@/assets/parent-dashboard.jpg";
 import safetyPipeline from "@/assets/safety-pipeline.jpg";
 import trustCare from "@/assets/trust-care.jpg";
 import ctaBackground from "@/assets/cta-background.jpg";
+import moderationDashboard from "@/assets/moderation-dashboard.jpg";
+import safetyFlowchart from "@/assets/safety-pipeline-flowchart.jpg";
 
 const Safety = () => {
   const navigate = useNavigate();
@@ -104,19 +106,20 @@ const Safety = () => {
       </section>
 
       {/* The Safety Pipeline */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img 
-            src={safetyPipeline} 
-            alt="Multi-layer safety pipeline"
-            className="w-full h-full object-cover opacity-20"
-          />
-        </div>
-        <div className="container mx-auto max-w-5xl relative z-10">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-5xl">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-3">The AI Safety Pipeline</h2>
-          <p className="text-center text-muted-foreground mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-muted-foreground mb-8 max-w-2xl mx-auto">
             For AI-generated Stories, Journeys, and Learning—same protective AI system
           </p>
+          
+          <div className="rounded-2xl overflow-hidden shadow-xl mb-8">
+            <img 
+              src={safetyFlowchart} 
+              alt="6-layer AI safety pipeline flowchart showing Intent Analysis, Context Check, Content Filter, Tone Guard, Parent Override, and Audit Trail"
+              className="w-full h-auto"
+            />
+          </div>
           <div className="space-y-6">
             <Card className="p-6 flex items-start gap-4">
               <div className="flex-shrink-0 w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">1</div>
@@ -242,8 +245,16 @@ const Safety = () => {
                 View Real Logs: Free Demo
               </Button>
             </div>
-            <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
-              <div className="space-y-4">
+            <div className="space-y-6">
+              <div className="rounded-lg overflow-hidden shadow-lg">
+                <img 
+                  src={moderationDashboard} 
+                  alt="Content moderation dashboard showing conversation logs and safety indicators"
+                  className="w-full h-auto"
+                />
+              </div>
+              <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
+                <div className="space-y-4">
                 <div className="flex items-start gap-3 pb-4 border-b">
                   <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">
                     C
@@ -275,11 +286,12 @@ const Safety = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-              <div className="mt-4 pt-4 border-t text-center">
-                <p className="text-xs text-muted-foreground italic">Sample conversation log (redacted for demo)</p>
-              </div>
-            </Card>
+                </div>
+                <div className="mt-4 pt-4 border-t text-center">
+                  <p className="text-xs text-muted-foreground italic">Sample conversation log (redacted for demo)</p>
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </section>

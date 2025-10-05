@@ -5,6 +5,9 @@ import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Home, Upload, Lock, Heart } from "lucide-react";
+import familyTreeBuilder from "@/assets/family-tree-builder-interface.jpg";
+import familyPhotoLibrary from "@/assets/family-photo-library-grid.jpg";
+import familyStoryRecorder from "@/assets/family-story-recorder.jpg";
 
 const FamilyFeature = () => {
   const navigate = useNavigate();
@@ -99,8 +102,12 @@ const FamilyFeature = () => {
                 <p className="text-sm text-muted-foreground">— Maria K., Premium User</p>
               </Card>
             </div>
-            <div className="bg-gradient-to-br from-emerald-100 to-amber-100 dark:from-emerald-900/20 dark:to-amber-900/20 rounded-lg p-8 aspect-video flex items-center justify-center">
-              <p className="text-muted-foreground text-center">Interactive family timeline visualization</p>
+            <div className="rounded-lg overflow-hidden shadow-lg">
+              <img 
+                src={familyTreeBuilder} 
+                alt="Interactive family tree builder interface with photos and relationship connections"
+                className="w-full h-auto"
+              />
             </div>
           </div>
         </div>
@@ -111,13 +118,27 @@ const FamilyFeature = () => {
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">Premium Features</h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="p-6">
+            <Card className="p-6 overflow-hidden group">
+              <div className="aspect-video rounded-lg overflow-hidden mb-4">
+                <img 
+                  src={familyPhotoLibrary} 
+                  alt="Family photo library with organized albums"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-3">Unlimited Uploads</h3>
               <p className="text-sm text-muted-foreground">
                 No storage limits—upload your entire family archive without worry.
               </p>
             </Card>
-            <Card className="p-6">
+            <Card className="p-6 overflow-hidden group">
+              <div className="aspect-video rounded-lg overflow-hidden mb-4">
+                <img 
+                  src={familyStoryRecorder} 
+                  alt="Voice recording interface for family stories"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                />
+              </div>
               <h3 className="text-xl font-bold mb-3">Voice Recordings</h3>
               <p className="text-sm text-muted-foreground">
                 Preserve Grandma's voice telling her favorite story—Paliyo can play it back contextually.

@@ -4,6 +4,9 @@ import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Sparkles, Volume2 } from "lucide-react";
+import storyStep1 from "@/assets/story-step-1-setup.jpg";
+import storyStep2 from "@/assets/story-step-2-interaction.jpg";
+import storyStep3 from "@/assets/story-step-3-narration.jpg";
 
 const StoriesFeature = () => {
   const navigate = useNavigate();
@@ -42,22 +45,32 @@ const StoriesFeature = () => {
                 step: "1",
                 title: "Parent Sets the Scene",
                 description: "Choose themes like 'Beach adventure with sea creatures' or let Paliyo suggest from your child's favorites.",
-                cta: "Set Your Scene"
+                cta: "Set Your Scene",
+                image: storyStep1
               },
               {
                 step: "2",
                 title: "Child Co-Creates",
                 description: "During the tale, Paliyo pauses: 'What happens next?' Your child's imagination drives the story forward.",
-                cta: "See Interaction"
+                cta: "See Interaction",
+                image: storyStep2
               },
               {
                 step: "3",
                 title: "Magic Unfolds",
                 description: "5-10 min narrated audio with evolving illustrations. Save, replay, or export as a keepsake.",
-                cta: "See It in Action—Free Demo"
+                cta: "See It in Action—Free Demo",
+                image: storyStep3
               }
             ].map((step) => (
-              <Card key={step.step} className="p-6 text-center hover:shadow-lg transition-all">
+              <Card key={step.step} className="p-6 text-center hover:shadow-lg transition-all overflow-hidden group">
+                <div className="aspect-[4/3] rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={step.image} 
+                    alt={`${step.title} interface`}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                  />
+                </div>
                 <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                   {step.step}
                 </div>

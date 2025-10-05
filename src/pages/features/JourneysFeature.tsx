@@ -5,6 +5,9 @@ import { Navigation } from "@/components/landing/Navigation";
 import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Heart, Trophy, Star } from "lucide-react";
+import missionKindness from "@/assets/mission-card-kindness.jpg";
+import missionTidying from "@/assets/mission-card-tidying.jpg";
+import badgeCollection from "@/assets/badge-collection.jpg";
 
 const JourneysFeature = () => {
   const navigate = useNavigate();
@@ -105,17 +108,38 @@ const JourneysFeature = () => {
                 </p>
               </Card>
             </div>
-            <Card className="p-8 bg-gradient-to-br from-pink-100 to-amber-100 dark:from-pink-900/20 dark:to-amber-900/20">
-              <p className="text-center text-muted-foreground mb-4">Interactive Dashboard Preview</p>
-              <div className="space-y-4">
-                <div className="h-4 bg-gradient-to-r from-pink-300 to-amber-300 rounded-full" style={{ width: '85%' }}></div>
-                <p className="text-sm font-semibold text-center">Average Completion Rate: 85%</p>
-                <p className="text-xs text-center text-muted-foreground">Your child is crushing their kindness goals!</p>
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="rounded-lg overflow-hidden shadow-lg">
+                  <img 
+                    src={missionKindness} 
+                    alt="Kindness mission card showing share a compliment quest"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="rounded-lg overflow-hidden shadow-lg">
+                  <img 
+                    src={missionTidying} 
+                    alt="Tidying mission card showing tidy your room quest"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
               </div>
-              <Button className="w-full mt-6" onClick={() => navigate("/auth")}>
-                View Full Dashboard: Free Trial
-              </Button>
-            </Card>
+              <Card className="p-6 bg-gradient-to-br from-pink-100 to-amber-100 dark:from-pink-900/20 dark:to-amber-900/20">
+                <div className="rounded-lg overflow-hidden mb-4">
+                  <img 
+                    src={badgeCollection} 
+                    alt="Collection of earned achievement badges"
+                    className="w-full h-auto"
+                  />
+                </div>
+                <p className="text-sm font-semibold text-center mb-2">Your Growing Collection!</p>
+                <p className="text-xs text-center text-muted-foreground mb-4">Track progress and celebrate every win</p>
+                <Button className="w-full" onClick={() => navigate("/auth")}>
+                  Start Earning Badges: Free Trial
+                </Button>
+              </Card>
+            </div>
           </div>
         </div>
       </section>

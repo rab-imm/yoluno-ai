@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Quote } from "lucide-react";
 
 interface TestimonialProps {
@@ -7,14 +7,16 @@ interface TestimonialProps {
   author: string;
   role: string;
   avatarFallback: string;
+  avatarImage?: string;
 }
 
-export const Testimonial = ({ quote, author, role, avatarFallback }: TestimonialProps) => {
+export const Testimonial = ({ quote, author, role, avatarFallback, avatarImage }: TestimonialProps) => {
   return (
     <Card className="p-6 bg-card hover:shadow-md transition-shadow relative">
       <Quote className="h-8 w-8 text-accent/20 absolute top-4 right-4" />
       <div className="flex items-start gap-4 mb-4">
         <Avatar className="h-12 w-12 border-2 border-accent/20">
+          {avatarImage && <AvatarImage src={avatarImage} alt={author} />}
           <AvatarFallback className="bg-gradient-to-br from-primary to-accent text-white font-semibold">
             {avatarFallback}
           </AvatarFallback>

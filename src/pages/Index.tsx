@@ -9,6 +9,18 @@ import { Card } from "@/components/ui/card";
 import heroBackground from "@/assets/homepage-hero-bg.jpg";
 import testimonialsBg from "@/assets/testimonials-bg.jpg";
 import ctaBackground from "@/assets/cta-background.jpg";
+import whyPaliyoFeatures from "@/assets/why-paliyo-features.jpg";
+import storiesIcon from "@/assets/stories-feature-icon.jpg";
+import journeysIcon from "@/assets/journeys-feature-icon.jpg";
+import learningIcon from "@/assets/learning-feature-icon.jpg";
+import familyIcon from "@/assets/family-feature-icon.jpg";
+import controlCenterDashboard from "@/assets/control-center-dashboard.jpg";
+import transparencyHubScreenshot from "@/assets/transparency-hub-screenshot.jpg";
+import connectionToolsInterface from "@/assets/connection-tools-interface.jpg";
+import supportSuiteAnalytics from "@/assets/support-suite-analytics.jpg";
+import testimonialSarah from "@/assets/testimonial-sarah-t.jpg";
+import testimonialMike from "@/assets/testimonial-mike-r.jpg";
+import testimonialLena from "@/assets/testimonial-lena-k.jpg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -19,21 +31,24 @@ const Index = () => {
       title: "Stories",
       description: "Bedtime tales crafted just for them, where they're the brave explorer or clever inventor. Narrated in soothing voices, with pauses for their input—ending in dreams, not screens.",
       color: "text-purple-500",
-      path: "/features/stories"
+      path: "/features/stories",
+      image: storiesIcon
     },
     {
       icon: Heart,
       title: "Journeys",
       description: "Bite-sized daily missions to nurture habits like kindness or tidying up. Earn badges, track streaks, and celebrate wins with virtual high-fives that build real confidence.",
       color: "text-pink-500",
-      path: "/features/journeys"
+      path: "/features/journeys",
+      image: journeysIcon
     },
     {
       icon: Sun,
       title: "Learning",
       description: "Endless 'why' and 'how' answered safely. From 'Why do stars twinkle?' to 'How do plants grow?'—pulled from curated packs you approve, with fun facts and follow-up questions.",
       color: "text-amber-500",
-      path: "/features/learning"
+      path: "/features/learning",
+      image: learningIcon
     },
     {
       icon: Home,
@@ -41,7 +56,8 @@ const Index = () => {
       description: "Chat with echoes of your family's past. 'Tell me about Grandma's adventures'—and Paliyo shares stories from your uploaded memories, keeping heritage alive in their voice.",
       color: "text-emerald-500",
       path: "/features/family",
-      premium: true
+      premium: true,
+      image: familyIcon
     }
   ];
 
@@ -50,25 +66,29 @@ const Index = () => {
       icon: Settings,
       title: "Control Center",
       description: "Curate content on the fly—approve topics, block sensitivities, upload family lore, or design custom journeys. It's your dashboard, your rules.",
-      color: "text-blue-500"
+      color: "text-blue-500",
+      image: controlCenterDashboard
     },
     {
       icon: Eye,
       title: "Transparency Hub",
       description: "Dive into detailed logs of every chat. See questions asked, answers given, and emotional tones flagged—empowering you to guide without guessing.",
-      color: "text-indigo-500"
+      color: "text-indigo-500",
+      image: transparencyHubScreenshot
     },
     {
       icon: Heart,
       title: "Connection Tools",
       description: "Busy day? Record a voice intro for tonight's story, or schedule ritual reminders. Paliyo keeps the warmth of home flowing, even from afar.",
-      color: "text-rose-500"
+      color: "text-rose-500",
+      image: connectionToolsInterface
     },
     {
       icon: BarChart,
       title: "Support Suite",
       description: "Weekly digest reports on progress (e.g., 'Your kid nailed 3 kindness missions!'), auto-generated family journals, and habit analytics to spot patterns and celebrate growth.",
-      color: "text-cyan-500"
+      color: "text-cyan-500",
+      image: supportSuiteAnalytics
     }
   ];
 
@@ -77,19 +97,22 @@ const Index = () => {
       quote: "Finally, an AI I trust my 5-year-old with. I set the topics on dinosaurs and emotions—Paliyo weaves them into stories that spark her imagination. Game-changer for solo evenings.",
       author: "Sarah T.",
       role: "Mom of Two",
-      avatarFallback: "ST"
+      avatarFallback: "ST",
+      image: testimonialSarah
     },
     {
       quote: "Traveling for work used to mean missing bedtime. Now, my daughter hears my voice in Paliyo's tales, and I get the recap. It's like I'm there.",
       author: "Mike R.",
       role: "Dad on the Road",
-      avatarFallback: "MR"
+      avatarFallback: "MR",
+      image: testimonialMike
     },
     {
       quote: "The kindness journeys? Transformative. My kids went from 'mine!' to sharing stickers. Plus, the reports help me reinforce at dinner.",
       author: "Lena K.",
       role: "Family of Four",
-      avatarFallback: "LK"
+      avatarFallback: "LK",
+      image: testimonialLena
     }
   ];
 
@@ -186,23 +209,12 @@ const Index = () => {
                 Start Free Now
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-4">
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20 flex items-center justify-center">
-                  <Sparkles className="h-16 w-16 text-purple-500 animate-pulse-glow" />
-                </div>
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20 flex items-center justify-center">
-                  <Sun className="h-16 w-16 text-amber-500" />
-                </div>
-              </div>
-              <div className="space-y-4 pt-8">
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-pink-100 to-rose-100 dark:from-pink-900/20 dark:to-rose-900/20 flex items-center justify-center">
-                  <Heart className="h-16 w-16 text-pink-500" />
-                </div>
-                <div className="aspect-square rounded-2xl bg-gradient-to-br from-emerald-100 to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20 flex items-center justify-center">
-                  <Home className="h-16 w-16 text-emerald-500" />
-                </div>
-              </div>
+            <div className="rounded-2xl overflow-hidden shadow-lg">
+              <img 
+                src={whyPaliyoFeatures} 
+                alt="Paliyo's 4 core features - child interacting with AI companion and parent monitoring dashboard"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>
@@ -221,13 +233,19 @@ const Index = () => {
             {kidsFeatures.map((feature) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={feature.title} className="p-6 hover:shadow-xl transition-all hover:-translate-y-1 relative group">
+                <Card key={feature.title} className="p-6 hover:shadow-xl transition-all hover:-translate-y-1 relative group overflow-hidden">
                   {feature.premium && (
-                    <span className="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                    <span className="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white z-10">
                       Premium
                     </span>
                   )}
-                  <IconComponent className={`h-12 w-12 mb-4 ${feature.color} group-hover:scale-110 transition-transform`} />
+                  <div className="aspect-[4/3] rounded-lg overflow-hidden mb-4">
+                    <img 
+                      src={feature.image} 
+                      alt={`${feature.title} feature illustration`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
+                  </div>
                   <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
                     {feature.description}
@@ -266,9 +284,13 @@ const Index = () => {
             {parentFeatures.map((feature) => {
               const IconComponent = feature.icon;
               return (
-                <Card key={feature.title} className="p-6 hover:shadow-xl transition-all hover:-translate-y-1 group">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <IconComponent className={`h-6 w-6 ${feature.color}`} />
+                <Card key={feature.title} className="p-6 hover:shadow-xl transition-all hover:-translate-y-1 group overflow-hidden">
+                  <div className="aspect-[16/10] rounded-lg overflow-hidden mb-4">
+                    <img 
+                      src={feature.image} 
+                      alt={`${feature.title} dashboard interface`}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                    />
                   </div>
                   <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
@@ -356,6 +378,7 @@ const Index = () => {
                 <Testimonial
                   quote={testimonial.quote}
                   author={testimonial.author}
+                  avatarImage={testimonial.image}
                   role={testimonial.role}
                   avatarFallback={testimonial.avatarFallback}
                 />
