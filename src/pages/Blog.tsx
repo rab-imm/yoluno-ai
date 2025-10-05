@@ -7,6 +7,9 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Clock, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import blogGettingStarted from "@/assets/blog-getting-started.jpg";
+import blogSafetyTips from "@/assets/blog-safety-tips.jpg";
+import blogBedtimeRoutines from "@/assets/blog-bedtime-routines.jpg";
 
 const Blog = () => {
   const navigate = useNavigate();
@@ -17,35 +20,35 @@ const Blog = () => {
     {
       title: "5 Ways Paliyo Keeps Bedtime Sacred (Even on Weeknights)",
       excerpt: "Discover how busy families use Paliyo to maintain bedtime routines that actually stick, creating magical moments even when life gets hectic.",
-      image: "from-purple-100 to-pink-100 dark:from-purple-900/20 dark:to-pink-900/20",
+      image: blogBedtimeRoutines,
       readTime: "4 min",
       category: "Family Stories"
     },
     {
       title: "The Parent's Guide to Kid-Safe AI in 2025",
       excerpt: "Everything you need to know about AI safety for children, from understanding guardrails to evaluating content filters.",
-      image: "from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20",
+      image: blogSafetyTips,
       readTime: "6 min",
       category: "AI Tips"
     },
     {
       title: "Real Talk: How Journeys Boosted Our Family's Kindness Quotient",
       excerpt: "A parent's honest account of using Paliyo's journey feature to transform sibling dynamics and build lasting habits.",
-      image: "from-pink-100 to-amber-100 dark:from-pink-900/20 dark:to-amber-900/20",
+      image: blogGettingStarted,
       readTime: "5 min",
       category: "Habit Hacks"
     },
     {
       title: "Why Family Stories Matter More Than Ever",
       excerpt: "The psychology behind heritage storytelling and how it shapes children's identity and emotional resilience.",
-      image: "from-emerald-100 to-teal-100 dark:from-emerald-900/20 dark:to-teal-900/20",
+      image: blogGettingStarted,
       readTime: "7 min",
       category: "Family Stories"
     },
     {
       title: "Screen Time vs. Story Time: Finding the Balance",
       excerpt: "Practical strategies for managing digital engagement while fostering meaningful connections with your kids.",
-      image: "from-amber-100 to-orange-100 dark:from-amber-900/20 dark:to-orange-900/20",
+      image: blogSafetyTips,
       readTime: "5 min",
       category: "AI Tips"
     }
@@ -140,8 +143,12 @@ const Blog = () => {
                     className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
                     onClick={() => navigate("/auth")}
                   >
-                    <div className={`h-48 bg-gradient-to-br ${post.image} flex items-center justify-center`}>
-                      <BookOpen className="h-16 w-16 opacity-20" />
+                    <div className="h-48 overflow-hidden">
+                      <img 
+                        src={post.image} 
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
                     </div>
                     <div className="p-6">
                       <div className="flex items-center gap-2 mb-3">
