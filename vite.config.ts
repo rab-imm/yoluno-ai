@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => ({
           'vendor-query': ['@tanstack/react-query'],
           'vendor-supabase': ['@supabase/supabase-js'],
           'ui-radix': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select', '@radix-ui/react-tabs'],
-          'ui-components': ['@radix-ui/react-accordion', '@radix-ui/react-avatar', '@radix-ui/react-card', '@radix-ui/react-tooltip'],
+          'ui-components': ['@radix-ui/react-accordion', '@radix-ui/react-avatar', '@radix-ui/react-tooltip'],
           'charts': ['recharts'],
           'animations': ['framer-motion'],
         },
