@@ -4,6 +4,8 @@ import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Heart, Shield, Users, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import aboutHeroBg from "@/assets/about-hero-bg.jpg";
+import missionValues from "@/assets/mission-values.jpg";
 
 const About = () => {
   const navigate = useNavigate();
@@ -36,12 +38,20 @@ const About = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/5 via-background to-child-primary/5">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <div className="inline-block p-4 bg-gradient-to-br from-primary to-child-primary rounded-3xl mb-4 animate-float">
-            <Heart className="h-16 w-16 text-white" />
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={aboutHeroBg} 
+            alt="Diverse families together"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
+          <div className="inline-block p-3 bg-gradient-to-br from-primary to-child-primary rounded-3xl mb-4">
+            <Heart className="h-12 w-12 text-white" />
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold">Why we built Safe AI Buddy</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Why we built Safe AI Buddy</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             We're parents too. We saw our kids exploring AI tools that weren't built for them. 
             Unsafe, unfiltered, unpredictable. That wasn't good enough.
@@ -69,9 +79,16 @@ const About = () => {
       </section>
 
       {/* Mission */}
-      <section className="py-20 px-4 bg-secondary/30">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Our Mission</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={missionValues} 
+            alt="Mission and values"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-4xl text-center space-y-5 relative z-10">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Our Mission</h2>
           <Card className="p-12 bg-gradient-to-br from-primary/5 to-accent/5">
             <p className="text-2xl font-medium leading-relaxed">
               AI you can trust with your children.
@@ -84,18 +101,18 @@ const About = () => {
       </section>
 
       {/* Values */}
-      <section className="py-20 px-4">
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-6xl">
-          <h2 className="text-4xl font-bold text-center mb-16">Our Values</h2>
-          <div className="grid md:grid-cols-2 gap-8">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-12">Our Values</h2>
+          <div className="grid md:grid-cols-2 gap-6">
             {values.map((value) => (
-              <Card key={value.title} className="p-8 hover:shadow-lg transition-shadow">
+              <Card key={value.title} className="p-6 hover:shadow-md transition-shadow">
                 <div className="flex items-start gap-4">
                   <div className="flex-shrink-0 p-3 bg-gradient-to-br from-primary/10 to-accent/10 rounded-2xl">
                     <value.icon className="h-8 w-8 text-primary" />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-semibold mb-3">{value.title}</h3>
+                    <h3 className="text-xl md:text-2xl font-heading font-semibold mb-3">{value.title}</h3>
                     <p className="text-muted-foreground leading-relaxed">{value.description}</p>
                   </div>
                 </div>
@@ -106,12 +123,12 @@ const About = () => {
       </section>
 
       {/* What We Built */}
-      <section className="py-20 px-4 bg-gradient-to-br from-[hsl(var(--story-magic-light))] via-background to-[hsl(var(--learning-bg))]">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-[hsl(var(--story-magic-light))] via-background to-[hsl(var(--learning-bg))]">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-4xl font-bold text-center mb-12">What We Built</h2>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">What We Built</h2>
           <div className="space-y-6">
-            <Card className="p-8">
-              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3">
+            <Card className="p-6">
+              <h3 className="text-xl md:text-2xl font-heading font-semibold mb-3 flex items-center gap-3">
                 <Shield className="h-7 w-7 text-primary" />
                 Safe by default
               </h3>
@@ -119,8 +136,8 @@ const About = () => {
                 Locked sandbox AI that only references parent-approved content. No internet access, no surprises.
               </p>
             </Card>
-            <Card className="p-8">
-              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3">
+            <Card className="p-6">
+              <h3 className="text-xl md:text-2xl font-heading font-semibold mb-3 flex items-center gap-3">
                 <Users className="h-7 w-7 text-accent" />
                 Parent-controlled
               </h3>
@@ -128,8 +145,8 @@ const About = () => {
                 You choose the topics. You review the conversations. You decide what stays and what goes.
               </p>
             </Card>
-            <Card className="p-8">
-              <h3 className="text-2xl font-semibold mb-3 flex items-center gap-3">
+            <Card className="p-6">
+              <h3 className="text-xl md:text-2xl font-heading font-semibold mb-3 flex items-center gap-3">
                 <Sparkles className="h-7 w-7 text-child-primary" />
                 Magical for kids
               </h3>
@@ -142,9 +159,9 @@ const About = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-4xl text-center space-y-6">
-          <h2 className="text-4xl font-bold">Join our mission</h2>
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
+        <div className="container mx-auto max-w-4xl text-center space-y-5">
+          <h2 className="text-3xl md:text-4xl font-heading font-bold">Join our mission</h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Help us create a safer, more magical digital childhood. Start with our free plan today.
           </p>

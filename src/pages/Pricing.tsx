@@ -4,6 +4,8 @@ import { Footer } from "@/components/landing/Footer";
 import { useNavigate } from "react-router-dom";
 import { Check, Sparkles, Book } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import pricingHeroBg from "@/assets/pricing-hero-bg.jpg";
+import pricingAddons from "@/assets/pricing-addons.jpg";
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -99,8 +101,16 @@ const Pricing = () => {
       <Navigation />
       
       {/* Hero */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-primary/3 via-background to-accent/3">
-        <div className="container mx-auto max-w-6xl text-center space-y-5">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={pricingHeroBg} 
+            alt="Family value and pricing"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
+        </div>
+        <div className="container mx-auto max-w-6xl text-center space-y-5 relative z-10">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Simple plans. Family-friendly pricing.</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             No hidden fees. No ads. No data resale. Just safe, magical experiences for your children.
@@ -158,8 +168,15 @@ const Pricing = () => {
       </section>
 
       {/* Add-Ons */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-secondary/30">
-        <div className="container mx-auto max-w-4xl">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={pricingAddons} 
+            alt="Add-ons and extras"
+            className="w-full h-full object-cover opacity-20"
+          />
+        </div>
+        <div className="container mx-auto max-w-4xl relative z-10">
           <h2 className="text-3xl md:text-4xl font-heading font-bold text-center mb-10">Add-Ons</h2>
           <div className="grid sm:grid-cols-2 gap-6">
             {addons.map((addon) => (

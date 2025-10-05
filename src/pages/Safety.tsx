@@ -60,7 +60,7 @@ const Safety = () => {
             alt="Protective safety shield"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/90 to-background/95" />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/70 to-background/80" />
         </div>
         <div className="container mx-auto max-w-6xl text-center space-y-5 relative z-10">
           <div className="inline-block p-3 bg-gradient-to-br from-primary to-success rounded-3xl mb-4">
