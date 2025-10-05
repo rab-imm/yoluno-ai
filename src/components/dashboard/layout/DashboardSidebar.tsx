@@ -87,7 +87,7 @@ export function DashboardSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border">
+      <SidebarHeader className="border-b border-sidebar-border p-4">
         <ChildSwitcher />
       </SidebarHeader>
 

@@ -1,39 +1,56 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Load landing pages immediately
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
-import ChildChat from "./pages/ChildChat";
-import KidsLauncher from "./pages/KidsLauncher";
-import Features from "./pages/Features";
-import StoriesFeature from "./pages/features/Stories";
-import JourneysFeature from "./pages/features/JourneysFeature";
-import LearningFeature from "./pages/features/LearningFeature";
-import FamilyFeature from "./pages/features/FamilyFeature";
-import Safety from "./pages/Safety";
-import Pricing from "./pages/Pricing";
-import About from "./pages/About";
-import Support from "./pages/Support";
-import Blog from "./pages/Blog";
-import Privacy from "./pages/legal/Privacy";
-import Terms from "./pages/legal/Terms";
-import COPPA from "./pages/legal/COPPA";
-import NotFound from "./pages/NotFound";
-import JourneyMarketplace from "./pages/JourneyMarketplace";
 
-// New Dashboard Routes
-import DashboardLayout from "./pages/dashboard/DashboardLayout";
-import Overview from "./pages/dashboard/Overview";
-import Insights from "./pages/dashboard/Insights";
-import Topics from "./pages/dashboard/Topics";
-import Library from "./pages/dashboard/Library";
-import Journeys from "./pages/dashboard/Journeys";
-import Stories from "./pages/dashboard/Stories";
-import Family from "./pages/dashboard/Family";
-import Content from "./pages/dashboard/Content";
-import DashboardSafety from "./pages/dashboard/Safety";
+// Lazy load all other pages
+const ChildChat = lazy(() => import("./pages/ChildChat"));
+const KidsLauncher = lazy(() => import("./pages/KidsLauncher"));
+const Features = lazy(() => import("./pages/Features"));
+const StoriesFeature = lazy(() => import("./pages/features/Stories"));
+const JourneysFeature = lazy(() => import("./pages/features/JourneysFeature"));
+const LearningFeature = lazy(() => import("./pages/features/LearningFeature"));
+const FamilyFeature = lazy(() => import("./pages/features/FamilyFeature"));
+const Safety = lazy(() => import("./pages/Safety"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const About = lazy(() => import("./pages/About"));
+const Support = lazy(() => import("./pages/Support"));
+const Blog = lazy(() => import("./pages/Blog"));
+const Privacy = lazy(() => import("./pages/legal/Privacy"));
+const Terms = lazy(() => import("./pages/legal/Terms"));
+const COPPA = lazy(() => import("./pages/legal/COPPA"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const JourneyMarketplace = lazy(() => import("./pages/JourneyMarketplace"));
+
+// Dashboard routes - lazy loaded
+const DashboardLayout = lazy(() => import("./pages/dashboard/DashboardLayout"));
+const Overview = lazy(() => import("./pages/dashboard/Overview"));
+const Insights = lazy(() => import("./pages/dashboard/Insights"));
+const Topics = lazy(() => import("./pages/dashboard/Topics"));
+const Library = lazy(() => import("./pages/dashboard/Library"));
+const Journeys = lazy(() => import("./pages/dashboard/Journeys"));
+const Stories = lazy(() => import("./pages/dashboard/Stories"));
+const Family = lazy(() => import("./pages/dashboard/Family"));
+const Content = lazy(() => import("./pages/dashboard/Content"));
+const DashboardSafety = lazy(() => import("./pages/dashboard/Safety"));
+
+const LoadingFallback = () => (
+  <div className="min-h-screen flex items-center justify-center p-8">
+    <div className="space-y-4 w-full max-w-2xl">
+      <Skeleton className="h-12 w-64" />
+      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-32 w-full" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  </div>
+);
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -50,7 +67,8 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
+        <Suspense fallback={<LoadingFallback />}>
+          <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           
@@ -88,7 +106,8 @@ const App = () => (
           <Route path="/coppa" element={<COPPA />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

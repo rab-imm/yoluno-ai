@@ -1,14 +1,98 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, BookOpen, Target, TrendingUp, Sparkles } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Plus, BookOpen, Target, MessageSquare, Sparkles, Loader2 } from "lucide-react";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
-import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
+import { useChildActivities } from "@/hooks/dashboard/useChildActivities";
 import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
-import { JourneyOnboardingCard } from "@/components/journey/JourneyOnboardingCard";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
-import { useEffect } from "react";
+import { formatDistanceToNow } from "date-fns";
+
+function ChildOverviewCard({ child }: { child: any }) {
+  const navigate = useNavigate();
+  const { data: activities, isLoading } = useChildActivities(child.id);
+
+  return (
+    <Card className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="text-4xl">{child.avatar}</div>
+          <div className="flex-1">
+            <CardTitle>{child.name}</CardTitle>
+            <CardDescription>Age {child.age}</CardDescription>
+          </div>
+          {child.streak_days > 0 && (
+            <Badge variant="secondary">
+              🔥 {child.streak_days}
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {isLoading ? (
+          <div className="flex justify-center py-4">
+            <Loader2 className="w-4 h-4 animate-spin" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-3 gap-2 text-center text-sm">
+              <div>
+                <div className="text-2xl font-bold text-primary">{activities?.totalMessages || 0}</div>
+                <div className="text-xs text-muted-foreground">Messages</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-primary">{activities?.totalStories || 0}</div>
+                <div className="text-xs text-muted-foreground">Stories</div>
+              </div>
+              <div>
+                <div className="text-2xl font-bold text-primary">{activities?.activeJourneys || 0}</div>
+                <div className="text-xs text-muted-foreground">Journeys</div>
+              </div>
+            </div>
+
+            {activities?.lastActive && (
+              <div className="text-xs text-muted-foreground text-center pt-2 border-t">
+                Last active {formatDistanceToNow(new Date(activities.lastActive), { addSuffix: true })}
+              </div>
+            )}
+
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/dashboard/insights/${child.id}`)}
+                className="flex flex-col h-auto py-2 px-1"
+              >
+                <MessageSquare className="w-4 h-4 mb-1" />
+                <span className="text-xs">Insights</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/dashboard/stories/${child.id}`)}
+                className="flex flex-col h-auto py-2 px-1"
+              >
+                <BookOpen className="w-4 h-4 mb-1" />
+                <span className="text-xs">Stories</span>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/dashboard/journeys/${child.id}`)}
+                className="flex flex-col h-auto py-2 px-1"
+              >
+                <Target className="w-4 h-4 mb-1" />
+                <span className="text-xs">Journeys</span>
+              </Button>
+            </div>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function Overview() {
   const navigate = useNavigate();
@@ -32,111 +116,48 @@ export default function Overview() {
   };
 
   if (isLoading) {
-    return <div className="animate-pulse">Loading...</div>;
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (children.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96 space-y-4">
+        <div className="text-center space-y-2">
+          <h2 className="text-2xl font-bold">Welcome to Your Dashboard</h2>
+          <p className="text-muted-foreground">Get started by adding your first child profile</p>
+        </div>
+        <Button onClick={() => setShowCreateDialog(true)} size="lg">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Child Profile
+        </Button>
+        <CreateChildDialog open={showCreateDialog} onOpenChange={setShowCreateDialog} onSuccess={refreshProfiles} />
+        <WelcomeDialog open={showWelcome} onComplete={handleWelcomeComplete} />
+      </div>
+    );
   }
 
   return (
     <div className="space-y-6">
-      {/* Hero Cards */}
-      {children.length > 0 && (
-        <>
-          <Card className="border-0 overflow-hidden" style={{ background: 'var(--gradient-story)' }}>
-            <CardHeader>
-              <div className="flex items-center gap-3 text-white">
-                <BookOpen className="h-8 w-8" />
-                <div>
-                  <CardTitle className="text-2xl text-white">Create Tonight's Story</CardTitle>
-                  <CardDescription className="text-white/90">
-                    Magical bedtime stories personalized for your children
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                size="lg" 
-                variant="secondary"
-                onClick={() => navigate(`/dashboard/stories/${children[0].id}`)}
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Start Story Wizard
-              </Button>
-            </CardContent>
-          </Card>
-
-          <JourneyOnboardingCard
-            onStartJourney={() => navigate(`/dashboard/journeys/${children[0].id}`)}
-            onBrowseMarketplace={() => navigate("/marketplace")}
-          />
-        </>
-      )}
-
-      {/* Child Profiles */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <span>Child Profiles</span>
-            <Button onClick={() => setShowCreateDialog(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Child
-            </Button>
-          </CardTitle>
-          <CardDescription>
-            Manage profiles and view activity for each child
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {children.map((child) => (
-              <ChildProfileCard
-                key={child.id}
-                child={child}
-                onRefresh={refreshProfiles}
-              />
-            ))}
-            {children.length === 0 && (
-              <Card
-                className="border-dashed cursor-pointer hover:border-primary transition-colors"
-                onClick={() => setShowCreateDialog(true)}
-              >
-                <CardContent className="flex flex-col items-center justify-center min-h-[200px] gap-2">
-                  <Plus className="h-12 w-12 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">Create your first child profile</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Quick Actions */}
-      {children.length > 0 && (
-        <div className="grid gap-4 md:grid-cols-3">
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate(`/dashboard/insights/${children[0].id}`)}>
-            <CardHeader>
-              <TrendingUp className="h-8 w-8 text-primary mb-2" />
-              <CardTitle className="text-lg">Learning Insights</CardTitle>
-              <CardDescription>View progress and conversation topics</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate(`/dashboard/journeys/${children[0].id}`)}>
-            <CardHeader>
-              <Target className="h-8 w-8 text-growth-primary mb-2" />
-              <CardTitle className="text-lg">Goal Journeys</CardTitle>
-              <CardDescription>Create and manage habit journeys</CardDescription>
-            </CardHeader>
-          </Card>
-
-          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => navigate(`/dashboard/stories/${children[0].id}`)}>
-            <CardHeader>
-              <BookOpen className="h-8 w-8 text-story-primary mb-2" />
-              <CardTitle className="text-lg">Stories</CardTitle>
-              <CardDescription>Create and browse story library</CardDescription>
-            </CardHeader>
-          </Card>
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Dashboard Overview</h1>
+          <p className="text-muted-foreground">View and manage your children's profiles</p>
         </div>
-      )}
+        <Button onClick={() => setShowCreateDialog(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Child
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {children.map((child) => (
+          <ChildOverviewCard key={child.id} child={child} />
+        ))}
+      </div>
 
       <CreateChildDialog
         open={showCreateDialog}
