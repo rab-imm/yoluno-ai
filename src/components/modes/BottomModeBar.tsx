@@ -9,14 +9,14 @@ export function BottomModeBar() {
   if (!isMobile) return null;
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t safe-bottom">
-      <div className="grid grid-cols-2 gap-2 p-3">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t pb-safe">
+      <div className="grid grid-cols-2 gap-2 p-3 pb-safe">
         <button
           onClick={() => setMode("learning")}
-          className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-300 ${
+          className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-300 min-h-[56px] ${
             mode === "learning"
               ? "bg-gradient-to-br from-[hsl(var(--learning-primary))] to-[hsl(var(--learning-secondary))] text-white scale-105 shadow-lg"
-              : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              : "bg-muted/50 text-muted-foreground hover:bg-muted active:scale-95"
           }`}
         >
           <MessageCircle className={`w-6 h-6 ${mode === "learning" ? "animate-bounce-gentle" : ""}`} />
@@ -25,10 +25,10 @@ export function BottomModeBar() {
         
         <button
           onClick={() => setMode("story")}
-          className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-300 ${
+          className={`flex flex-col items-center justify-center gap-2 py-4 rounded-2xl transition-all duration-300 min-h-[56px] ${
             mode === "story"
               ? "bg-gradient-to-br from-[hsl(var(--story-primary))] to-[hsl(var(--story-secondary))] text-white scale-105 shadow-lg"
-              : "bg-muted/50 text-muted-foreground hover:bg-muted"
+              : "bg-muted/50 text-muted-foreground hover:bg-muted active:scale-95"
           }`}
         >
           <Sparkles className={`w-6 h-6 ${mode === "story" ? "animate-pulse-glow" : ""}`} />

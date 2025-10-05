@@ -117,17 +117,17 @@ export const Navigation = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" onClick={() => navigate("/auth")}>
+            <Button variant="ghost" onClick={() => navigate("/auth")} className="min-h-[44px]">
               Login
             </Button>
-            <Button onClick={() => navigate("/auth")} className="shadow-lg">
+            <Button onClick={() => navigate("/auth")} className="shadow-lg min-h-[44px]">
               Start Free
             </Button>
           </div>
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-secondary rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -196,10 +196,10 @@ export const Navigation = () => {
             ))}
             
             <div className="flex flex-col gap-2 px-4 pt-4 border-t">
-              <Button variant="outline" onClick={() => navigate("/auth")} className="w-full">
+              <Button variant="outline" onClick={() => navigate("/auth")} className="w-full min-h-[44px]">
                 Login
               </Button>
-              <Button onClick={() => navigate("/auth")} className="w-full">
+              <Button onClick={() => navigate("/auth")} className="w-full min-h-[44px]">
                 Start Free
               </Button>
             </div>

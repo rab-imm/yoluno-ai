@@ -205,7 +205,7 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
 
   if (usageLoading) {
     return (
-      <Card className="w-full max-w-3xl mx-auto p-12">
+      <Card className="w-full max-w-3xl mx-auto p-6 md:p-12">
         <div className="flex flex-col items-center justify-center">
           <Loader2 className="w-12 h-12 animate-spin text-purple-600" />
         </div>
@@ -215,7 +215,7 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
 
   if (stage === "limit-reached") {
     return (
-      <Card className="w-full max-w-3xl mx-auto p-8">
+      <Card className="w-full max-w-3xl mx-auto p-4 md:p-8">
         <Alert>
           <AlertCircle className="h-4 w-4" />
           <AlertTitle>Story Limit Reached</AlertTitle>
@@ -275,14 +275,14 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
 
   if (stage === "generating") {
     return (
-      <Card className="w-full max-w-3xl mx-auto p-12">
-        <div className="flex flex-col items-center justify-center text-center space-y-6">
+      <Card className="w-full max-w-3xl mx-auto p-6 md:p-12">
+        <div className="flex flex-col items-center justify-center text-center space-y-4 md:space-y-6">
           <Loader2 
-            className="w-16 h-16 animate-spin" 
+            className="w-12 h-12 md:w-16 md:h-16 animate-spin" 
             style={{ color: 'hsl(var(--story-magic))' }}
           />
-          <div className="space-y-3">
-            <h3 className="text-2xl font-bold">Creating Your Magical Story</h3>
+          <div className="space-y-2 md:space-y-3">
+            <h3 className="text-xl md:text-2xl font-bold">Creating Your Magical Story</h3>
             <div className="space-y-2 text-muted-foreground">
               <p className="flex items-center justify-center gap-2">
                 ✍️ Writing the story with {wizardData?.characters.length || 0} characters

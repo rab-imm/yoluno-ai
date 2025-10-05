@@ -48,21 +48,21 @@ export function ActivityFeed() {
             Recent Activity
           </CardTitle>
         </CardHeader>
-        <CardContent className="pt-6">
-          <ScrollArea className="h-[400px] pr-4">
-            <div className="space-y-3">
+        <CardContent className="pt-4 md:pt-6 p-4 md:p-6">
+          <ScrollArea className="h-[300px] md:h-[400px] pr-2 md:pr-4">
+            <div className="space-y-2 md:space-y-3">
               {activities.map((activity, index) => (
                 <motion.div
                   key={activity.id}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: index * 0.05 }}
-                  className="flex gap-4 rounded-xl border-2 bg-gradient-to-br from-card to-card/50 p-4 hover:shadow-lg transition-all hover:scale-[1.02] hover:border-primary/30"
+                  className="flex gap-3 md:gap-4 rounded-xl border-2 bg-gradient-to-br from-card to-card/50 p-3 md:p-4 hover:shadow-lg transition-all hover:scale-[1.02] hover:border-primary/30"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-2xl shadow-md flex-shrink-0">
+                  <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-xl md:text-2xl shadow-md flex-shrink-0">
                     {activity.icon}
                   </div>
-                  <div className="flex-1 space-y-1">
+                  <div className="flex-1 space-y-1 min-w-0">
                     <p className="text-sm font-medium leading-relaxed">
                       <span className="text-primary font-bold">{activity.childName}</span>
                       {" "}

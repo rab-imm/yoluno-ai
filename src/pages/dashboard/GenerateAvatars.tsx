@@ -46,10 +46,10 @@ export default function GenerateAvatars() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="container mx-auto p-4 md:p-6 space-y-4 md:space-y-6">
       <div>
-        <h1 className="text-3xl font-bold mb-2">Avatar Library Generator</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">Avatar Library Generator</h1>
+        <p className="text-sm md:text-base text-muted-foreground">
           Generate 24 unique Pixar-style character avatars for the platform
         </p>
       </div>
@@ -74,22 +74,24 @@ export default function GenerateAvatars() {
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button
               onClick={() => handleGenerate(false)}
               disabled={generating}
               size="lg"
-              className="flex-1"
+              className="flex-1 min-h-[44px]"
             >
               {generating ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Generating Avatars...
+                  <span className="hidden sm:inline">Generating Avatars...</span>
+                  <span className="sm:hidden">Generating...</span>
                 </>
               ) : (
                 <>
                   <Sparkles className="mr-2 h-5 w-5" />
-                  Generate Missing Avatars
+                  <span className="hidden sm:inline">Generate Missing Avatars</span>
+                  <span className="sm:hidden">Generate Missing</span>
                 </>
               )}
             </Button>
@@ -99,13 +101,15 @@ export default function GenerateAvatars() {
               disabled={generating}
               size="lg"
               variant="outline"
+              className="min-h-[44px]"
             >
               {generating ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 <>
                   <RefreshCw className="mr-2 h-5 w-5" />
-                  Regenerate All
+                  <span className="hidden sm:inline">Regenerate All</span>
+                  <span className="sm:hidden">Regenerate</span>
                 </>
               )}
             </Button>
@@ -155,7 +159,7 @@ export default function GenerateAvatars() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 md:gap-4">
               {avatars.map((avatar) => (
                 <div key={avatar.id} className="space-y-2">
                   <div className="relative aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-accent/10 p-2">

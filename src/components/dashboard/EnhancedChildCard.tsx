@@ -29,7 +29,7 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
       whileHover={{ y: -5 }}
     >
       <Card className="group hover:shadow-2xl transition-all duration-300 border-2 hover:border-primary/40 bg-gradient-to-br from-card to-card/50 overflow-hidden">
-        <CardHeader className="pb-4 bg-gradient-to-br from-primary/5 to-accent/5">
+        <CardHeader className="pb-4 p-4 md:p-6 bg-gradient-to-br from-primary/5 to-accent/5">
           <div className="flex items-center gap-4">
             {/* Enhanced Avatar */}
             <div className="relative">
@@ -69,7 +69,7 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 p-4 md:p-6">
           {isLoading ? (
             <div className="flex justify-center py-6">
               <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -86,7 +86,7 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
               </div>
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-3 gap-3 rounded-xl bg-gradient-to-br from-muted/80 to-muted/40 p-5 border border-primary/10">
+              <div className="grid grid-cols-3 gap-2 md:gap-3 rounded-xl bg-gradient-to-br from-muted/80 to-muted/40 p-3 md:p-5 border border-primary/10">
                 <div className="text-center">
                   <motion.div
                     whileHover={{ scale: 1.15 }}
@@ -124,29 +124,31 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
               )}
 
               {/* Quick Actions */}
-              <div className="grid grid-cols-2 gap-3 pt-3">
+              <div className="grid grid-cols-2 gap-2 md:gap-3 pt-3">
                 <Button
                   size="sm"
                   onClick={() => navigate(`/child/${child.id}`)}
-                  className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:scale-105"
+                  className="bg-gradient-to-r from-primary to-accent hover:opacity-90 transition-all shadow-md hover:shadow-lg hover:scale-105 min-h-[44px]"
                 >
                   <Rocket className="mr-2 h-4 w-4" />
-                  Launch Chat
+                  <span className="hidden sm:inline">Launch Chat</span>
+                  <span className="sm:hidden">Chat</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/insights/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105"
+                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105 min-h-[44px]"
                 >
                   <MessageSquare className="mr-2 h-4 w-4" />
-                  Insights
+                  <span className="hidden sm:inline">Insights</span>
+                  <span className="sm:hidden">Info</span>
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/stories/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105"
+                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105 min-h-[44px]"
                 >
                   <BookOpen className="mr-2 h-4 w-4" />
                   Stories
@@ -155,10 +157,11 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/journeys/${child.id}`)}
-                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105"
+                  className="hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105 min-h-[44px]"
                 >
                   <Target className="mr-2 h-4 w-4" />
-                  Journeys
+                  <span className="hidden sm:inline">Journeys</span>
+                  <span className="sm:hidden">Goals</span>
                 </Button>
               </div>
             </>

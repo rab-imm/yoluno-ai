@@ -12,7 +12,7 @@ export function DesktopModeSwitcher() {
     <div className="flex gap-3 mb-6">
       <button
         onClick={() => setMode("learning")}
-        className={`flex-1 flex items-center justify-center gap-3 py-6 rounded-2xl transition-all duration-300 ${
+        className={`flex-1 flex items-center justify-center gap-3 py-6 rounded-2xl transition-all duration-300 min-h-[80px] ${
           mode === "learning"
             ? "bg-gradient-to-br from-[hsl(var(--learning-primary))] to-[hsl(var(--learning-secondary))] text-white shadow-xl scale-105"
             : "bg-muted/50 text-muted-foreground hover:bg-muted hover:scale-102"
@@ -27,7 +27,7 @@ export function DesktopModeSwitcher() {
       
       <button
         onClick={() => setMode("story")}
-        className={`flex-1 flex items-center justify-center gap-3 py-6 rounded-2xl transition-all duration-300 ${
+        className={`flex-1 flex items-center justify-center gap-3 py-6 rounded-2xl transition-all duration-300 min-h-[80px] ${
           mode === "story"
             ? "bg-gradient-to-br from-[hsl(var(--story-primary))] to-[hsl(var(--story-secondary))] text-white shadow-xl scale-105"
             : "bg-muted/50 text-muted-foreground hover:bg-muted hover:scale-102"

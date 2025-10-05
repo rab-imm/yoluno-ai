@@ -50,15 +50,15 @@ export default function Overview() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-primary/30 bg-muted/50 py-16 px-4"
+          className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-primary/30 bg-muted/50 py-12 md:py-16 px-4"
         >
-          <div className="text-center space-y-4 max-w-md">
-            <div className="text-6xl mb-4">👨‍👩‍👧‍👦</div>
-            <h2 className="text-3xl font-bold">Let's Get Started!</h2>
-            <p className="text-muted-foreground text-lg">
+          <div className="text-center space-y-3 md:space-y-4 max-w-md">
+            <div className="text-5xl md:text-6xl mb-3 md:mb-4">👨‍👩‍👧‍👦</div>
+            <h2 className="text-2xl md:text-3xl font-bold">Let's Get Started!</h2>
+            <p className="text-muted-foreground text-base md:text-lg">
               Create your first child profile to unlock the magic of personalized learning, stories, and growth journeys.
             </p>
-            <Button onClick={() => setShowCreateDialog(true)} size="lg" className="mt-4">
+            <Button onClick={() => setShowCreateDialog(true)} size="lg" className="mt-4 min-h-[44px]">
               <Plus className="w-5 h-5 mr-2" />
               Add Your First Child
             </Button>
@@ -72,7 +72,7 @@ export default function Overview() {
   }
 
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-6 md:space-y-8 pb-8">
       {/* Hero Section */}
       <DashboardHero />
 
@@ -81,21 +81,22 @@ export default function Overview() {
 
       {/* Add Child Button */}
       <div className="flex justify-end">
-        <Button onClick={() => setShowCreateDialog(true)} size="lg">
+        <Button onClick={() => setShowCreateDialog(true)} size="lg" className="min-h-[44px]">
           <Plus className="w-4 h-4 mr-2" />
-          Add Child
+          <span className="hidden sm:inline">Add Child</span>
+          <span className="sm:hidden">Add</span>
         </Button>
       </div>
 
       {/* Enhanced Child Profile Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {children.map((child, index) => (
           <EnhancedChildCard key={child.id} child={child} index={index} />
         ))}
       </div>
 
       {/* Two Column Layout for Activity Feed and Engagement Prompts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         <div className="lg:col-span-2">
           <ActivityFeed />
         </div>

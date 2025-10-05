@@ -31,13 +31,13 @@ export function DashboardHero() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-center md:justify-between p-8">
-        <div className="flex-1 space-y-3">
+      <div className="relative z-10 flex flex-col gap-4 md:gap-6 md:flex-row md:items-center md:justify-between p-4 sm:p-6 md:p-8">
+        <div className="flex-1 space-y-2 md:space-y-3">
           <motion.h1
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-5xl font-bold text-white drop-shadow-lg"
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg"
           >
             {greeting}! {emoji}
           </motion.h1>
@@ -45,7 +45,7 @@ export function DashboardHero() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-xl text-white/95 drop-shadow-md max-w-2xl"
+            className="text-base sm:text-lg md:text-xl text-white/95 drop-shadow-md max-w-2xl"
           >
             {message}
           </motion.p>
@@ -55,12 +55,12 @@ export function DashboardHero() {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4 }}
-          className="flex flex-col gap-3 sm:flex-row"
+          className="flex flex-col gap-3 sm:flex-row sm:flex-shrink-0"
         >
           <Button
             size="lg"
             onClick={() => navigate("/kids")}
-            className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all hover:scale-105 font-semibold"
+            className="bg-white text-primary hover:bg-white/90 shadow-lg hover:shadow-xl transition-all hover:scale-105 font-semibold min-h-[44px]"
           >
             <Rocket className="mr-2 h-5 w-5" />
             Launch Kids Mode
@@ -69,7 +69,7 @@ export function DashboardHero() {
             size="lg"
             variant="outline"
             onClick={() => navigate("/marketplace")}
-            className="border-white/50 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm font-semibold hover:scale-105 transition-all"
+            className="border-white/50 bg-white/10 text-white hover:bg-white/20 backdrop-blur-sm font-semibold hover:scale-105 transition-all min-h-[44px]"
           >
             <Sparkles className="mr-2 h-5 w-5" />
             Browse Journeys
