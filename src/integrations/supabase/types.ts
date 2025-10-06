@@ -658,6 +658,50 @@ export type Database = {
           },
         ]
       }
+      family_narratives: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          media_urls: string[] | null
+          member_id: string
+          parent_id: string
+          story_date: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          media_urls?: string[] | null
+          member_id: string
+          parent_id: string
+          story_date?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          media_urls?: string[] | null
+          member_id?: string
+          parent_id?: string
+          story_date?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "family_narratives_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "family_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       family_photos: {
         Row: {
           ai_caption: string | null
@@ -708,6 +752,8 @@ export type Database = {
           person_id: string
           related_person_id: string
           relationship_type: string
+          tree_position_x: number | null
+          tree_position_y: number | null
         }
         Insert: {
           created_at?: string
@@ -716,6 +762,8 @@ export type Database = {
           person_id: string
           related_person_id: string
           relationship_type: string
+          tree_position_x?: number | null
+          tree_position_y?: number | null
         }
         Update: {
           created_at?: string
@@ -724,6 +772,8 @@ export type Database = {
           person_id?: string
           related_person_id?: string
           relationship_type?: string
+          tree_position_x?: number | null
+          tree_position_y?: number | null
         }
         Relationships: [
           {
