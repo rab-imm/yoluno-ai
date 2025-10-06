@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState, useRef } from "react";
 import {
   ReactFlow,
   Background,
@@ -6,14 +6,23 @@ import {
   MiniMap,
   Node,
   Edge,
-  ConnectionLineType,
   Panel,
   useNodesState,
   useEdgesState,
+  useReactFlow,
+  NodeMouseHandler,
+  EdgeMouseHandler,
+  OnNodesChange,
+  OnEdgesChange,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import { calculateTreeLayout, exportTreeToJSON } from "@/lib/familyTreeLayout";
+import { TreeControls } from "./TreeControls";
+import { TreeExportPanel } from "./TreeExportPanel";
+import { RelationshipEditor } from "./RelationshipEditor";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { ZoomIn, ZoomOut, Maximize2 } from "lucide-react";
 
 interface FamilyMember {
   id: string;
@@ -21,6 +30,8 @@ interface FamilyMember {
   relationship?: string;
   photo_url?: string;
   birth_date?: string;
+  tree_position_x?: number;
+  tree_position_y?: number;
 }
 
 interface FamilyRelationship {
@@ -36,7 +47,12 @@ interface FamilyTreeFlowProps {
   onMemberClick: (member: FamilyMember) => void;
 }
 
-const MemberNode = ({ data }: any) => {
+interface NodeData extends Record<string, unknown> {
+  member: FamilyMember;
+  onClick: (member: FamilyMember) => void;
+}
+
+const MemberNode = ({ data }: { data: NodeData }) => {
   return (
     <div
       onClick={() => data.onClick(data.member)}
@@ -70,107 +86,207 @@ const nodeTypes = {
 };
 
 export const FamilyTreeFlow = ({ members, relationships, onMemberClick }: FamilyTreeFlowProps) => {
-  // Build tree structure
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [selectedRelationship, setSelectedRelationship] = useState<{
+    id: string;
+    type: string;
+    from: string;
+    to: string;
+  } | null>(null);
+  const [useCustomLayout, setUseCustomLayout] = useState(true);
+  const reactFlowWrapper = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  const { fitView, zoomIn, zoomOut, setViewport, getViewport } = useReactFlow();
+
+  // Calculate layout using advanced algorithm
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
-    const nodes: Node[] = [];
-    const edges: Edge[] = [];
-
-    // Simple layout algorithm: arrange by generation
-    const generations = new Map<string, number>();
-    const positioned = new Set<string>();
-
-    // Calculate generations
-    const calculateGeneration = (memberId: string, gen: number = 0) => {
-      if (positioned.has(memberId)) return;
-      positioned.add(memberId);
-      generations.set(memberId, gen);
-
-      const childRels = relationships.filter(
-        (r) => r.person_id === memberId && r.relationship_type === "parent"
-      );
-      childRels.forEach((rel) => calculateGeneration(rel.related_person_id, gen + 1));
+    const layout = calculateTreeLayout(members, relationships, useCustomLayout);
+    return {
+      nodes: layout.nodes.map(node => ({
+        ...node,
+        data: { 
+          member: node.data.member,
+          onClick: onMemberClick 
+        } as NodeData,
+      })),
+      edges: layout.edges,
     };
+  }, [members, relationships, onMemberClick, useCustomLayout]);
 
-    // Start with root members (no parents)
-    const rootMembers = members.filter(
-      (m) => !relationships.some((r) => r.related_person_id === m.id && r.relationship_type === "parent")
-    );
-    rootMembers.forEach((m) => calculateGeneration(m.id));
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<NodeData>>(initialNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
 
-    // Position nodes by generation
-    const genMap = new Map<number, string[]>();
-    generations.forEach((gen, memberId) => {
-      if (!genMap.has(gen)) genMap.set(gen, []);
-      genMap.get(gen)!.push(memberId);
-    });
+  // Save node positions to database when dragged
+  const handleNodesChange: OnNodesChange<Node<NodeData>> = useCallback(
+    (changes) => {
+      onNodesChange(changes);
+      
+      // Save positions after drag
+      changes.forEach(async (change) => {
+        if (change.type === 'position' && change.dragging === false && change.position) {
+          const { error } = await supabase
+            .from('family_members')
+            .update({
+              tree_position_x: Math.round(change.position.x),
+              tree_position_y: Math.round(change.position.y),
+            })
+            .eq('id', change.id);
 
-    genMap.forEach((memberIds, gen) => {
-      memberIds.forEach((memberId, index) => {
-        const member = members.find((m) => m.id === memberId);
-        if (!member) return;
-
-        nodes.push({
-          id: memberId,
-          type: "member",
-          position: {
-            x: index * 200,
-            y: gen * 150,
-          },
-          data: { member, onClick: onMemberClick },
-        });
+          if (error) {
+            console.error('Failed to save node position:', error);
+          }
+        }
       });
-    });
+    },
+    [onNodesChange]
+  );
 
-    // Create edges
-    relationships.forEach((rel) => {
-      if (rel.relationship_type === "parent") {
-        edges.push({
-          id: rel.id,
-          source: rel.person_id,
-          target: rel.related_person_id,
-          type: ConnectionLineType.SmoothStep,
-          animated: false,
-          style: { stroke: "hsl(var(--primary))", strokeWidth: 2 },
+  // Handle edge clicks for editing
+  const handleEdgeClick: EdgeMouseHandler = useCallback(
+    (event, edge) => {
+      if (!isEditMode) return;
+
+      const sourceNode = nodes.find(n => n.id === edge.source);
+      const targetNode = nodes.find(n => n.id === edge.target);
+
+      if (sourceNode && targetNode) {
+        setSelectedRelationship({
+          id: edge.id,
+          type: edge.label as string || 'unknown',
+          from: sourceNode.data.member.name,
+          to: targetNode.data.member.name,
         });
       }
+    },
+    [isEditMode, nodes]
+  );
+
+  // Update relationship type
+  const handleUpdateRelationship = async (relationshipId: string, newType: string) => {
+    const { error } = await supabase
+      .from('family_relationships')
+      .update({ relationship_type: newType })
+      .eq('id', relationshipId);
+
+    if (error) {
+      toast({
+        title: "Update failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Relationship updated",
+        description: "The relationship type has been changed",
+      });
+      // Trigger re-fetch by parent component
+    }
+  };
+
+  // Delete relationship
+  const handleDeleteRelationship = async (relationshipId: string) => {
+    const { error } = await supabase
+      .from('family_relationships')
+      .delete()
+      .eq('id', relationshipId);
+
+    if (error) {
+      toast({
+        title: "Delete failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Relationship deleted",
+        description: "The relationship has been removed",
+      });
+    }
+  };
+
+  // Reset to auto-layout
+  const handleResetLayout = () => {
+    setUseCustomLayout(false);
+    toast({
+      title: "Layout reset",
+      description: "Tree positions reset to automatic layout",
     });
+  };
 
-    return { nodes, edges };
-  }, [members, relationships, onMemberClick]);
+  // Export data
+  const handleExportData = () => {
+    return exportTreeToJSON(members, relationships);
+  };
 
-  const [nodes, , onNodesChange] = useNodesState(initialNodes);
-  const [edges, , onEdgesChange] = useEdgesState(initialEdges);
+  const currentZoom = getViewport().zoom;
 
-  const fitView = useCallback(() => {
-    // This would be called from ReactFlow instance
-  }, []);
+  const handleZoomChange = (zoom: number) => {
+    const viewport = getViewport();
+    setViewport({ ...viewport, zoom });
+  };
 
   return (
-    <div className="w-full h-[600px] border rounded-lg bg-background">
+    <div 
+      ref={reactFlowWrapper}
+      className={`w-full border rounded-lg bg-background ${
+        isFullscreen ? 'fixed inset-0 z-50 rounded-none' : 'h-[600px]'
+      }`}
+      id="family-tree-container"
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
-        onNodesChange={onNodesChange}
+        onNodesChange={handleNodesChange}
         onEdgesChange={onEdgesChange}
+        onEdgeClick={handleEdgeClick}
         nodeTypes={nodeTypes}
         fitView
         minZoom={0.5}
         maxZoom={1.5}
-        defaultEdgeOptions={{
-          type: ConnectionLineType.SmoothStep,
-        }}
+        nodesDraggable={isEditMode}
       >
         <Background />
-        <Controls />
+        <Controls showInteractive={false} />
         <MiniMap
           nodeColor={(node) => "hsl(var(--primary))"}
           maskColor="hsl(var(--muted) / 0.6)"
           className="bg-background border rounded"
         />
-        <Panel position="top-right" className="flex gap-2">
-          <Button size="sm" variant="outline">
-            <Maximize2 className="w-4 h-4" />
-          </Button>
+        
+        <Panel position="top-right" className="space-y-2">
+          <TreeControls
+            onZoomIn={() => zoomIn()}
+            onZoomOut={() => zoomOut()}
+            onFitView={() => fitView()}
+            onResetZoom={() => handleZoomChange(1)}
+            onToggleFullscreen={() => setIsFullscreen(!isFullscreen)}
+            isFullscreen={isFullscreen}
+            currentZoom={currentZoom}
+            onZoomChange={handleZoomChange}
+          />
+          
+          <TreeExportPanel
+            treeElementId="family-tree-container"
+            exportData={handleExportData}
+          />
+        </Panel>
+
+        <Panel position="top-left" className="space-y-2">
+          <RelationshipEditor
+            isEditMode={isEditMode}
+            onToggleEditMode={() => setIsEditMode(!isEditMode)}
+            selectedRelationship={selectedRelationship}
+            onUpdateRelationship={handleUpdateRelationship}
+            onDeleteRelationship={handleDeleteRelationship}
+            onClearSelection={() => setSelectedRelationship(null)}
+          />
+          
+          {useCustomLayout && (
+            <Button size="sm" variant="outline" onClick={handleResetLayout}>
+              Reset Layout
+            </Button>
+          )}
         </Panel>
       </ReactFlow>
     </div>

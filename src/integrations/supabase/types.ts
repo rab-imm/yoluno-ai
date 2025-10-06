@@ -620,6 +620,8 @@ export type Database = {
           parent_id: string
           photo_url: string | null
           relationship: string | null
+          tree_position_x: number | null
+          tree_position_y: number | null
           updated_at: string
         }
         Insert: {
@@ -633,6 +635,8 @@ export type Database = {
           parent_id: string
           photo_url?: string | null
           relationship?: string | null
+          tree_position_x?: number | null
+          tree_position_y?: number | null
           updated_at?: string
         }
         Update: {
@@ -646,6 +650,8 @@ export type Database = {
           parent_id?: string
           photo_url?: string | null
           relationship?: string | null
+          tree_position_x?: number | null
+          tree_position_y?: number | null
           updated_at?: string
         }
         Relationships: [

@@ -14,6 +14,7 @@ import { FamilyTreeFlow } from "./family/FamilyTreeFlow";
 import { MemberDetailDialog } from "./family/MemberDetailDialog";
 import { PhotoLibraryPanel } from "./family/PhotoLibraryPanel";
 import { PhotoUploader } from "./family/PhotoUploader";
+import { ReactFlowProvider } from "@xyflow/react";
 
 interface FamilyMember {
   id: string;
@@ -312,11 +313,13 @@ export const FamilyTreeBuilder = () => {
                     </CardContent>
                   </Card>
                 ) : (
-                  <FamilyTreeFlow
-                    members={members}
-                    relationships={relationships}
-                    onMemberClick={handleMemberClick}
-                  />
+                  <ReactFlowProvider>
+                    <FamilyTreeFlow
+                      members={members}
+                      relationships={relationships}
+                      onMemberClick={handleMemberClick}
+                    />
+                  </ReactFlowProvider>
                 )}
               </TabsContent>
 
