@@ -31,11 +31,21 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
       return;
     }
 
+    // Map avatar categories to emoji fallbacks
+    const getEmojiForCategory = (category?: string) => {
+      switch (category) {
+        case 'animal': return '🐾';
+        case 'fantasy': return '✨';
+        case 'everyday': return '👦';
+        default: return '👦';
+      }
+    };
+
     const { error } = await supabase.from("child_profiles").insert({
       parent_id: user.id,
       name,
       age: parseInt(age),
-      avatar: avatarData?.character_slug || "robot-pup",
+      avatar: avatarData ? getEmojiForCategory(avatarData.category) : '👦',
       avatar_library_id: avatarLibraryId || null,
       use_library_avatar: !!avatarLibraryId,
       personality_mode: "curious",
