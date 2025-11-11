@@ -49,7 +49,11 @@ const CHARACTERS: Character[] = [
 
 const EXPRESSIONS = ['neutral', 'happy', 'thinking', 'excited'] as const;
 
-async function generateAvatarImage(character: Character, expression: typeof EXPRESSIONS[number]): Promise<string> {
+async function generateAvatarImage(
+  character: Character, 
+  expression: typeof EXPRESSIONS[number],
+  supabase: any
+): Promise<string> {
   const expressionDescriptions = {
     neutral: "calm, friendly, welcoming expression with gentle smile",
     happy: "big joyful smile, bright sparkling eyes, enthusiastic and delighted",
@@ -109,13 +113,39 @@ Quality: Ultra high resolution, production-ready character asset`;
   }
 
   const data = await response.json();
-  const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+  const imageBase64 = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
   
-  if (!imageUrl) {
+  if (!imageBase64) {
     throw new Error("No image returned from API");
   }
 
-  return imageUrl;
+  // Convert base64 to binary
+  const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+  const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+
+  // Upload to storage bucket
+  const fileName = `${character.slug}/${expression}.png`;
+  const { data: uploadData, error: uploadError } = await supabase.storage
+    .from('avatar_images')
+    .upload(fileName, binaryData, {
+      contentType: 'image/png',
+      upsert: true,
+      cacheControl: '31536000', // 1 year cache
+    });
+
+  if (uploadError) {
+    console.error('Storage upload error:', uploadError);
+    throw new Error(`Failed to upload to storage: ${uploadError.message}`);
+  }
+
+  // Get public URL
+  const { data: { publicUrl } } = supabase.storage
+    .from('avatar_images')
+    .getPublicUrl(fileName);
+
+  console.log(`✓ Uploaded ${character.name} ${expression} to storage: ${publicUrl}`);
+  
+  return publicUrl;
 }
 
 serve(async (req) => {
@@ -161,12 +191,12 @@ serve(async (req) => {
           }
         }
 
-        // Generate all 4 expressions
+        // Generate all 4 expressions and upload to storage
         const [neutralImg, happyImg, thinkingImg, excitedImg] = await Promise.all([
-          generateAvatarImage(character, 'neutral'),
-          generateAvatarImage(character, 'happy'),
-          generateAvatarImage(character, 'thinking'),
-          generateAvatarImage(character, 'excited'),
+          generateAvatarImage(character, 'neutral', supabase),
+          generateAvatarImage(character, 'happy', supabase),
+          generateAvatarImage(character, 'thinking', supabase),
+          generateAvatarImage(character, 'excited', supabase),
         ]);
 
         // Insert or update in database
