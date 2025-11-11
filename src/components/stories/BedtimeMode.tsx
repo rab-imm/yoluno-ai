@@ -180,42 +180,46 @@ export function BedtimeMode({ story, childName, onClose }: BedtimeModeProps) {
               </div>
             )}
 
-            {/* Story Text - SINGLE scroll container */}
-            <div className="flex-1 overflow-y-auto overscroll-contain relative">
-              {/* Top scroll indicator - sticky to scroll container */}
-              <div className="sticky top-0 left-0 right-0 h-12 bg-gradient-to-b from-indigo-950 via-indigo-950/80 to-transparent pointer-events-none z-10" />
-              
-              {/* Actual text content with proper padding */}
-              <div className="px-8 pb-28">
-                <div className="max-w-3xl mx-auto">
-                  <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1 }}
-                    className="text-xl leading-relaxed text-white/90 whitespace-pre-wrap"
-                  >
-                    {currentText}
-                  </motion.p>
+            {/* Story Text Section Wrapper */}
+            <div className="flex-1 relative">
+              {/* Scroll Container - absolutely positioned to fill parent */}
+              <div className="absolute inset-0 overflow-y-auto overscroll-contain">
+                <div className="px-8 pb-32">
+                  <div className="max-w-3xl mx-auto">
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 1 }}
+                      className="text-xl leading-relaxed text-white/90 whitespace-pre-wrap"
+                    >
+                      {currentText}
+                    </motion.p>
+                  </div>
                 </div>
               </div>
               
-              {/* Bottom scroll indicator - sticky to scroll container */}
-              <div className="sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-indigo-950 via-indigo-950/80 to-transparent pointer-events-none z-10" />
+              {/* Top gradient overlay - positioned outside scroll container */}
+              <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-indigo-950 via-indigo-950/80 to-transparent pointer-events-none z-10" />
               
-              {/* Scroll hint - fades in after 2 seconds */}
+              {/* Bottom gradient overlay - positioned outside scroll container */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-indigo-950 via-indigo-950/80 to-transparent pointer-events-none z-10" />
+              
+              {/* Scroll hint - positioned outside scroll container */}
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 2, duration: 1 }}
-                className="sticky bottom-20 left-1/2 -translate-x-1/2 text-white/50 text-sm flex items-center gap-2 pointer-events-none"
+                className="absolute bottom-20 left-0 right-0 flex justify-center pointer-events-none"
               >
-                <motion.div
-                  animate={{ y: [0, 4, 0] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
-                >
-                  ↓
-                </motion.div>
-                Scroll for more
+                <div className="flex items-center gap-2 text-white/50 text-sm">
+                  <motion.div
+                    animate={{ y: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    ↓
+                  </motion.div>
+                  Scroll for more
+                </div>
               </motion.div>
             </div>
 
