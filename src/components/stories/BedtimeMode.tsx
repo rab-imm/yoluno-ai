@@ -155,7 +155,7 @@ export function BedtimeMode({ story, childName, onClose }: BedtimeModeProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col h-full"
+            className="flex flex-col min-h-screen"
           >
             {/* Title */}
             <div className="text-center pt-8 pb-4">
@@ -175,43 +175,67 @@ export function BedtimeMode({ story, childName, onClose }: BedtimeModeProps) {
                   <img
                     src={story.illustrations[currentIllustration]?.imageUrl}
                     alt={`Scene ${currentIllustration + 1}`}
-                    className="w-full h-64 md:h-96 object-cover rounded-2xl shadow-2xl"
+                    className="w-full h-48 sm:h-64 md:h-80 object-cover rounded-2xl shadow-2xl"
                   />
                 </motion.div>
               </div>
             )}
 
             {/* Story Text */}
-            <div className="flex-1 overflow-y-auto px-8 pb-24">
-              <div className="max-w-3xl mx-auto">
+            <div className="flex-1 overflow-y-auto overscroll-contain px-8 pb-32 relative">
+              <div className="max-w-3xl mx-auto max-h-[50vh] md:max-h-[60vh] overflow-y-auto overscroll-y-contain px-4 -mx-4">
+                {/* Scroll indicator gradient at top */}
+                <div className="sticky top-0 left-0 right-0 h-8 bg-gradient-to-b from-indigo-950 to-transparent pointer-events-none z-10" />
+                
                 <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1 }}
-                  className="text-xl leading-relaxed text-white/90 whitespace-pre-wrap"
+                  className="text-xl leading-relaxed text-white/90 whitespace-pre-wrap py-2"
                 >
                   {currentText}
                 </motion.p>
+                
+                {/* Scroll indicator gradient at bottom */}
+                <div className="sticky bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-indigo-950 to-transparent pointer-events-none" />
               </div>
+              
+              {/* Scroll hint - fades in after 2 seconds */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 2, duration: 1 }}
+                className="absolute bottom-36 left-1/2 -translate-x-1/2 text-white/50 text-sm flex items-center gap-2"
+              >
+                <motion.div
+                  animate={{ y: [0, 4, 0] }}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  ↓
+                </motion.div>
+                Scroll for more
+              </motion.div>
             </div>
 
             {/* Controls */}
-            <div className="fixed bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4">
-              {audioRef.current && (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={togglePause}
-                    className="bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm rounded-full w-16 h-16"
-                  >
-                    {isPaused ? <Play className="w-8 h-8" /> : <Pause className="w-8 h-8" />}
-                  </Button>
-                  <div className="text-white/70 text-sm">
-                    <Volume2 className="w-5 h-5" />
-                  </div>
-                </>
-              )}
+            <div className="fixed bottom-6 left-0 right-0 flex justify-center">
+              <div className="flex items-center gap-4 bg-black/40 backdrop-blur-md rounded-full px-6 py-3">
+                {audioRef.current && (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={togglePause}
+                      className="bg-white/20 hover:bg-white/30 text-white rounded-full w-14 h-14"
+                    >
+                      {isPaused ? <Play className="w-7 h-7" /> : <Pause className="w-7 h-7" />}
+                    </Button>
+                    <div className="text-white/70 text-sm">
+                      <Volume2 className="w-5 h-5" />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
