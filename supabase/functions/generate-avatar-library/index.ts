@@ -49,10 +49,10 @@ const CHARACTERS: Character[] = [
 
 const EXPRESSIONS = ['neutral', 'happy', 'thinking', 'excited'] as const;
 
-async function generateAvatarImage(
+async function generateAndUploadAvatar(
+  supabase: any,
   character: Character, 
-  expression: typeof EXPRESSIONS[number],
-  supabase: any
+  expression: typeof EXPRESSIONS[number]
 ): Promise<string> {
   const expressionDescriptions = {
     neutral: "calm, friendly, welcoming expression with gentle smile",
@@ -113,38 +113,37 @@ Quality: Ultra high resolution, production-ready character asset`;
   }
 
   const data = await response.json();
-  const imageBase64 = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+  const imageUrl = data.choices?.[0]?.message?.images?.[0]?.image_url?.url;
   
-  if (!imageBase64) {
+  if (!imageUrl) {
     throw new Error("No image returned from API");
   }
 
   // Convert base64 to binary
-  const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+  const base64Data = imageUrl.split(',')[1];
   const binaryData = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
 
-  // Upload to storage bucket
-  const fileName = `${character.slug}/${expression}.png`;
+  // Upload to storage bucket with CDN caching
+  const filePath = `${character.slug}/${expression}.png`;
   const { data: uploadData, error: uploadError } = await supabase.storage
     .from('avatar_images')
-    .upload(fileName, binaryData, {
+    .upload(filePath, binaryData, {
       contentType: 'image/png',
       upsert: true,
-      cacheControl: '31536000', // 1 year cache
+      cacheControl: '31536000' // 1 year cache for CDN
     });
 
   if (uploadError) {
-    console.error('Storage upload error:', uploadError);
-    throw new Error(`Failed to upload to storage: ${uploadError.message}`);
+    console.error(`Storage upload error for ${filePath}:`, uploadError);
+    throw uploadError;
   }
 
-  // Get public URL
+  // Get public URL (CDN-cached)
   const { data: { publicUrl } } = supabase.storage
     .from('avatar_images')
-    .getPublicUrl(fileName);
+    .getPublicUrl(filePath);
 
-  console.log(`✓ Uploaded ${character.name} ${expression} to storage: ${publicUrl}`);
-  
+  console.log(`✓ Uploaded ${filePath} to storage with CDN caching`);
   return publicUrl;
 }
 
@@ -191,15 +190,15 @@ serve(async (req) => {
           }
         }
 
-        // Generate all 4 expressions and upload to storage
+        // Generate all 4 expressions and upload to storage with CDN
         const [neutralImg, happyImg, thinkingImg, excitedImg] = await Promise.all([
-          generateAvatarImage(character, 'neutral', supabase),
-          generateAvatarImage(character, 'happy', supabase),
-          generateAvatarImage(character, 'thinking', supabase),
-          generateAvatarImage(character, 'excited', supabase),
+          generateAndUploadAvatar(supabase, character, 'neutral'),
+          generateAndUploadAvatar(supabase, character, 'happy'),
+          generateAndUploadAvatar(supabase, character, 'thinking'),
+          generateAndUploadAvatar(supabase, character, 'excited'),
         ]);
 
-        // Insert or update in database
+        // Insert or update in database with storage URLs
         const { error } = await supabase
           .from("avatar_library")
           .upsert({
@@ -220,7 +219,7 @@ serve(async (req) => {
         if (error) throw error;
 
         results.push({ character: character.name, status: "success" });
-        console.log(`✓ ${character.name} generated successfully`);
+        console.log(`✓ ${character.name} generated and uploaded to CDN successfully`);
 
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error);
