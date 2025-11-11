@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Wand2, Volume2, Edit, Save, Moon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface StoryPreviewProps {
   childId: string;
@@ -32,6 +33,7 @@ export function StoryPreview({
   onRegenerate,
   onSendToBedtime,
 }: StoryPreviewProps) {
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(storyData.content);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -74,7 +76,10 @@ export function StoryPreview({
 
       if (error) throw error;
 
-      toast.success("Story saved and ready for bedtime! 🌙");
+      // Invalidate stories cache to show new story immediately
+      await queryClient.invalidateQueries({ queryKey: ["child-stories", childId] });
+
+      toast.success("Story saved! Switching to your collection... 📖");
       
       // Check for badges
       await supabase.rpc("check_and_award_badges", { p_child_id: childId });

@@ -30,7 +30,8 @@ export function useStories(childId: string) {
       if (error) throw error;
       return data as Story[];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh data
+    refetchOnMount: true, // Refetch when component mounts
   });
 
   const toggleFavorite = useMutation({

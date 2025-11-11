@@ -121,12 +121,37 @@ export function StoriesLibrary({ childId, childName }: StoriesLibraryProps) {
 
   if (stories.length === 0) {
     return (
-      <Card className="p-8 text-center">
-        <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-        <h3 className="text-lg font-semibold mb-2">No Stories Yet</h3>
-        <p className="text-sm text-muted-foreground">
-          Create your first story to see it here!
-        </p>
+      <Card className="p-8 text-center space-y-4">
+        <div 
+          className="w-20 h-20 mx-auto rounded-full flex items-center justify-center"
+          style={{ 
+            background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
+            opacity: 0.1
+          }}
+        >
+          <BookOpen className="w-12 h-12" style={{ color: "hsl(var(--story-primary))" }} />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold mb-2">No Stories Yet</h3>
+          <p className="text-sm text-muted-foreground">
+            {filterFavorites 
+              ? "You haven't favorited any stories yet. Create stories and mark your favorites!"
+              : filterTheme !== "all"
+              ? `No stories found with the "${filterTheme}" theme.`
+              : "Create your first magical story to see it here!"}
+          </p>
+        </div>
+        {(filterFavorites || filterTheme !== "all") && (
+          <Button
+            variant="outline"
+            onClick={() => {
+              setFilterFavorites(false);
+              setFilterTheme("all");
+            }}
+          >
+            Clear Filters
+          </Button>
+        )}
       </Card>
     );
   }

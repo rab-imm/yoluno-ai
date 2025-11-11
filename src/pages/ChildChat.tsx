@@ -13,6 +13,8 @@ import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
 import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
 import { AccessoriesManager } from "@/components/dashboard/AccessoriesManager";
 import { BedtimeMode } from "@/components/stories/BedtimeMode";
+import { useStories } from "@/hooks/dashboard/useStories";
+import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { JourneyProgressWidget } from "@/components/journey/JourneyProgressWidget";
 import {
@@ -39,6 +41,7 @@ function ChildChatContent() {
   const location = useLocation();
   const isMobile = useIsMobile();
   const { mode } = useMode();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
   const [bedtimeStory, setBedtimeStory] = useState<any>(null);
@@ -46,6 +49,7 @@ function ChildChatContent() {
   const [storyView, setStoryView] = useState<"create" | "library">("create");
   
   const fromLauncher = location.state?.fromLauncher || false;
+  const { stories } = useStories(id || "");
 
 
   useEffect(() => {
@@ -270,7 +274,7 @@ function ChildChatContent() {
                     </Button>
                     <Button
                       onClick={() => setStoryView("library")}
-                      className="flex-1 transition-all min-h-[48px]"
+                      className="flex-1 transition-all min-h-[48px] relative"
                       style={storyView === "library" ? {
                         background: "linear-gradient(135deg, hsl(var(--story-primary)), hsl(var(--story-secondary)))",
                         color: "white"
@@ -278,6 +282,9 @@ function ChildChatContent() {
                       variant={storyView === "library" ? "default" : "outline"}
                     >
                       📖 My Stories
+                      {stories.length > 0 && (
+                        <span className="ml-1 opacity-80">({stories.length})</span>
+                      )}
                     </Button>
                   </div>
 
@@ -286,7 +293,13 @@ function ChildChatContent() {
                       childId={id!}
                       childName={child.name}
                       childAge={child.age || 8}
-                      onComplete={() => setStoryView("library")}
+                      onComplete={() => {
+                        queryClient.invalidateQueries({ queryKey: ["child-stories", id] });
+                        setStoryView("library");
+                        setTimeout(() => {
+                          window.scrollTo({ top: 0, behavior: "smooth" });
+                        }, 100);
+                      }}
                     />
                   ) : (
                     <StoriesLibrary childId={id!} childName={child.name} />
@@ -319,7 +332,10 @@ function ChildChatContent() {
                           childId={id!}
                           childName={child.name}
                           childAge={child.age || 8}
-                          onComplete={loadBedtimeStory}
+                          onComplete={() => {
+                            queryClient.invalidateQueries({ queryKey: ["child-stories", id] });
+                            loadBedtimeStory();
+                          }}
                         />
                       </div>
                       <div>
