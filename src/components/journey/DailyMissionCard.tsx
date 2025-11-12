@@ -167,34 +167,61 @@ export function DailyMissionCard({ childId, personalityMode }: DailyMissionCardP
 
   return (
     <>
-      <Card className="border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 mb-4">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
-            <div className="flex-1">
-              <CardTitle className="text-base">{getHeaderText()}</CardTitle>
-              <CardDescription className="text-xs">
-                {mission.journey_title} - Day {mission.step_number}
-              </CardDescription>
+      <Card className="relative border-0 overflow-hidden animate-scale-in shadow-xl">
+        {/* Animated gradient border */}
+        <div className="absolute inset-0 bg-gradient-to-r from-child-primary via-child-secondary to-child-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite] opacity-40" 
+             style={{ 
+               padding: '3px',
+               mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+               maskComposite: 'exclude'
+             }} 
+        />
+        
+        {/* TODAY'S MISSION badge */}
+        <div className="absolute top-3 right-3 z-10">
+          <div className="flex items-center gap-1.5 bg-gradient-to-r from-child-primary to-child-secondary px-3 py-1.5 rounded-full shadow-lg animate-pulse">
+            <span className="text-white text-xs font-bold">🎯 TODAY'S MISSION!</span>
+          </div>
+        </div>
+
+        {/* Card content with gradient background */}
+        <div className="relative bg-gradient-to-br from-child-primary/10 via-child-secondary/5 to-background p-5 md:p-8">
+          <CardHeader className="p-0 pb-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-1">
+                <Sparkles className="h-7 w-7 md:h-8 md:w-8 text-child-primary animate-pulse" />
+              </div>
+              <div className="flex-1 pr-20">
+                <CardTitle className="text-lg md:text-xl mb-1 flex items-center gap-2">
+                  {getHeaderText()}
+                </CardTitle>
+                <CardDescription className="text-sm font-medium text-muted-foreground">
+                  {mission.journey_title} - Day {mission.step_number}
+                </CardDescription>
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-sm mb-1">{mission.title}</h4>
-            {mission.description && (
-              <p className="text-sm text-muted-foreground">{mission.description}</p>
-            )}
-          </div>
-          <Button 
-            onClick={handleComplete}
-            className="w-full"
-            size="lg"
-          >
-            <CheckCircle2 className="h-4 w-4 mr-2" />
-            Mark Complete
-          </Button>
-        </CardContent>
+          </CardHeader>
+          
+          <CardContent className="p-0 space-y-5">
+            <div className="bg-background/60 backdrop-blur-sm rounded-lg p-4 border border-child-primary/20">
+              <h4 className="font-bold text-xl md:text-2xl mb-2 text-foreground flex items-center gap-2">
+                ⭐ {mission.title}
+              </h4>
+              {mission.description && (
+                <p className="text-base text-muted-foreground leading-relaxed">{mission.description}</p>
+              )}
+            </div>
+            
+            <Button 
+              onClick={handleComplete}
+              className="w-full h-14 text-lg font-bold shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] bg-gradient-to-r from-child-primary to-child-secondary hover:from-child-primary/90 hover:to-child-secondary/90 text-white border-0"
+              size="lg"
+            >
+              <CheckCircle2 className="h-5 w-5 mr-2" />
+              Mark Complete
+            </Button>
+          </CardContent>
+        </div>
       </Card>
 
       {showCompletion && (

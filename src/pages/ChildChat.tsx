@@ -17,6 +17,7 @@ import { useStories } from "@/hooks/dashboard/useStories";
 import { useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { JourneyProgressWidget } from "@/components/journey/JourneyProgressWidget";
+import { DailyMissionCard } from "@/components/journey/DailyMissionCard";
 import {
   Sheet,
   SheetContent,
@@ -244,6 +245,14 @@ function ChildChatContent() {
             mode === "learning" ? (
               <LearningMode>
                 <div className="space-y-6 mode-transition">
+                  {/* STICKY MISSION CARD */}
+                  <div className="sticky top-[60px] z-30 -mx-2 px-2 py-3 backdrop-blur-md bg-background/95 shadow-lg border-b-2 border-child-primary/20">
+                    <DailyMissionCard 
+                      childId={id!} 
+                      personalityMode={child.personality_mode || "curious_explorer"} 
+                    />
+                  </div>
+                  
                   <div className="grid grid-cols-2 gap-3">
                     <StreakDisplay streakDays={child.streak_days || 0} childName={child.name} />
                     <BadgeDisplay childId={id!} childName={child.name} />
@@ -312,6 +321,14 @@ function ChildChatContent() {
               {mode === "learning" && (
                 <LearningMode>
                   <div className="space-y-6 mode-transition">
+                    {/* STICKY MISSION CARD */}
+                    <div className="sticky top-[76px] z-30 -mx-4 px-4 py-3 backdrop-blur-md bg-background/95 shadow-lg border-b-2 border-child-primary/20">
+                      <DailyMissionCard 
+                        childId={id!} 
+                        personalityMode={child.personality_mode || "curious_explorer"} 
+                      />
+                    </div>
+                    
                     <JourneyProgressWidget childId={id!} />
                     <ChatInterface childId={id!} childName={child.name} childAvatar={child.avatar} personalityMode={child.personality_mode} />
                   </div>
