@@ -228,7 +228,7 @@ export const NetflixProfileSelector = () => {
         {/* Main Content */}
         <div className="w-full max-w-7xl text-center space-y-16">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-12">
-            Who's Playing?
+            Pick Your Character!
           </h1>
 
           {children.length === 0 ? (
