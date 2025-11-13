@@ -35,6 +35,7 @@ import { LearningMode } from "@/components/modes/LearningMode";
 import { StoryTimeMode } from "@/components/modes/StoryTimeMode";
 import { StoryModeHeader } from "@/components/stories/StoryModeHeader";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useKidsAuth } from "@/contexts/KidsAuthContext";
 
 function ChildChatContent() {
   const { id } = useParams();
@@ -43,6 +44,7 @@ function ChildChatContent() {
   const isMobile = useIsMobile();
   const { mode } = useMode();
   const queryClient = useQueryClient();
+  const { session: kidsSession } = useKidsAuth();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
   const [bedtimeStory, setBedtimeStory] = useState<any>(null);
@@ -64,6 +66,34 @@ function ChildChatContent() {
       return;
     }
 
+    // Check if there's an active kids session matching this child ID
+    if (kidsSession && kidsSession.childId === id) {
+      // Try to load full profile data
+      const { data } = await supabase
+        .from("child_profiles")
+        .select("*")
+        .eq("id", id)
+        .single();
+
+      if (data) {
+        setChild(data);
+      } else {
+        // Even if query fails, trust the kids session
+        // Create minimal child object from session
+        setChild({
+          id: kidsSession.childId,
+          name: "Buddy", // Fallback name
+          age: 8,
+          avatar: "👦",
+          personality_mode: "curious_explorer",
+          streak_days: 0,
+        });
+      }
+      setLoading(false);
+      return;
+    }
+
+    // If no kids session, try regular Supabase query (parent access)
     const { data, error } = await supabase
       .from("child_profiles")
       .select("*")
@@ -129,11 +159,17 @@ function ChildChatContent() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(fromLauncher ? "/kids" : "/dashboard")}
+              onClick={() => {
+                if (kidsSession) {
+                  navigate("/play/select");
+                } else {
+                  navigate(fromLauncher ? "/kids" : "/dashboard");
+                }
+              }}
               className="text-white hover:bg-white/20 shrink-0"
-              title={fromLauncher ? "Back to Profile Selection" : "Back to Dashboard"}
+              title={kidsSession ? "Back to Profile Selection" : (fromLauncher ? "Back to Profile Selection" : "Back to Dashboard")}
             >
-              {fromLauncher ? <LogOut className="h-4 w-4 md:mr-2" /> : <ArrowLeft className="h-4 w-4 md:mr-2" />}
+              {kidsSession || fromLauncher ? <LogOut className="h-4 w-4 md:mr-2" /> : <ArrowLeft className="h-4 w-4 md:mr-2" />}
               <span className="hidden md:inline">Back</span>
             </Button>
             <div className="flex items-center gap-2 md:gap-3 min-w-0">
