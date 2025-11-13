@@ -9,7 +9,7 @@ interface BuddyAvatarProps {
   avatarLibraryId?: string;
   isSpeaking?: boolean;
   className?: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";
   expression?: "neutral" | "happy" | "thinking" | "excited";
 }
 
@@ -49,6 +49,8 @@ export function BuddyAvatar({
     md: "w-16 h-16 text-3xl",
     lg: "w-24 h-24 text-4xl",
     xl: "w-32 h-32 text-5xl",
+    "2xl": "w-40 h-40 text-6xl",
+    "3xl": "w-48 h-48 text-7xl",
   };
 
   // Priority: avatarData > customAvatarUrl > emoji

@@ -248,7 +248,7 @@ export const NetflixProfileSelector = () => {
           ) : (
             <>
         {/* Profile Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto justify-items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto justify-items-center px-4">
                 {children.map((child, index) => {
                   return (
                     <motion.div
@@ -268,13 +268,13 @@ export const NetflixProfileSelector = () => {
                                 avatar={child.avatar || "👦"}
                                 customAvatarUrl={child.custom_avatar_url}
                                 avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
-                                size="xl"
+                                size="2xl"
                                 expression="happy"
                                 className="!w-full !h-full !rounded-lg"
                               />
                               {/* Overlay on hover */}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center rounded-lg">
-                                <Play className="h-16 w-16 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <Play className="h-20 w-20 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                               </div>
                             </div>
                           </div>
@@ -289,7 +289,7 @@ export const NetflixProfileSelector = () => {
                       </div>
 
                       {/* Name */}
-                      <h3 className="text-xl md:text-2xl text-white text-center mt-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300 font-medium">
+                      <h3 className="text-2xl md:text-3xl text-white text-center mt-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300 font-medium">
                         {child.name}
                       </h3>
                     </motion.div>
