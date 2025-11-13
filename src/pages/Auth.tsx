@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,13 +13,15 @@ import type { Session } from "@supabase/supabase-js";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [session, setSession] = useState<Session | null>(null);
+  const returnTo = searchParams.get("returnTo");
 
   useEffect(() => {
-    console.log("[Auth] Setting up auth state listener");
+    console.log("[Auth] Setting up auth state listener", { returnTo });
     
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -27,8 +29,8 @@ export default function Auth() {
         console.log("[Auth] Auth state changed:", event, "Session:", !!session);
         setSession(session);
         if (session) {
-          console.log("[Auth] Session found, navigating to dashboard");
-          navigate("/dashboard");
+          console.log("[Auth] Session found, navigating to:", returnTo || "/dashboard");
+          navigate(returnTo || "/dashboard");
         }
       }
     );
@@ -38,8 +40,8 @@ export default function Auth() {
       console.log("[Auth] Initial session check:", !!session);
       setSession(session);
       if (session) {
-        console.log("[Auth] Existing session found, navigating to dashboard");
-        navigate("/dashboard");
+        console.log("[Auth] Existing session found, navigating to:", returnTo || "/dashboard");
+        navigate(returnTo || "/dashboard");
       }
     });
 
@@ -47,7 +49,7 @@ export default function Auth() {
       console.log("[Auth] Cleaning up auth listener");
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, returnTo]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,11 +68,15 @@ export default function Auth() {
     setLoading(true);
 
     try {
+      const redirectUrl = returnTo 
+        ? `${window.location.origin}${returnTo}`
+        : `${window.location.origin}/dashboard`;
+      
       const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/dashboard`,
+          emailRedirectTo: redirectUrl,
         },
       });
 
@@ -145,10 +151,14 @@ export default function Auth() {
 
   const handleGoogleSignIn = async () => {
     try {
+      const redirectUrl = returnTo 
+        ? `${window.location.origin}${returnTo}`
+        : `${window.location.origin}/dashboard`;
+      
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: redirectUrl,
         },
       });
 

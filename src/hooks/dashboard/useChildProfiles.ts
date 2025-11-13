@@ -13,6 +13,8 @@ export interface ChildProfile {
   personality_mode: string;
   streak_days: number;
   last_chat_date?: string;
+  pin_enabled?: boolean;
+  pin_code?: string;
   created_at: string;
   updated_at: string;
 }

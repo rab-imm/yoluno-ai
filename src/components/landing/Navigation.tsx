@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Shield, Menu, X, ChevronDown, Sparkles, Heart, Sun, Home } from "lucide-react";
-import { useState } from "react";
+import { Shield, Menu, X, ChevronDown, Sparkles, Heart, Sun, Home, Gamepad2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,6 +16,29 @@ export const Navigation = () => {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileFeaturesOpen, setMobileFeaturesOpen] = useState(false);
+  const [isParentLoggedIn, setIsParentLoggedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsParentLoggedIn(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        setIsParentLoggedIn(!!session);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleKidsModeClick = () => {
+    if (isParentLoggedIn) {
+      navigate("/?kids=true");
+    } else {
+      navigate("/?kids=true");
+    }
+  };
 
   const featureLinks = [
     { label: "Stories", path: "/features/stories", icon: Sparkles, color: "text-purple-500" },
@@ -117,12 +141,29 @@ export const Navigation = () => {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden lg:flex items-center gap-3">
-            <Button variant="ghost" onClick={() => navigate("/auth")} className="min-h-[44px]">
-              Login
+            <Button 
+              variant="outline" 
+              onClick={handleKidsModeClick}
+              className="min-h-[44px] border-2 border-primary/20 hover:border-primary/40 bg-gradient-to-r from-purple-500/10 to-pink-500/10"
+            >
+              <Gamepad2 className="mr-2 h-4 w-4" />
+              Kids Mode
             </Button>
-            <Button onClick={() => navigate("/auth")} className="shadow-lg min-h-[44px]">
-              Start Free
-            </Button>
+            {!isParentLoggedIn && (
+              <>
+                <Button variant="ghost" onClick={() => navigate("/auth")} className="min-h-[44px]">
+                  Login
+                </Button>
+                <Button onClick={() => navigate("/auth")} className="shadow-lg min-h-[44px]">
+                  Start Free
+                </Button>
+              </>
+            )}
+            {isParentLoggedIn && (
+              <Button onClick={() => navigate("/dashboard")} className="shadow-lg min-h-[44px]">
+                Dashboard
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -196,12 +237,32 @@ export const Navigation = () => {
             ))}
             
             <div className="flex flex-col gap-2 px-4 pt-4 border-t">
-              <Button variant="outline" onClick={() => navigate("/auth")} className="w-full min-h-[44px]">
-                Login
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  handleKidsModeClick();
+                  setMobileMenuOpen(false);
+                }}
+                className="w-full min-h-[44px] border-2 border-primary/20 bg-gradient-to-r from-purple-500/10 to-pink-500/10"
+              >
+                <Gamepad2 className="mr-2 h-4 w-4" />
+                Kids Mode
               </Button>
-              <Button onClick={() => navigate("/auth")} className="w-full min-h-[44px]">
-                Start Free
-              </Button>
+              {!isParentLoggedIn && (
+                <>
+                  <Button variant="outline" onClick={() => navigate("/auth")} className="w-full min-h-[44px]">
+                    Login
+                  </Button>
+                  <Button onClick={() => navigate("/auth")} className="w-full min-h-[44px]">
+                    Start Free
+                  </Button>
+                </>
+              )}
+              {isParentLoggedIn && (
+                <Button onClick={() => navigate("/dashboard")} className="w-full min-h-[44px]">
+                  Dashboard
+                </Button>
+              )}
             </div>
           </div>
         )}
