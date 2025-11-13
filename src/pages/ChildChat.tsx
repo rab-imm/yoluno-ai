@@ -38,7 +38,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useKidsAuth } from "@/contexts/KidsAuthContext";
 
 function ChildChatContent() {
-  const { id } = useParams();
+  const { childId: id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const isMobile = useIsMobile();
