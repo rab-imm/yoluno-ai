@@ -1,12 +1,14 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MessageSquare, BookOpen, Target, Rocket, Loader2 } from "lucide-react";
+import { MessageSquare, BookOpen, Target, Rocket, Loader2, Settings, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useChildActivities } from "@/hooks/dashboard/useChildActivities";
 import { formatDistanceToNow } from "date-fns";
 import { Progress } from "@/components/ui/progress";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
+import { EditChildProfileDialog } from "./EditChildProfileDialog";
+import { useState } from "react";
 
 interface EnhancedChildCardProps {
   child: any;
@@ -16,6 +18,7 @@ interface EnhancedChildCardProps {
 export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
   const navigate = useNavigate();
   const { data: activities, isLoading } = useChildActivities(child.id);
+  const [showEditDialog, setShowEditDialog] = useState(false);
 
   const totalActivities = (activities?.totalMessages || 0) + (activities?.totalStories || 0) + (activities?.activeJourneys || 0);
   const progressPercentage = Math.min((totalActivities / 10) * 100, 100);
@@ -52,9 +55,17 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
             <div className="flex-1">
               <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">{child.name}</h3>
               <p className="text-sm text-muted-foreground font-medium">Age {child.age}</p>
-              <Badge variant="outline" className="mt-2 text-xs font-semibold border-primary/30">
-                {child.personality_mode.replace(/_/g, " ")}
-              </Badge>
+              <div className="flex gap-2 mt-2">
+                <Badge variant="outline" className="text-xs font-semibold border-primary/30">
+                  {child.personality_mode.replace(/_/g, " ")}
+                </Badge>
+                {child.pin_enabled && (
+                  <Badge variant="secondary" className="text-xs font-semibold gap-1">
+                    <Lock className="h-3 w-3" />
+                    PIN Protected
+                  </Badge>
+                )}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -144,7 +155,25 @@ export function EnhancedChildCard({ child, index }: EnhancedChildCardProps) {
                   <span className="hidden sm:inline">Journeys</span>
                   <span className="sm:hidden">Goals</span>
                 </Button>
+                
+                {/* Settings Button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowEditDialog(true)}
+                  className="col-span-2 hover:bg-primary hover:text-primary-foreground transition-all border-2 hover:scale-105 min-h-[44px]"
+                >
+                  <Settings className="mr-2 h-4 w-4" />
+                  Profile Settings
+                </Button>
               </div>
+              
+              {/* Edit Dialog */}
+              <EditChildProfileDialog
+                open={showEditDialog}
+                onOpenChange={setShowEditDialog}
+                child={child}
+              />
             </>
           )}
         </CardContent>
