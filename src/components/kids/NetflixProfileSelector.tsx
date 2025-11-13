@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Lock, Plus, Settings, Play, Shield, LogOut, AlertTriangle, ChevronRight } from "lucide-react";
+import { Lock, Plus, Settings, Play, Shield, LogOut, AlertTriangle, ChevronRight, MessageSquare, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import { Textarea } from "@/components/ui/textarea";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
 import { KidsPINDialog } from "@/components/kids/KidsPINDialog";
 import { useKidsAuth } from "@/contexts/KidsAuthContext";
@@ -20,6 +21,8 @@ export const NetflixProfileSelector = () => {
   const [showPINDialog, setShowPINDialog] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [sendingFeedback, setSendingFeedback] = useState(false);
   const { login } = useKidsAuth();
 
   const handleProfileClick = (child: any) => {
@@ -63,6 +66,39 @@ export const NetflixProfileSelector = () => {
     }
   };
 
+  const handleSubmitFeedback = async () => {
+    if (!feedbackMessage.trim()) {
+      toast.error("Please write a message");
+      return;
+    }
+
+    try {
+      setSendingFeedback(true);
+      
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+
+      const { error } = await supabase
+        .from("child_feedback")
+        .insert({
+          parent_id: user.id,
+          message: feedbackMessage,
+          child_id: children[0]?.id || null
+        });
+
+      if (error) throw error;
+
+      toast.success("Message sent to parents! 📬");
+      setFeedbackMessage("");
+      setShowSidebar(false);
+    } catch (error) {
+      console.error("Error sending feedback:", error);
+      toast.error("Failed to send message");
+    } finally {
+      setSendingFeedback(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -96,14 +132,14 @@ export const NetflixProfileSelector = () => {
                 className="bg-white/10 border-white/20 text-white hover:bg-white/20"
               >
                 <Settings className="mr-2 h-4 w-4" />
-                Manage Profiles
+                Options
               </Button>
             </SheetTrigger>
             
             <SheetContent className="w-80">
-              <SheetHeader>
-                <SheetTitle>Parent Controls</SheetTitle>
-              </SheetHeader>
+        <SheetHeader>
+          <SheetTitle>Options</SheetTitle>
+        </SheetHeader>
               
               <div className="mt-6 space-y-4">
                 {/* Navigation */}
@@ -118,10 +154,51 @@ export const NetflixProfileSelector = () => {
                   >
                     <ChevronRight className="mr-2 h-4 w-4" />
                     View Dashboard
-                  </Button>
-                </div>
-                
-                <Separator className="my-6" />
+            </Button>
+          </div>
+
+          <Separator className="my-6" />
+
+          {/* Send a Message Section */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 mb-2">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              <h3 className="font-semibold">Send a Message</h3>
+            </div>
+            
+            <p className="text-sm text-muted-foreground">
+              Need to tell your parents something? Write them a message!
+            </p>
+            
+            <Textarea
+              placeholder="Hi Mom and Dad! I want to tell you..."
+              value={feedbackMessage}
+              onChange={(e) => setFeedbackMessage(e.target.value)}
+              className="min-h-[100px] resize-none"
+              maxLength={500}
+            />
+            
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{feedbackMessage.length}/500 characters</span>
+            </div>
+            
+            <Button
+              onClick={handleSubmitFeedback}
+              disabled={sendingFeedback || !feedbackMessage.trim()}
+              className="w-full"
+            >
+              {sendingFeedback ? (
+                <>Sending...</>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send to Parents
+                </>
+              )}
+            </Button>
+          </div>
+
+          <Separator className="my-6" />
                 
                 {/* Danger Zone */}
                 <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4">
@@ -170,8 +247,8 @@ export const NetflixProfileSelector = () => {
             </div>
           ) : (
             <>
-              {/* Profile Grid */}
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
+        {/* Profile Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8 max-w-5xl mx-auto justify-items-center">
                 {children.map((child, index) => {
                   return (
                     <motion.div

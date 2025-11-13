@@ -9,6 +9,7 @@ import { ProductExplainerPanel } from "@/components/dashboard/ProductExplainerPa
 import { EnhancedChildCard } from "@/components/dashboard/EnhancedChildCard";
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { EngagementPrompts } from "@/components/dashboard/EngagementPrompts";
+import { ChildFeedbackPanel } from "@/components/dashboard/ChildFeedbackPanel";
 
 
 export default function Overview() {
@@ -72,6 +73,9 @@ export default function Overview() {
 
       {/* Product Explainer - Show for first week */}
       <ProductExplainerPanel />
+
+      {/* Messages from Kids */}
+      <ChildFeedbackPanel />
 
       {/* Add Child Button */}
       <div className="flex justify-end">

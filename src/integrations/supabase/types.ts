@@ -167,6 +167,41 @@ export type Database = {
           },
         ]
       }
+      child_feedback: {
+        Row: {
+          child_id: string | null
+          created_at: string | null
+          id: string
+          is_read: boolean | null
+          message: string
+          parent_id: string
+        }
+        Insert: {
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message: string
+          parent_id: string
+        }
+        Update: {
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          parent_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_feedback_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_memory: {
         Row: {
           child_id: string
