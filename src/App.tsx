@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { KidsAuthProvider } from "./contexts/KidsAuthContext";
 
 // Load landing pages immediately
 import Index from "./pages/Index";
@@ -14,6 +15,8 @@ import Auth from "./pages/Auth";
 // Lazy load all other pages
 const ChildChat = lazy(() => import("./pages/ChildChat"));
 const KidsLauncher = lazy(() => import("./pages/KidsLauncher"));
+const KidsEntrypoint = lazy(() => import("./pages/KidsEntrypoint"));
+const KidsProfileSelector = lazy(() => import("./pages/KidsProfileSelector"));
 const Features = lazy(() => import("./pages/Features"));
 const StoriesFeature = lazy(() => import("./pages/features/Stories"));
 const JourneysFeature = lazy(() => import("./pages/features/JourneysFeature"));
@@ -73,8 +76,9 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ErrorBoundary>
-          <Suspense fallback={<LoadingFallback />}>
-            <Routes>
+          <KidsAuthProvider>
+            <Suspense fallback={<LoadingFallback />}>
+              <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
           
@@ -98,6 +102,11 @@ const App = () => (
           <Route path="/marketplace" element={<JourneyMarketplace />} />
           <Route path="/kids" element={<KidsLauncher />} />
           <Route path="/child/:id" element={<ChildChat />} />
+          
+          {/* Independent Kids Mode Routes */}
+          <Route path="/play" element={<KidsEntrypoint />} />
+          <Route path="/play/select" element={<KidsProfileSelector />} />
+          <Route path="/play/:childId" element={<ChildChat />} />
           <Route path="/features" element={<Features />} />
           <Route path="/features/stories" element={<StoriesFeature />} />
           <Route path="/features/journeys" element={<JourneysFeature />} />
@@ -113,8 +122,9 @@ const App = () => (
           <Route path="/coppa" element={<COPPA />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+              </Routes>
+            </Suspense>
+          </KidsAuthProvider>
         </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>

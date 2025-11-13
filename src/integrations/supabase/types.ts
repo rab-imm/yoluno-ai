@@ -217,10 +217,13 @@ export type Database = {
           created_at: string
           custom_avatar_url: string | null
           id: string
+          last_access_at: string | null
           last_chat_date: string | null
           name: string
           parent_id: string
           personality_mode: string
+          pin_code: string | null
+          pin_enabled: boolean | null
           streak_days: number
           updated_at: string
           use_library_avatar: boolean | null
@@ -233,10 +236,13 @@ export type Database = {
           created_at?: string
           custom_avatar_url?: string | null
           id?: string
+          last_access_at?: string | null
           last_chat_date?: string | null
           name: string
           parent_id: string
           personality_mode?: string
+          pin_code?: string | null
+          pin_enabled?: boolean | null
           streak_days?: number
           updated_at?: string
           use_library_avatar?: boolean | null
@@ -249,10 +255,13 @@ export type Database = {
           created_at?: string
           custom_avatar_url?: string | null
           id?: string
+          last_access_at?: string | null
           last_chat_date?: string | null
           name?: string
           parent_id?: string
           personality_mode?: string
+          pin_code?: string | null
+          pin_enabled?: boolean | null
           streak_days?: number
           updated_at?: string
           use_library_avatar?: boolean | null
@@ -1095,6 +1104,85 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      kids_invites: {
+        Row: {
+          child_id: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          invite_code: string
+          is_active: boolean | null
+          max_uses: number | null
+          used_count: number | null
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          invite_code: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          used_count?: number | null
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          invite_code?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          used_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_invites_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kids_sessions: {
+        Row: {
+          child_id: string
+          created_at: string
+          device_info: string | null
+          expires_at: string
+          id: string
+          last_activity_at: string | null
+          session_token: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          device_info?: string | null
+          expires_at: string
+          id?: string
+          last_activity_at?: string | null
+          session_token: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          device_info?: string | null
+          expires_at?: string
+          id?: string
+          last_activity_at?: string | null
+          session_token?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_sessions_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       parent_approved_content: {
         Row: {
