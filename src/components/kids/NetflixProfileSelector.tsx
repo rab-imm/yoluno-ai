@@ -248,7 +248,7 @@ export const NetflixProfileSelector = () => {
           ) : (
             <>
         {/* Profile Grid */}
-        <div className="flex flex-wrap justify-center gap-12 md:gap-16 max-w-3xl mx-auto px-4">
+        <div className="flex flex-wrap justify-center gap-12 md:gap-16 max-w-5xl mx-auto px-4">
                 {children.map((child, index) => {
                   return (
                     <motion.div
@@ -256,7 +256,7 @@ export const NetflixProfileSelector = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="group cursor-pointer w-56"
+                      className="group cursor-pointer w-80 md:w-96"
                       onClick={() => handleProfileClick(child)}
                     >
                       <div className="relative">
@@ -268,13 +268,13 @@ export const NetflixProfileSelector = () => {
                                 avatar={child.avatar || "👦"}
                                 customAvatarUrl={child.custom_avatar_url}
                                 avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
-                                size="3xl"
+                                size="5xl"
                                 expression="happy"
                                 className="!w-full !h-full !rounded-lg"
                               />
                               {/* Overlay on hover */}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center rounded-lg">
-                                <Play className="h-24 w-24 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <Play className="h-32 w-32 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                               </div>
                             </div>
                           </div>
@@ -289,7 +289,7 @@ export const NetflixProfileSelector = () => {
                       </div>
 
                       {/* Name */}
-                      <h3 className="text-2xl md:text-3xl text-white text-center mt-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300 font-medium">
+                      <h3 className="text-3xl md:text-4xl text-white text-center mt-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300 font-medium">
                         {child.name}
                       </h3>
                     </motion.div>
