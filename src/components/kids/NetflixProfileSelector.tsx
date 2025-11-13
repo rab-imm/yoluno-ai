@@ -1,18 +1,25 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Lock, Plus, Settings, Play, Shield } from "lucide-react";
+import { Lock, Plus, Settings, Play, Shield, LogOut, AlertTriangle, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
 import { KidsPINDialog } from "@/components/kids/KidsPINDialog";
 import { useKidsAuth } from "@/contexts/KidsAuthContext";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 export const NetflixProfileSelector = () => {
   const navigate = useNavigate();
   const { children, isLoading } = useChildProfiles();
   const [selectedChild, setSelectedChild] = useState<any>(null);
   const [showPINDialog, setShowPINDialog] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const { login } = useKidsAuth();
 
   const handleProfileClick = (child: any) => {
@@ -42,6 +49,20 @@ export const NetflixProfileSelector = () => {
     return success;
   };
 
+  const handleParentLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem('last_mode');
+      toast.success("Parent logged out successfully");
+      setShowLogoutDialog(false);
+      setShowSidebar(false);
+      navigate("/");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to log out");
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="fixed inset-0 z-40 flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -68,14 +89,63 @@ export const NetflixProfileSelector = () => {
             <span className="font-bold text-2xl">Paliyo</span>
           </button>
           
-          <Button
-            variant="outline"
-            onClick={() => navigate("/dashboard")}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
-          >
-            <Settings className="mr-2 h-4 w-4" />
-            Manage Profiles
-          </Button>
+          <Sheet open={showSidebar} onOpenChange={setShowSidebar}>
+            <SheetTrigger asChild>
+              <Button
+                variant="outline"
+                className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Manage Profiles
+              </Button>
+            </SheetTrigger>
+            
+            <SheetContent className="w-80">
+              <SheetHeader>
+                <SheetTitle>Parent Controls</SheetTitle>
+              </SheetHeader>
+              
+              <div className="mt-6 space-y-4">
+                {/* Navigation */}
+                <div className="space-y-2">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start"
+                    onClick={() => {
+                      navigate("/dashboard");
+                      setShowSidebar(false);
+                    }}
+                  >
+                    <ChevronRight className="mr-2 h-4 w-4" />
+                    View Dashboard
+                  </Button>
+                </div>
+                
+                <Separator className="my-6" />
+                
+                {/* Danger Zone */}
+                <div className="rounded-lg bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                    <h3 className="font-semibold text-red-600">Danger Zone</h3>
+                  </div>
+                  
+                  <p className="text-sm text-red-600/80 mb-3">
+                    Logging out will return you to the main page and require re-authentication.
+                  </p>
+                  
+                  <Button
+                    variant="destructive"
+                    className="w-full"
+                    onClick={() => setShowLogoutDialog(true)}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Log Out Parent
+                  </Button>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* Main Content */}
@@ -148,22 +218,6 @@ export const NetflixProfileSelector = () => {
                     </motion.div>
                   );
                 })}
-
-                {/* Add Profile Card */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: children.length * 0.1 }}
-                  className="group cursor-pointer"
-                  onClick={() => navigate("/dashboard")}
-                >
-                  <div className="w-full aspect-square rounded-lg border-4 border-dashed border-white/30 group-hover:border-white transition-all duration-300 flex items-center justify-center bg-white/5 group-hover:bg-white/10 shadow-xl group-hover:shadow-2xl group-hover:scale-105">
-                    <Plus className="h-16 w-16 text-white/50 group-hover:text-white transition-colors duration-300" />
-                  </div>
-                  <h3 className="text-xl md:text-2xl text-white text-center mt-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300 font-medium">
-                    Add Profile
-                  </h3>
-                </motion.div>
               </div>
 
               {/* Back to Dashboard Link */}
@@ -190,6 +244,24 @@ export const NetflixProfileSelector = () => {
           childName={selectedChild.name}
         />
       )}
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log out parent account?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will end your parent session. You'll need to log in again to manage profiles or access parent controls.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleParentLogout} className="bg-destructive hover:bg-destructive/90">
+              Log Out
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
