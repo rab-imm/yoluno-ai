@@ -226,7 +226,7 @@ export const NetflixProfileSelector = () => {
         </div>
 
         {/* Main Content */}
-        <div className="w-full max-w-7xl text-center space-y-12">
+        <div className="w-full max-w-7xl text-center space-y-16">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-12">
             Who's Playing?
           </h1>
@@ -248,7 +248,7 @@ export const NetflixProfileSelector = () => {
           ) : (
             <>
         {/* Profile Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-4xl mx-auto justify-items-center px-4">
+        <div className="flex flex-wrap justify-center gap-12 md:gap-16 max-w-3xl mx-auto px-4">
                 {children.map((child, index) => {
                   return (
                     <motion.div
@@ -256,7 +256,7 @@ export const NetflixProfileSelector = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.1 }}
-                      className="group cursor-pointer"
+                      className="group cursor-pointer w-56"
                       onClick={() => handleProfileClick(child)}
                     >
                       <div className="relative">
@@ -268,13 +268,13 @@ export const NetflixProfileSelector = () => {
                                 avatar={child.avatar || "👦"}
                                 customAvatarUrl={child.custom_avatar_url}
                                 avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
-                                size="2xl"
+                                size="3xl"
                                 expression="happy"
                                 className="!w-full !h-full !rounded-lg"
                               />
                               {/* Overlay on hover */}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center rounded-lg">
-                                <Play className="h-20 w-20 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <Play className="h-24 w-24 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                               </div>
                             </div>
                           </div>
