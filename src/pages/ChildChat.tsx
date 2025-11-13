@@ -44,7 +44,7 @@ function ChildChatContent() {
   const isMobile = useIsMobile();
   const { mode } = useMode();
   const queryClient = useQueryClient();
-  const { session: kidsSession } = useKidsAuth();
+  const { session: kidsSession, isLoading: kidsAuthLoading } = useKidsAuth();
   const [loading, setLoading] = useState(true);
   const [child, setChild] = useState<any>(null);
   const [bedtimeStory, setBedtimeStory] = useState<any>(null);
@@ -56,9 +56,11 @@ function ChildChatContent() {
 
 
   useEffect(() => {
-    loadChild();
-    loadBedtimeStory();
-  }, [id]);
+    if (!kidsAuthLoading) {
+      loadChild();
+      loadBedtimeStory();
+    }
+  }, [id, kidsSession, kidsAuthLoading]);
 
   const loadChild = async () => {
     if (!id) {
@@ -144,7 +146,7 @@ function ChildChatContent() {
     toast.success("Buddy personality updated! 🎉");
   };
 
-  if (loading) {
+  if (loading || kidsAuthLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-child-bg">
         <div className="animate-pulse text-child-primary text-xl">Loading your buddy...</div>
