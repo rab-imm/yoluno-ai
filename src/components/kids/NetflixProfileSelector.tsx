@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
 import { KidsPINDialog } from "@/components/kids/KidsPINDialog";
 import { useKidsAuth } from "@/contexts/KidsAuthContext";
+import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 
 export const NetflixProfileSelector = () => {
   const navigate = useNavigate();
@@ -102,10 +103,6 @@ export const NetflixProfileSelector = () => {
               {/* Profile Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 md:gap-8">
                 {children.map((child, index) => {
-                  const avatarUrl = child.use_library_avatar && child.avatar_library_id
-                    ? `/avatars/${child.avatar_library_id}.png`
-                    : child.custom_avatar_url || child.avatar;
-
                   return (
                     <motion.div
                       key={child.id}
@@ -117,21 +114,28 @@ export const NetflixProfileSelector = () => {
                     >
                       <div className="relative">
                         {/* Avatar */}
-                        <div className="relative aspect-square rounded-lg overflow-hidden border-4 border-transparent group-hover:border-white transition-all duration-300 shadow-xl group-hover:shadow-2xl group-hover:scale-105">
-                          <img
-                            src={avatarUrl}
-                            alt={child.name}
-                            className="w-full h-full object-cover"
-                          />
-                          {/* Overlay on hover */}
-                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center">
-                            <Play className="h-16 w-16 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                        <div className="relative w-full aspect-square">
+                          <div className="absolute inset-0 rounded-lg overflow-hidden border-4 border-transparent group-hover:border-white transition-all duration-300 shadow-xl group-hover:shadow-2xl">
+                            <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-300">
+                              <BuddyAvatar
+                                avatar={child.avatar || "👦"}
+                                customAvatarUrl={child.custom_avatar_url}
+                                avatarLibraryId={child.use_library_avatar ? child.avatar_library_id : undefined}
+                                size="xl"
+                                expression="happy"
+                                className="!w-full !h-full !rounded-lg"
+                              />
+                              {/* Overlay on hover */}
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-300 flex items-center justify-center rounded-lg">
+                                <Play className="h-16 w-16 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                              </div>
+                            </div>
                           </div>
                         </div>
 
                         {/* PIN Badge */}
                         {child.pin_enabled && (
-                          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-2">
+                          <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm rounded-full p-2 z-10">
                             <Lock className="w-5 h-5 text-white" />
                           </div>
                         )}
@@ -153,7 +157,7 @@ export const NetflixProfileSelector = () => {
                   className="group cursor-pointer"
                   onClick={() => navigate("/dashboard")}
                 >
-                  <div className="aspect-square rounded-lg border-4 border-dashed border-white/30 group-hover:border-white transition-all duration-300 flex items-center justify-center bg-white/5 group-hover:bg-white/10 shadow-xl group-hover:shadow-2xl group-hover:scale-105">
+                  <div className="w-full aspect-square rounded-lg border-4 border-dashed border-white/30 group-hover:border-white transition-all duration-300 flex items-center justify-center bg-white/5 group-hover:bg-white/10 shadow-xl group-hover:shadow-2xl group-hover:scale-105">
                     <Plus className="h-16 w-16 text-white/50 group-hover:text-white transition-colors duration-300" />
                   </div>
                   <h3 className="text-xl md:text-2xl text-white text-center mt-4 opacity-60 group-hover:opacity-100 transition-opacity duration-300 font-medium">
