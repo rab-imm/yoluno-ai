@@ -5,7 +5,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Testimonial } from "@/components/landing/Testimonial";
 import { TrustBadge } from "@/components/landing/TrustBadge";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, Sparkles, Heart, Sun, Home, Eye, Settings, BarChart, Lock, CheckCircle, XCircle, MessageCircle, Play } from "lucide-react";
+import { Shield, Sparkles, Heart, Lock, Play, Eye, CheckCircle } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { FirstTimePrompt } from "@/components/kids/FirstTimePrompt";
@@ -13,15 +13,7 @@ import { NetflixProfileSelector } from "@/components/kids/NetflixProfileSelector
 import heroBackground from "@/assets/homepage-hero-bg.jpg";
 import testimonialsBg from "@/assets/testimonials-bg.jpg";
 import ctaBackground from "@/assets/cta-background.jpg";
-import whyPaliyoFeatures from "@/assets/why-paliyo-features.jpg";
-import storiesIcon from "@/assets/stories-feature-icon.jpg";
-import journeysIcon from "@/assets/journeys-feature-icon.jpg";
-import learningIcon from "@/assets/learning-feature-icon.jpg";
-import familyIcon from "@/assets/family-feature-icon.jpg";
 import controlCenterDashboard from "@/assets/control-center-dashboard.jpg";
-import transparencyHubScreenshot from "@/assets/transparency-hub-screenshot.jpg";
-import connectionToolsInterface from "@/assets/connection-tools-interface.jpg";
-import supportSuiteAnalytics from "@/assets/support-suite-analytics.jpg";
 import testimonialSarah from "@/assets/testimonial-sarah-t.jpg";
 import testimonialMike from "@/assets/testimonial-mike-r.jpg";
 import testimonialLena from "@/assets/testimonial-lena-k.jpg";
@@ -62,83 +54,16 @@ const Index = () => {
     return () => subscription.unsubscribe();
   }, [searchParams]);
 
-  const kidsFeatures = [
-    {
-      icon: Sparkles,
-      title: "Stories",
-      description: "Bedtime tales crafted just for them, where they're the brave explorer or clever inventor. Narrated in soothing voices, with pauses for their input—ending in dreams, not screens.",
-      color: "text-purple-500",
-      path: "/features/stories",
-      image: storiesIcon
-    },
-    {
-      icon: Heart,
-      title: "Journeys",
-      description: "Bite-sized daily missions to nurture habits like kindness or tidying up. Earn badges, track streaks, and celebrate wins with virtual high-fives that build real confidence.",
-      color: "text-pink-500",
-      path: "/features/journeys",
-      image: journeysIcon
-    },
-    {
-      icon: Sun,
-      title: "Learning",
-      description: "Endless 'why' and 'how' answered safely. From 'Why do stars twinkle?' to 'How do plants grow?'—pulled from curated packs you approve, with fun facts and follow-up questions.",
-      color: "text-amber-500",
-      path: "/features/learning",
-      image: learningIcon
-    },
-    {
-      icon: Home,
-      title: "Family",
-      description: "Chat with echoes of your family's past. 'Tell me about Grandma's adventures'—and Paliyo shares stories from your uploaded memories, keeping heritage alive in their voice.",
-      color: "text-emerald-500",
-      path: "/features/family",
-      premium: true,
-      image: familyIcon
-    }
-  ];
-
-  const parentFeatures = [
-    {
-      icon: Settings,
-      title: "Control Center",
-      description: "Curate content on the fly—approve topics, block sensitivities, upload family lore, or design custom journeys. It's your dashboard, your rules.",
-      color: "text-blue-500",
-      image: controlCenterDashboard
-    },
-    {
-      icon: Eye,
-      title: "Transparency Hub",
-      description: "Dive into detailed logs of every chat. See questions asked, answers given, and emotional tones flagged—empowering you to guide without guessing.",
-      color: "text-indigo-500",
-      image: transparencyHubScreenshot
-    },
-    {
-      icon: Heart,
-      title: "Connection Tools",
-      description: "Busy day? Record a voice intro for tonight's story, or schedule ritual reminders. Paliyo keeps the warmth of home flowing, even from afar.",
-      color: "text-rose-500",
-      image: connectionToolsInterface
-    },
-    {
-      icon: BarChart,
-      title: "Support Suite",
-      description: "Weekly digest reports on progress (e.g., 'Your kid nailed 3 kindness missions!'), auto-generated family journals, and habit analytics to spot patterns and celebrate growth.",
-      color: "text-cyan-500",
-      image: supportSuiteAnalytics
-    }
-  ];
-
   const testimonials = [
     {
-      quote: "Finally, an AI I trust my 5-year-old with. I set the topics on dinosaurs and emotions—Paliyo weaves them into stories that spark her imagination. Game-changer for solo evenings.",
+      quote: "Finally, an AI I trust my 5-year-old with. I set the topics on dinosaurs and emotions—Yoluno weaves them into stories that spark her imagination. Game-changer for solo evenings.",
       author: "Sarah T.",
       role: "Mom of Two",
       avatarFallback: "ST",
       image: testimonialSarah
     },
     {
-      quote: "Traveling for work used to mean missing bedtime. Now, my daughter hears my voice in Paliyo's tales, and I get the recap. It's like I'm there.",
+      quote: "Traveling for work used to mean missing bedtime. Now, my daughter hears my voice in Yoluno's tales, and I get the recap. It's like I'm there.",
       author: "Mike R.",
       role: "Dad on the Road",
       avatarFallback: "MR",
@@ -367,17 +292,18 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Safety First Section */}
+      {/* Safety First Section - Redesigned */}
       <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <Lock className="h-12 w-12 text-primary mx-auto mb-4" />
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Safety First: AI That Doesn't Wander</h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">Designed with Child Psychologists + AI Experts.</h2>
             <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              We built Paliyo with one non-negotiable: Your child's safety is sacred. No black boxes here—just crystal-clear guardrails designed with pediatric experts and parents like you.
+              Your family's safety is not a feature.<br />
+              <strong className="text-foreground">It's the foundation.</strong>
             </p>
           </div>
-          <div className="grid md:grid-cols-2 gap-6 mb-8">
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
             <Card className="p-6 flex gap-4">
               <Lock className="h-8 w-8 text-primary flex-shrink-0" />
               <div>
@@ -399,13 +325,6 @@ const Index = () => {
                 <p className="text-sm text-muted-foreground">Warm, age-appropriate language with built-in empathy. Paliyo models kindness in every reply.</p>
               </div>
             </Card>
-            <Card className="p-6 flex gap-4">
-              <XCircle className="h-8 w-8 text-amber-500 flex-shrink-0" />
-              <div>
-                <h3 className="font-bold text-lg mb-2">Gentle Refusals</h3>
-                <p className="text-sm text-muted-foreground">Off-topic? Paliyo pivots gracefully: "That's a big question—let's ask Mom/Dad first!" No scolding, just redirection.</p>
-              </div>
-            </Card>
           </div>
           <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
             <div className="flex items-start gap-4">
@@ -413,7 +332,7 @@ const Index = () => {
               <div>
                 <h3 className="font-bold text-lg mb-2">Full Conversation Logs</h3>
                 <p className="text-muted-foreground mb-4">Review, export, or share anytime. Plus, automatic alerts for any flagged moments.</p>
-                <p className="text-sm text-muted-foreground italic">Our Safety Charter outlines it all—audited annually for COPPA and KOSA compliance. Because safe today means confident tomorrow.</p>
+                <p className="text-sm text-muted-foreground italic">Our Safety Charter outlines it all—audited annually for COPPA compliance.</p>
               </div>
             </div>
           </Card>
@@ -425,7 +344,38 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+      {/* Join the Founding Families */}
+      <section className="py-20 px-4 bg-gradient-to-br from-primary via-accent to-primary relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(255,255,255,0.1),transparent_50%)]" />
+        <div className="container mx-auto max-w-5xl text-center space-y-8 relative z-10">
+          <h2 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg">Join the Founding Families</h2>
+          <p className="text-xl text-white/90 drop-shadow">Early access comes with:</p>
+          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <Card className="p-6 bg-white/95 backdrop-blur">
+              <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-3" />
+              <h3 className="font-bold text-lg mb-2">Lifetime Loyalty Discount</h3>
+              <p className="text-sm text-muted-foreground">Lock in special pricing forever</p>
+            </Card>
+            <Card className="p-6 bg-white/95 backdrop-blur">
+              <Sparkles className="h-8 w-8 text-amber-500 mx-auto mb-3" />
+              <h3 className="font-bold text-lg mb-2">Exclusive "Founding Seedling" Badge</h3>
+              <p className="text-sm text-muted-foreground">Digital collectible for early adopters</p>
+            </Card>
+            <Card className="p-6 bg-white/95 backdrop-blur">
+              <Heart className="h-8 w-8 text-rose-500 mx-auto mb-3" />
+              <h3 className="font-bold text-lg mb-2">Priority Feature Requests</h3>
+              <p className="text-sm text-muted-foreground">Shape the future of Yoluno</p>
+            </Card>
+          </div>
+          <Button size="lg" onClick={() => navigate("/auth")} className="text-lg px-10 py-7 shadow-2xl bg-white text-primary hover:bg-white/90 font-bold">
+            <Sparkles className="mr-2 h-6 w-6" />
+            Claim Your Spot
+          </Button>
+          <p className="text-white/80 text-sm">Limited spots available</p>
+        </div>
+      </section>
+
+      {/* CTA Section */}
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0">
           <img 
@@ -448,14 +398,14 @@ const Index = () => {
                   avatarFallback={testimonial.avatarFallback}
                 />
                 <Button variant="link" className="w-full" onClick={() => navigate("/auth")}>
-                  Like {testimonial.author.split(' ')[0]}? Start Free Like Them →
+                  Like {testimonial.author.split(' ')[0]}? Get Early Access →
                 </Button>
               </div>
             ))}
           </div>
           <div className="text-center">
             <Button size="lg" onClick={() => navigate("/auth")} className="shadow-xl">
-              Join These Families: Start Free Today
+              Join These Families: Get Early Access
             </Button>
             <p className="text-sm text-muted-foreground mt-4">
               Limited spots in beta—claim yours! 🎉
@@ -464,39 +414,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Closing Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-primary/10 via-secondary/10 to-accent/10">
-        <div className="container mx-auto max-w-5xl text-center space-y-8">
-          <h2 className="text-3xl md:text-5xl font-bold">One Paliyo. Two Audiences. Endless Benefits.</h2>
-          <div className="grid md:grid-cols-2 gap-6 text-left max-w-4xl mx-auto">
-            <Card className="p-6">
-              <Sparkles className="h-8 w-8 text-purple-500 mb-3" />
-              <h3 className="text-xl font-bold mb-2">For Children:</h3>
-              <p className="text-muted-foreground">A safe, magical companion who turns ordinary moments into extraordinary memories.</p>
-            </Card>
-            <Card className="p-6">
-              <Shield className="h-8 w-8 text-blue-500 mb-3" />
-              <h3 className="text-xl font-bold mb-2">For Parents:</h3>
-              <p className="text-muted-foreground">A reliable, supportive assistant who lightens the load and deepens the joy.</p>
-            </Card>
-          </div>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Together? A family stronger, closer, and ready for whatever comes next.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-            <Button size="lg" onClick={() => navigate("/auth")} className="text-lg px-8 py-6 shadow-xl">
-              <Sparkles className="mr-2 h-5 w-5" />
-              Start Free Today
-            </Button>
-            <div className="flex items-center justify-center gap-2 text-muted-foreground">
-              <MessageCircle className="h-5 w-5" />
-              <span className="text-sm">Join 10,000+ Families Already Paliyo-ing</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
+      {/* Testimonials Section */}
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0">
           <img 
@@ -509,14 +427,14 @@ const Index = () => {
         </div>
         <div className="container mx-auto max-w-4xl text-center space-y-6 relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold">
-            Safe AI that makes bedtime magical, builds great habits, and keeps learning protected.
+            Safe AI that nurtures growing minds.
           </h2>
           <p className="text-lg text-muted-foreground">
-            Start with unlimited conversations, personalized stories, and parent-controlled learning. No credit card required.
+            Start with personalized stories, gentle guidance, and parent-controlled learning. No credit card required.
           </p>
           <Button size="lg" onClick={() => navigate("/auth")} className="text-lg px-8 py-6 shadow-2xl hover:shadow-3xl transition-all">
             <Sparkles className="mr-2 h-6 w-6" />
-            Start Free Today
+            Get Early Access
           </Button>
           <div className="flex flex-wrap justify-center gap-4 pt-4">
             <TrustBadge icon={Shield} text="No ads" />
