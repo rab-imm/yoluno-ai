@@ -114,28 +114,30 @@ const Index = () => {
             className="w-full h-full object-cover"
             fetchPriority="high"
           />
+          <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/75 to-background/80" />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center space-y-6">
             <div className="inline-block p-3 bg-gradient-to-br from-primary to-accent rounded-3xl mb-4 animate-bounce-gentle">
               <Shield className="h-12 w-12 text-white" />
             </div>
-            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white leading-tight drop-shadow-lg">
-              One Safe AI Companion for Your Child—
-              <br className="hidden md:block" />
-              and a Co-Pilot for You as a Parent
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight drop-shadow-lg">
+              YOLUNO
             </h1>
-            <p className="text-lg md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
-              From bedtime stories where your little one stars as the hero, to daily habit missions that build quiet confidence, to unlocking family memories with a simple question—Paliyo handles it all. Safe, conversational, and always under your watchful eye.
+            <h2 className="text-2xl md:text-4xl font-semibold text-foreground drop-shadow-md">
+              Safe AI for Growing Minds.
+            </h2>
+            <p className="text-lg md:text-2xl text-foreground/90 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
+              Your child's smart, gentle, and parent-approved AI buddy.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
               <Button size="lg" onClick={() => navigate("/auth")} className="text-lg px-8 py-6 shadow-xl hover:shadow-2xl transition-all">
                 <Sparkles className="mr-2 h-5 w-5" />
-                Start Free Today (No Card Needed)
+                Get Early Access
               </Button>
-              <Button size="lg" variant="outline" onClick={() => navigate("/features")} className="text-lg px-8 py-6">
+              <Button size="lg" variant="outline" onClick={() => navigate("/features")} className="text-lg px-8 py-6 bg-background/80 backdrop-blur">
                 <Play className="mr-2 h-5 w-5" />
-                Watch the 2-Min Demo
+                Watch Demo
               </Button>
             </div>
             
@@ -146,59 +148,81 @@ const Index = () => {
               <TrustBadge icon={Shield} text="COPPA certified" />
               <TrustBadge icon={Shield} text="Cancel anytime" />
             </div>
-
-            {/* Split-screen preview note */}
-            <p className="text-sm text-white/80 pt-4 italic drop-shadow">
-              <span className="font-semibold">For Kids:</span> Magic Awaits · <span className="font-semibold">For Parents:</span> Control & Insights
-            </p>
           </div>
         </div>
       </section>
 
-      {/* Why Paliyo? Section */}
+      {/* What Makes Yoluno Different? */}
       <section className="py-20 px-4 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <div className="container mx-auto max-w-6xl text-center">
+          <h2 className="text-3xl md:text-5xl font-bold mb-6">What Makes Yoluno Different?</h2>
+          <p className="text-lg md:text-2xl text-muted-foreground max-w-4xl mx-auto leading-relaxed mb-12">
+            Because kids deserve more than a chatbot.<br />
+            They deserve safety, learning, magic, and emotional care.<br />
+            Yoluno delivers all four — in one beautiful experience.
+          </p>
+          <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <Card className="p-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center mx-auto mb-3">
+                <Shield className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">Safety</h3>
+              <p className="text-sm text-muted-foreground">Parent-approved content only</p>
+            </Card>
+            <Card className="p-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center mx-auto mb-3">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">Learning</h3>
+              <p className="text-sm text-muted-foreground">Curated knowledge packs</p>
+            </Card>
+            <Card className="p-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mx-auto mb-3">
+                <Sparkles className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">Magic</h3>
+              <p className="text-sm text-muted-foreground">Personalized stories & adventures</p>
+            </Card>
+            <Card className="p-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center mx-auto mb-3">
+                <Heart className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-bold text-lg mb-2">Emotional Care</h3>
+              <p className="text-sm text-muted-foreground">Listens, encourages, grows with them</p>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Parent-Curated Section */}
+      <section className="py-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl md:text-5xl font-bold">Why Paliyo?</h2>
-              <p className="text-lg text-muted-foreground leading-relaxed">
-                In a world of wandering AIs that promise the moon but deliver risks, Paliyo is different. We're not just another app—we're the bridge between your child's wonder and your peace of mind.
-              </p>
-              <div className="space-y-4">
-                <Card className="p-4 flex gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                      <Sparkles className="h-4 w-4 text-white" />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-1">For Kids:</p>
-                    <p className="text-sm text-muted-foreground">A true companion who listens without judgment, responds with kindness, and grows alongside their curiosities. No ads, no distractions—just pure, magical connection.</p>
-                  </div>
-                </Card>
-                <Card className="p-4 flex gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                      <Shield className="h-4 w-4 text-white" />
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-semibold mb-1">For Parents:</p>
-                    <p className="text-sm text-muted-foreground">A trusted assistant that amplifies your intuition. Set boundaries, review every moment, and get insights that make parenting feel collaborative, not overwhelming.</p>
-                  </div>
-                </Card>
+              <h2 className="text-3xl md:text-5xl font-bold">Parent-Curated.</h2>
+              <div className="space-y-4 text-lg text-muted-foreground">
+                <p className="leading-relaxed">
+                  Unlike AI tools that answer anything, Yoluno only answers what <strong>YOU</strong> approve.
+                </p>
+                <p className="leading-relaxed">
+                  <strong>You</strong> choose the topics.
+                </p>
+                <p className="leading-relaxed">
+                  <strong>You</strong> choose the limits.
+                </p>
+                <p className="leading-relaxed font-semibold text-foreground">
+                  We handle the safety.
+                </p>
               </div>
-              <p className="text-muted-foreground italic">
-                Unlike generic chatbots that improvise and expose kids to the unknown, Paliyo stays in your lane. Every story, question, and adventure is drawn from your approved world—parent-vetted, sandboxed, and logged for transparency.
-              </p>
-              <Button onClick={() => navigate("/auth")} size="lg">
-                Start Free Now
+              <Button size="lg" onClick={() => navigate("/auth")} className="shadow-lg">
+                <Shield className="mr-2 h-5 w-5" />
+                Get Early Access
               </Button>
             </div>
-            <div className="rounded-2xl overflow-hidden shadow-lg">
+            <div className="rounded-2xl overflow-hidden shadow-2xl">
               <img 
-                src={whyPaliyoFeatures} 
-                alt="Paliyo's 4 core features - child interacting with AI companion and parent monitoring dashboard"
+                src={controlCenterDashboard} 
+                alt="Parent control dashboard showing topic approval and content management"
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
@@ -207,88 +231,21 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Paliyo for Kids: Companion Mode */}
-      <section className="py-20 px-4">
-        <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Paliyo for Kids: Companion Mode</h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Unlock a world where learning feels like play and every day sparkles with possibility. Paliyo adapts to your child's age, mood, and pace—turning "What's next?" into "I can't wait!"
-            </p>
+      {/* Gentle, Smart, Emotionally Aware */}
+      <section className="py-20 px-4 bg-gradient-to-br from-rose-50/50 via-purple-50/30 to-pink-50/50 dark:from-rose-950/10 dark:via-purple-950/10 dark:to-pink-950/10">
+        <div className="container mx-auto max-w-5xl text-center space-y-8">
+          <Heart className="h-16 w-16 text-rose-500 mx-auto mb-4" />
+          <h2 className="text-3xl md:text-5xl font-bold">Gentle, Smart, Emotionally Aware.</h2>
+          <div className="space-y-4 text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="leading-relaxed">Yoluno doesn't just respond.</p>
+            <p className="leading-relaxed font-semibold text-foreground">It listens.</p>
+            <p className="leading-relaxed font-semibold text-foreground">It encourages.</p>
+            <p className="leading-relaxed">And it grows with your child.</p>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {kidsFeatures.map((feature) => {
-              const IconComponent = feature.icon;
-              return (
-                <Card key={feature.title} className="p-6 hover:shadow-xl transition-all hover:-translate-y-1 relative group overflow-hidden">
-                  {feature.premium && (
-                    <span className="absolute top-4 right-4 text-xs font-semibold px-2 py-1 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 text-white z-10">
-                      Premium
-                    </span>
-                  )}
-                  <div className="aspect-[4/3] rounded-lg overflow-hidden mb-4">
-                    <img 
-                      src={feature.image} 
-                      alt={`${feature.title} feature illustration`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      loading="lazy"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
-                    {feature.description}
-                  </p>
-                  <div className="flex flex-col gap-2 mt-auto">
-                    <Button variant="outline" size="sm" onClick={() => navigate(feature.path)}>
-                      Learn More
-                    </Button>
-                    <Button size="sm" onClick={() => navigate("/auth")}>
-                      Try Free
-                    </Button>
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
-          <div className="text-center mt-10">
-            <Button size="lg" onClick={() => navigate("/features")} className="shadow-lg">
-              <Sparkles className="mr-2 h-5 w-5" />
-              Meet Paliyo: Try a Sample Story Now
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Paliyo for Parents: Assistant Mode */}
-      <section className="py-20 px-4 bg-muted/30">
-        <div className="container mx-auto max-w-7xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Paliyo for Parents: Assistant Mode</h2>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
-              Parenting is your greatest adventure—Paliyo makes it easier to navigate. With full control at your fingertips, you stay connected without being everywhere at once.
-            </p>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {parentFeatures.map((feature) => {
-              const IconComponent = feature.icon;
-              return (
-                <Card key={feature.title} className="p-6 hover:shadow-xl transition-all hover:-translate-y-1 group overflow-hidden">
-                  <div className="aspect-[16/10] rounded-lg overflow-hidden mb-4">
-                    <img 
-                      src={feature.image} 
-                      alt={`${feature.title} dashboard interface`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                      loading="lazy"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    {feature.description}
-                  </p>
-                </Card>
-              );
-            })}
-          </div>
+          <Button size="lg" onClick={() => navigate("/auth")} className="shadow-xl mt-8">
+            <Heart className="mr-2 h-5 w-5" />
+            Experience Yoluno
+          </Button>
         </div>
       </section>
 
@@ -304,26 +261,20 @@ const Index = () => {
             </p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <Card className="p-6 flex gap-4">
-              <Lock className="h-8 w-8 text-primary flex-shrink-0" />
-              <div>
-                <h3 className="font-bold text-lg mb-2">Parent Allowlist Only</h3>
-                <p className="text-sm text-muted-foreground">Every piece of content starts with your green light. No external web crawls or unvetted data.</p>
-              </div>
+            <Card className="p-6">
+              <Lock className="h-8 w-8 text-primary mb-3" />
+              <h3 className="font-bold text-lg mb-2">Parent Allowlist Only</h3>
+              <p className="text-sm text-muted-foreground">Every piece of content starts with your green light.</p>
             </Card>
-            <Card className="p-6 flex gap-4">
-              <Shield className="h-8 w-8 text-emerald-500 flex-shrink-0" />
-              <div>
-                <h3 className="font-bold text-lg mb-2">Closed Knowledge Sandbox</h3>
-                <p className="text-sm text-muted-foreground">Responses drawn exclusively from your approved library—think 1,000+ safe sources on science, stories, and values.</p>
-              </div>
+            <Card className="p-6">
+              <Shield className="h-8 w-8 text-emerald-500 mb-3" />
+              <h3 className="font-bold text-lg mb-2">Closed Knowledge Sandbox</h3>
+              <p className="text-sm text-muted-foreground">Responses drawn exclusively from your approved library.</p>
             </Card>
-            <Card className="p-6 flex gap-4">
-              <CheckCircle className="h-8 w-8 text-blue-500 flex-shrink-0" />
-              <div>
-                <h3 className="font-bold text-lg mb-2">Child-Safe Tone & Filters</h3>
-                <p className="text-sm text-muted-foreground">Warm, age-appropriate language with built-in empathy. Paliyo models kindness in every reply.</p>
-              </div>
+            <Card className="p-6">
+              <CheckCircle className="h-8 w-8 text-blue-500 mb-3" />
+              <h3 className="font-bold text-lg mb-2">Child-Safe Tone & Filters</h3>
+              <p className="text-sm text-muted-foreground">Warm, age-appropriate language with built-in empathy.</p>
             </Card>
           </div>
           <Card className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5">
@@ -339,6 +290,42 @@ const Index = () => {
           <div className="text-center mt-8">
             <Button variant="outline" size="lg" onClick={() => navigate("/safety")}>
               Read Our Safety Charter
+            </Button>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 px-4 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <img 
+            src={testimonialsBg} 
+            alt="Happy families"
+            className="w-full h-full object-cover opacity-10"
+            loading="lazy"
+          />
+        </div>
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <h2 className="text-3xl md:text-5xl font-bold text-center mb-12">What Families Are Saying</h2>
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="space-y-4">
+                <Testimonial
+                  quote={testimonial.quote}
+                  author={testimonial.author}
+                  avatarImage={testimonial.image}
+                  role={testimonial.role}
+                  avatarFallback={testimonial.avatarFallback}
+                />
+                <Button variant="link" className="w-full" onClick={() => navigate("/auth")}>
+                  Like {testimonial.author.split(' ')[0]}? Get Early Access →
+                </Button>
+              </div>
+            ))}
+          </div>
+          <div className="text-center">
+            <Button size="lg" onClick={() => navigate("/auth")} className="shadow-xl">
+              Join These Families: Get Early Access
             </Button>
           </div>
         </div>
@@ -376,45 +363,6 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <img 
-            src={testimonialsBg} 
-            alt="Happy families"
-            className="w-full h-full object-cover opacity-10"
-            loading="lazy"
-          />
-        </div>
-        <div className="container mx-auto max-w-6xl relative z-10">
-          <h2 className="text-3xl md:text-5xl font-bold text-center mb-12">What Families Are Saying</h2>
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="space-y-4">
-                <Testimonial
-                  quote={testimonial.quote}
-                  author={testimonial.author}
-                  avatarImage={testimonial.image}
-                  role={testimonial.role}
-                  avatarFallback={testimonial.avatarFallback}
-                />
-                <Button variant="link" className="w-full" onClick={() => navigate("/auth")}>
-                  Like {testimonial.author.split(' ')[0]}? Get Early Access →
-                </Button>
-              </div>
-            ))}
-          </div>
-          <div className="text-center">
-            <Button size="lg" onClick={() => navigate("/auth")} className="shadow-xl">
-              Join These Families: Get Early Access
-            </Button>
-            <p className="text-sm text-muted-foreground mt-4">
-              Limited spots in beta—claim yours! 🎉
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0">
           <img 
