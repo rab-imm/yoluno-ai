@@ -69,7 +69,7 @@ export const Navigation = () => {
             <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
               <Shield className="h-5 w-5 text-white" />
             </div>
-            <span className="font-bold text-xl">Paliyo</span>
+            <span className="font-bold text-xl">YOLUNO</span>
           </button>
 
           {/* Desktop Navigation */}
@@ -85,7 +85,7 @@ export const Navigation = () => {
                   <NavigationMenuContent>
                     <div className="w-[400px] p-4">
                       <div className="mb-3">
-                        <h3 className="text-sm font-semibold mb-1">Discover Paliyo</h3>
+                        <h3 className="text-sm font-semibold mb-1">Discover Yoluno</h3>
                         <p className="text-xs text-muted-foreground">Explore features for kids and parents</p>
                       </div>
                       <div className="grid gap-2">

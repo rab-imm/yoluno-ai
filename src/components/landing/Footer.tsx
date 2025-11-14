@@ -33,9 +33,9 @@ export const Footer = () => {
   };
 
   const socialLinks = [
-    { icon: Twitter, label: "X (Twitter)", url: "https://twitter.com/paliyo" },
-    { icon: Instagram, label: "Instagram", url: "https://instagram.com/paliyo" },
-    { icon: Music2, label: "TikTok", url: "https://tiktok.com/@paliyo" },
+    { icon: Twitter, label: "X (Twitter)", url: "https://twitter.com/yoluno" },
+    { icon: Instagram, label: "Instagram", url: "https://instagram.com/yoluno" },
+    { icon: Music2, label: "TikTok", url: "https://tiktok.com/@yoluno" },
   ];
 
   const handleNewsletterSubmit = (e: React.FormEvent) => {
@@ -58,10 +58,10 @@ export const Footer = () => {
               <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
                 <Shield className="h-5 w-5 text-white" />
               </div>
-              <span className="font-bold text-lg">Paliyo</span>
+              <span className="font-bold text-lg">YOLUNO</span>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
-              Safe AI companion for kids and co-pilot for parents. Built with care for curious minds and peace of mind.
+              Safe AI for growing minds. Your child's smart, gentle, and parent-approved AI buddy.
             </p>
             
             {/* Newsletter Signup */}
