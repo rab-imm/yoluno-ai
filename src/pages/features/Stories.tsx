@@ -44,14 +44,14 @@ const StoriesFeature = () => {
               {
                 step: "1",
                 title: "Parent Sets the Scene",
-                description: "Choose themes like 'Beach adventure with sea creatures' or let Paliyo suggest from your child's favorites.",
+                description: "Choose themes like 'Beach adventure with sea creatures' or let Yoluno suggest from your child's favorites.",
                 cta: "Set Your Scene",
                 image: storyStep1
               },
               {
                 step: "2",
                 title: "Child Co-Creates",
-                description: "During the tale, Paliyo pauses: 'What happens next?' Your child's imagination drives the story forward.",
+                description: "During the tale, Yoluno pauses: 'What happens next?' Your child's imagination drives the story forward.",
                 cta: "See Interaction",
                 image: storyStep2
               },
@@ -95,7 +95,7 @@ const StoriesFeature = () => {
               <p className="text-lg font-semibold">Sample Story: "The Lost Treasure of Tidytown"</p>
             </div>
             <p className="text-muted-foreground mb-6">
-              Listen to how Paliyo weaves your child's name and choices into an engaging bedtime adventure.
+              Listen to how Yoluno weaves your child's name and choices into an engaging bedtime adventure.
             </p>
             <div className="bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg p-8 mb-6">
               <p className="text-sm italic">Audio player would be embedded here</p>

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
+import yolunoLogo from "@/assets/yoluno-logo.svg";
 
 export const Footer = () => {
   const navigate = useNavigate();
@@ -55,10 +56,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="lg:col-span-2 space-y-4">
             <div className="flex items-center gap-2">
-              <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
-                <Shield className="h-5 w-5 text-white" />
-              </div>
-              <span className="font-bold text-lg">YOLUNO</span>
+              <img src={yolunoLogo} alt="Yoluno" className="h-10 w-auto" />
             </div>
             <p className="text-sm text-muted-foreground max-w-xs">
               Safe AI for growing minds. Your child's smart, gentle, and parent-approved AI buddy.
@@ -125,7 +123,7 @@ export const Footer = () => {
         {/* Bottom Row: Copyright + COPPA Badge */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <p className="text-center sm:text-left">
-            © 2025 Paliyo Inc. All rights reserved.
+            © 2025 Yoluno Inc. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <div className="px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-semibold flex items-center gap-1.5">

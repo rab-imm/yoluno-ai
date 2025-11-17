@@ -28,7 +28,7 @@ const FamilyFeature = () => {
     {
       number: "3",
       title: "Chat & Explore",
-      description: "Ask 'What was Grandma like as a kid?' and Paliyo narrates timelines with warmth and accuracy.",
+      description: "Ask 'What was Grandma like as a kid?' and Yoluno narrates timelines with warmth and accuracy.",
       icon: Heart
     }
   ];
@@ -47,7 +47,7 @@ const FamilyFeature = () => {
             Family History, Alive in Conversation
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Upload photos, stories, recipes—Paliyo turns them into interactive chats. "What was Dad like as a kid?" Answers with warmth, accuracy, and your curated details.
+            Upload photos, stories, recipes—Yoluno turns them into interactive chats. "What was Dad like as a kid?" Answers with warmth, accuracy, and your curated details.
           </p>
           <Button 
             size="lg" 
@@ -98,7 +98,7 @@ const FamilyFeature = () => {
               </p>
               <Card className="p-6 bg-gradient-to-br from-emerald-50 to-amber-50 dark:from-emerald-950/20 dark:to-amber-950/20">
                 <p className="font-semibold mb-2 text-emerald-600 dark:text-emerald-400">What Families Say:</p>
-                <p className="italic mb-3">"It's like time travel with hugs. My daughter asks about her great-grandmother every night, and Paliyo shares stories I uploaded last month. She feels connected to family she never met."</p>
+                <p className="italic mb-3">"It's like time travel with hugs. My daughter asks about her great-grandmother every night, and Yoluno shares stories I uploaded last month. She feels connected to family she never met."</p>
                 <p className="text-sm text-muted-foreground">— Maria K., Premium User</p>
               </Card>
             </div>
@@ -141,7 +141,7 @@ const FamilyFeature = () => {
               </div>
               <h3 className="text-xl font-bold mb-3">Voice Recordings</h3>
               <p className="text-sm text-muted-foreground">
-                Preserve Grandma's voice telling her favorite story—Paliyo can play it back contextually.
+                Preserve Grandma's voice telling her favorite story—Yoluno can play it back contextually.
               </p>
             </Card>
             <Card className="p-6">
@@ -153,7 +153,7 @@ const FamilyFeature = () => {
             <Card className="p-6">
               <h3 className="text-xl font-bold mb-3">Role-Play Mode</h3>
               <p className="text-sm text-muted-foreground">
-                "Talk" to ancestors as if they're present—Paliyo role-plays based on your stories.
+                "Talk" to ancestors as if they're present—Yoluno role-plays based on your stories.
               </p>
             </Card>
             <Card className="p-6">
@@ -180,7 +180,7 @@ const FamilyFeature = () => {
             <p className="text-lg mb-6">Sample conversation: Child asks about family heritage</p>
             <div className="bg-background rounded-lg p-6 mb-6 text-left space-y-4">
               <p><strong>Child:</strong> "What was Dad like when he was my age?"</p>
-              <p><strong>Paliyo:</strong> "Your dad was brave and curious, just like you! When he was 7, he loved exploring the woods behind your grandparents' house. One time, he found a secret fort and spent all summer fixing it up with his friends."</p>
+              <p><strong>Yoluno:</strong> "Your dad was brave and curious, just like you! When he was 7, he loved exploring the woods behind your grandparents' house. One time, he found a secret fort and spent all summer fixing it up with his friends."</p>
               <p className="text-sm text-muted-foreground italic">(Based on stories and photos you've uploaded)</p>
             </div>
             <Button size="lg" onClick={() => navigate("/pricing")}>

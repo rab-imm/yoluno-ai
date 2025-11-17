@@ -49,7 +49,7 @@ const LearningFeature = () => {
             Safe Curiosity: Answers That Spark, Never Scare
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            "Why is the sky blue?" Paliyo draws from your approved packs—science, history, values—delivering bite-sized explanations with visuals and "Try this!" experiments.
+            "Why is the sky blue?" Yoluno draws from your approved packs—science, history, values—delivering bite-sized explanations with visuals and "Try this!" experiments.
           </p>
           <Button 
             size="lg" 
@@ -114,7 +114,7 @@ const LearningFeature = () => {
           <h2 className="text-3xl font-bold mb-6">Safe by Design</h2>
           <Card className="p-8">
             <p className="text-lg text-muted-foreground mb-6">
-              All sources are vetted and age-appropriate. If a question goes off-rails, Paliyo gently pivots: "That's a big question—let's ask Mom or Dad first!" No scolding, just safe redirection.
+              All sources are vetted and age-appropriate. If a question goes off-rails, Yoluno gently pivots: "That's a big question—let's ask Mom or Dad first!" No scolding, just safe redirection.
             </p>
             <div className="grid md:grid-cols-3 gap-4">
               <div className="p-4 bg-primary/5 rounded-lg">
@@ -168,11 +168,11 @@ const LearningFeature = () => {
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-6">Try It Now</h2>
           <Card className="p-8">
-            <p className="text-lg mb-6">Ask Paliyo a sample question and see how safe, engaging learning works.</p>
+            <p className="text-lg mb-6">Ask Yoluno a sample question and see how safe, engaging learning works.</p>
             <div className="bg-background rounded-lg p-6 mb-6 text-left">
               <p className="text-sm text-muted-foreground mb-2">Sample Interaction:</p>
               <p className="mb-2"><strong>Child:</strong> "Why do stars twinkle?"</p>
-              <p className="mb-2"><strong>Paliyo:</strong> "Great question! Stars twinkle because their light passes through Earth's atmosphere, which is always moving. It's like looking at something through water—the light bends and shimmers! Want to learn more about stars?"</p>
+              <p className="mb-2"><strong>Yoluno:</strong> "Great question! Stars twinkle because their light passes through Earth's atmosphere, which is always moving. It's like looking at something through water—the light bends and shimmers! Want to learn more about stars?"</p>
             </div>
             <Button size="lg" onClick={() => navigate("/auth")}>
               Explore More Packs Free

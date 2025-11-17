@@ -56,7 +56,7 @@ const About = () => {
           <div className="inline-block p-3 bg-gradient-to-br from-primary to-child-primary rounded-3xl mb-4">
             <Heart className="h-12 w-12 text-white" />
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Meet the Team Behind Paliyo: Parents, Builders, Dreamers</h1>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-heading font-bold">Meet the Team Behind Yoluno: Parents, Builders, Dreamers</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Founded by a mom of three and an AI ethicist, we're on a mission to make tech a family ally—not a wildcard. Backed by xAI-inspired tech for smarts, powered by heart for safety.
           </p>
@@ -74,7 +74,7 @@ const About = () => {
             <div className="rounded-2xl overflow-hidden shadow-xl">
               <img 
                 src={founderTeam} 
-                alt="Paliyo founding team - parents and builders working together"
+                alt="Yoluno founding team - parents and builders working together"
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
@@ -158,7 +158,7 @@ const About = () => {
             <div className="rounded-xl overflow-hidden shadow-xl">
               <img 
                 src={productDashboard} 
-                alt="Paliyo product dashboard showing parent controls and features"
+                alt="Yoluno product dashboard showing parent controls and features"
                 className="w-full h-auto"
                 loading="lazy"
               />
@@ -166,7 +166,7 @@ const About = () => {
             <div className="rounded-xl overflow-hidden shadow-xl flex items-center justify-center bg-gradient-to-br from-primary/5 to-secondary/5">
               <img 
                 src={productMobile} 
-                alt="Paliyo mobile app showing child-friendly interface"
+                alt="Yoluno mobile app showing child-friendly interface"
                 className="w-2/3 h-auto"
                 loading="lazy"
               />

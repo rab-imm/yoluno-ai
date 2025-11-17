@@ -108,7 +108,7 @@ export function ProductExplainerPanel() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <Lightbulb className="h-5 w-5 text-primary" />
-              <h3 className="text-xl font-semibold">What You Can Do with Paliyo</h3>
+              <h3 className="text-xl font-semibold">What You Can Do with Yoluno</h3>
             </div>
             <div className="flex gap-2">
               <Button
