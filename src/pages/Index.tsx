@@ -17,7 +17,7 @@ import controlCenterDashboard from "@/assets/control-center-dashboard.jpg";
 import testimonialSarah from "@/assets/testimonial-sarah-t.jpg";
 import testimonialMike from "@/assets/testimonial-mike-r.jpg";
 import testimonialLena from "@/assets/testimonial-lena-k.jpg";
-import yolunoIcon from "@/assets/yoluno-icon.svg";
+import yolunoLogoVertical from "@/assets/yoluno-logo-vertical.svg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -121,9 +121,9 @@ const Index = () => {
           <div className="text-center space-y-6">
             <div className="inline-block p-4 mb-4 animate-bounce-gentle">
               <img 
-                src={yolunoIcon} 
-                alt="Yoluno" 
-                className="h-30 w-30"
+                src={yolunoLogoVertical} 
+                alt="Yoluno Logo" 
+                className="h-16 w-16"
               />
             </div>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight drop-shadow-lg">
