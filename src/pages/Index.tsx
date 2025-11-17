@@ -123,7 +123,7 @@ const Index = () => {
               <img 
                 src={yolunoLogoVertical} 
                 alt="Yoluno Logo" 
-                className="h-24 w-24 md:h-28 md:w-28"
+                className="h-16 w-16"
               />
             </div>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight drop-shadow-lg">
