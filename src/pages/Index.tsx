@@ -18,77 +18,72 @@ import testimonialSarah from "@/assets/testimonial-sarah-t.jpg";
 import testimonialMike from "@/assets/testimonial-mike-r.jpg";
 import testimonialLena from "@/assets/testimonial-lena-k.jpg";
 import yolunoLogoVertical from "@/assets/yoluno-logo-vertical.svg";
-
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [isParentLoggedIn, setIsParentLoggedIn] = useState(false);
   const [showKidsMode, setShowKidsMode] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
-
   useEffect(() => {
     // Check for kids mode parameter
     const kidsParam = searchParams.get("kids");
-    
+
     // Check parent session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({
+      data: {
+        session
+      }
+    }) => {
       setIsParentLoggedIn(!!session);
       setCheckingSession(false);
-      
+
       // If kids mode is requested
       if (kidsParam === "true") {
         setShowKidsMode(true);
       }
-      
+
       // Store last mode preference
       if (kidsParam === "true") {
         localStorage.setItem("last_mode", "kids");
       }
     });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setIsParentLoggedIn(!!session);
+    const {
+      data: {
+        subscription
       }
-    );
-
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsParentLoggedIn(!!session);
+    });
     return () => subscription.unsubscribe();
   }, [searchParams]);
-
-  const testimonials = [
-    {
-      quote: "Finally, an AI I trust my 5-year-old with. I set the topics on dinosaurs and emotions—Yoluno weaves them into stories that spark her imagination. Game-changer for solo evenings.",
-      author: "Sarah T.",
-      role: "Mom of Two",
-      avatarFallback: "ST",
-      image: testimonialSarah
-    },
-    {
-      quote: "Traveling for work used to mean missing bedtime. Now, my daughter hears my voice in Yoluno's tales, and I get the recap. It's like I'm there.",
-      author: "Mike R.",
-      role: "Dad on the Road",
-      avatarFallback: "MR",
-      image: testimonialMike
-    },
-    {
-      quote: "The kindness journeys? Transformative. My kids went from 'mine!' to sharing stickers. Plus, the reports help me reinforce at dinner.",
-      author: "Lena K.",
-      role: "Family of Four",
-      avatarFallback: "LK",
-      image: testimonialLena
-    }
-  ];
+  const testimonials = [{
+    quote: "Finally, an AI I trust my 5-year-old with. I set the topics on dinosaurs and emotions—Yoluno weaves them into stories that spark her imagination. Game-changer for solo evenings.",
+    author: "Sarah T.",
+    role: "Mom of Two",
+    avatarFallback: "ST",
+    image: testimonialSarah
+  }, {
+    quote: "Traveling for work used to mean missing bedtime. Now, my daughter hears my voice in Yoluno's tales, and I get the recap. It's like I'm there.",
+    author: "Mike R.",
+    role: "Dad on the Road",
+    avatarFallback: "MR",
+    image: testimonialMike
+  }, {
+    quote: "The kindness journeys? Transformative. My kids went from 'mine!' to sharing stickers. Plus, the reports help me reinforce at dinner.",
+    author: "Lena K.",
+    role: "Family of Four",
+    avatarFallback: "LK",
+    image: testimonialLena
+  }];
 
   // Loading state while checking session
   if (checkingSession) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5">
+    return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5">
         <div className="text-center space-y-4">
           <div className="w-16 h-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin mx-auto"></div>
           <p className="text-muted-foreground">Loading...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // Show Kids Mode if requested
@@ -102,33 +97,21 @@ const Index = () => {
   }
 
   // Default: Show marketing page
-  return (
-    <div className="min-h-screen">
+  return <div className="min-h-screen">
       <Navigation />
       
       {/* Hero Section */}
       <section className="relative overflow-hidden py-20 lg:py-32 px-4">
         <div className="absolute inset-0">
-          <img 
-            src={heroBackground} 
-            alt="Magical bedtime scene"
-            className="w-full h-full object-cover"
-            fetchPriority="high"
-          />
+          <img src={heroBackground} alt="Magical bedtime scene" className="w-full h-full object-cover" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/75 to-background/80" />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center space-y-6">
             <div className="inline-block p-4 mb-4 animate-bounce-gentle">
-              <img 
-                src={yolunoLogoVertical} 
-                alt="Yoluno Logo" 
-                className="h-24 w-24 md:h-28 md:w-28"
-              />
+              <img src={yolunoLogoVertical} alt="Yoluno Logo" className="h-24 w-24 md:h-28 md:w-28" />
             </div>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight drop-shadow-lg">
-              YOLUNO
-            </h1>
+            
             <h2 className="text-2xl md:text-4xl font-semibold text-foreground drop-shadow-md">
               Safe AI for Growing Minds.
             </h2>
@@ -225,12 +208,7 @@ const Index = () => {
               </Button>
             </div>
             <div className="rounded-2xl overflow-hidden shadow-2xl">
-              <img 
-                src={controlCenterDashboard} 
-                alt="Parent control dashboard showing topic approval and content management"
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
+              <img src={controlCenterDashboard} alt="Parent control dashboard showing topic approval and content management" className="w-full h-full object-cover" loading="lazy" />
             </div>
           </div>
         </div>
@@ -303,30 +281,17 @@ const Index = () => {
       {/* Testimonials Section */}
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src={testimonialsBg} 
-            alt="Happy families"
-            className="w-full h-full object-cover opacity-10"
-            loading="lazy"
-          />
+          <img src={testimonialsBg} alt="Happy families" className="w-full h-full object-cover opacity-10" loading="lazy" />
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
           <h2 className="text-3xl md:text-5xl font-bold text-center mb-12">What Families Are Saying</h2>
           <div className="grid md:grid-cols-3 gap-8 mb-8">
-            {testimonials.map((testimonial, index) => (
-              <div key={index} className="space-y-4">
-                <Testimonial
-                  quote={testimonial.quote}
-                  author={testimonial.author}
-                  avatarImage={testimonial.image}
-                  role={testimonial.role}
-                  avatarFallback={testimonial.avatarFallback}
-                />
+            {testimonials.map((testimonial, index) => <div key={index} className="space-y-4">
+                <Testimonial quote={testimonial.quote} author={testimonial.author} avatarImage={testimonial.image} role={testimonial.role} avatarFallback={testimonial.avatarFallback} />
                 <Button variant="link" className="w-full" onClick={() => navigate("/auth")}>
                   Like {testimonial.author.split(' ')[0]}? Get Early Access →
                 </Button>
-              </div>
-            ))}
+              </div>)}
           </div>
           <div className="text-center">
             <Button size="lg" onClick={() => navigate("/auth")} className="shadow-xl">
@@ -370,12 +335,7 @@ const Index = () => {
       {/* CTA Section */}
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0">
-          <img 
-            src={ctaBackground} 
-            alt="Start your journey"
-            className="w-full h-full object-cover"
-            loading="lazy"
-          />
+          <img src={ctaBackground} alt="Start your journey" className="w-full h-full object-cover" loading="lazy" />
           <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/85 to-background/90" />
         </div>
         <div className="container mx-auto max-w-4xl text-center space-y-6 relative z-10">
@@ -398,8 +358,6 @@ const Index = () => {
       </section>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
