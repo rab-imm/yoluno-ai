@@ -135,6 +135,65 @@ export type Database = {
           },
         ]
       }
+      chat_session_metrics: {
+        Row: {
+          anomaly_score: number | null
+          child_id: string | null
+          created_at: string | null
+          flagged_messages: number | null
+          id: string
+          manipulation_attempts: number | null
+          parent_alerted: boolean | null
+          rapid_switching: boolean | null
+          session_end: string | null
+          session_start: string | null
+          topic_drift_score: number | null
+          topics_discussed: string[] | null
+          total_messages: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          anomaly_score?: number | null
+          child_id?: string | null
+          created_at?: string | null
+          flagged_messages?: number | null
+          id?: string
+          manipulation_attempts?: number | null
+          parent_alerted?: boolean | null
+          rapid_switching?: boolean | null
+          session_end?: string | null
+          session_start?: string | null
+          topic_drift_score?: number | null
+          topics_discussed?: string[] | null
+          total_messages?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          anomaly_score?: number | null
+          child_id?: string | null
+          created_at?: string | null
+          flagged_messages?: number | null
+          id?: string
+          manipulation_attempts?: number | null
+          parent_alerted?: boolean | null
+          rapid_switching?: boolean | null
+          session_end?: string | null
+          session_start?: string | null
+          topic_drift_score?: number | null
+          topics_discussed?: string[] | null
+          total_messages?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_session_metrics_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_badges: {
         Row: {
           badge_name: string
@@ -950,6 +1009,116 @@ export type Database = {
         }
         Relationships: []
       }
+      guardrail_learning_events: {
+        Row: {
+          child_id: string | null
+          created_at: string | null
+          event_type: string
+          id: string
+          message_content: string | null
+          message_topic: string | null
+          original_flag_level: string | null
+          parent_decision: string
+          parent_id: string
+          parent_notes: string | null
+          validation_reasoning: Json | null
+        }
+        Insert: {
+          child_id?: string | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          message_content?: string | null
+          message_topic?: string | null
+          original_flag_level?: string | null
+          parent_decision: string
+          parent_id: string
+          parent_notes?: string | null
+          validation_reasoning?: Json | null
+        }
+        Update: {
+          child_id?: string | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          message_content?: string | null
+          message_topic?: string | null
+          original_flag_level?: string | null
+          parent_decision?: string
+          parent_id?: string
+          parent_notes?: string | null
+          validation_reasoning?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guardrail_learning_events_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guardrail_settings: {
+        Row: {
+          auto_expand_topics: boolean | null
+          block_on_yellow: boolean | null
+          created_at: string | null
+          custom_allowed_phrases: string[] | null
+          custom_blocked_keywords: string[] | null
+          id: string
+          learn_from_approvals: boolean | null
+          max_response_length: number | null
+          messages_per_hour: number | null
+          messages_per_minute: number | null
+          notify_on_green: boolean | null
+          notify_on_yellow: boolean | null
+          parent_id: string
+          preferred_ai_tone: string | null
+          require_explicit_approval: boolean | null
+          strictness_level: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          auto_expand_topics?: boolean | null
+          block_on_yellow?: boolean | null
+          created_at?: string | null
+          custom_allowed_phrases?: string[] | null
+          custom_blocked_keywords?: string[] | null
+          id?: string
+          learn_from_approvals?: boolean | null
+          max_response_length?: number | null
+          messages_per_hour?: number | null
+          messages_per_minute?: number | null
+          notify_on_green?: boolean | null
+          notify_on_yellow?: boolean | null
+          parent_id: string
+          preferred_ai_tone?: string | null
+          require_explicit_approval?: boolean | null
+          strictness_level?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          auto_expand_topics?: boolean | null
+          block_on_yellow?: boolean | null
+          created_at?: string | null
+          custom_allowed_phrases?: string[] | null
+          custom_blocked_keywords?: string[] | null
+          id?: string
+          learn_from_approvals?: boolean | null
+          max_response_length?: number | null
+          messages_per_hour?: number | null
+          messages_per_minute?: number | null
+          notify_on_green?: boolean | null
+          notify_on_yellow?: boolean | null
+          parent_id?: string
+          preferred_ai_tone?: string | null
+          require_explicit_approval?: boolean | null
+          strictness_level?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       journey_progress_log: {
         Row: {
           buddy_message: string | null
@@ -1219,6 +1388,41 @@ export type Database = {
           },
         ]
       }
+      message_rate_limits: {
+        Row: {
+          blocked_count: number | null
+          child_id: string | null
+          created_at: string | null
+          id: string
+          message_count: number | null
+          window_start: string | null
+        }
+        Insert: {
+          blocked_count?: number | null
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          message_count?: number | null
+          window_start?: string | null
+        }
+        Update: {
+          blocked_count?: number | null
+          child_id?: string | null
+          created_at?: string | null
+          id?: string
+          message_count?: number | null
+          window_start?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_rate_limits_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       message_validation_logs: {
         Row: {
           action_taken: string
@@ -1256,6 +1460,56 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "message_validation_logs_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parent_alerts: {
+        Row: {
+          alert_type: string
+          child_id: string | null
+          created_at: string | null
+          description: string
+          id: string
+          is_dismissed: boolean | null
+          is_read: boolean | null
+          metadata: Json | null
+          parent_id: string
+          severity: string
+          title: string
+        }
+        Insert: {
+          alert_type: string
+          child_id?: string | null
+          created_at?: string | null
+          description: string
+          id?: string
+          is_dismissed?: boolean | null
+          is_read?: boolean | null
+          metadata?: Json | null
+          parent_id: string
+          severity: string
+          title: string
+        }
+        Update: {
+          alert_type?: string
+          child_id?: string | null
+          created_at?: string | null
+          description?: string
+          id?: string
+          is_dismissed?: boolean | null
+          is_read?: boolean | null
+          metadata?: Json | null
+          parent_id?: string
+          severity?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_alerts_child_id_fkey"
             columns: ["child_id"]
             isOneToOne: false
             referencedRelation: "child_profiles"
