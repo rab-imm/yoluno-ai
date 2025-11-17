@@ -45,7 +45,7 @@ const Support = () => {
     },
     {
       question: "How do safety alerts work?",
-      answer: "Paliyo proactively monitors all conversations and sends alerts if new topics are suggested or if content falls outside your approved guidelines. You'll receive instant notifications and can review detailed logs anytime.",
+      answer: "Yoluno proactively monitors all conversations and sends alerts if new topics are suggested or if content falls outside your approved guidelines. You'll receive instant notifications and can review detailed logs anytime.",
       cta: "Learn About Safety"
     },
     {
@@ -71,7 +71,7 @@ const Support = () => {
             We're Here for You—Every Step, Every Story
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8">
-            Got a question? Dive into FAQs or chat live. Our team is ready to help make your Paliyo experience magical.
+            Got a question? Dive into FAQs or chat live. Our team is ready to help make your Yoluno experience magical.
           </p>
           <Button 
             size="lg" 
@@ -192,7 +192,7 @@ const Support = () => {
                 <h3 className="text-xl font-bold mb-4">Support Hours</h3>
                 <div className="space-y-2 text-muted-foreground">
                   <p><strong>Live Chat:</strong> 24/7 (typical response: &lt;5 min)</p>
-                  <p><strong>Email:</strong> support@paliyo.com (response within 24 hours)</p>
+                  <p><strong>Email:</strong> support@yoluno.com (response within 24 hours)</p>
                   <p><strong>Emergency Safety Line:</strong> Available for Premium users</p>
                 </div>
               </Card>

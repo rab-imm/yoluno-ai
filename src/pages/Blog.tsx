@@ -20,8 +20,8 @@ const Blog = () => {
 
   const posts = [
     {
-      title: "5 Ways Paliyo Keeps Bedtime Sacred (Even on Weeknights)",
-      excerpt: "Discover how busy families use Paliyo to maintain bedtime routines that actually stick, creating magical moments even when life gets hectic.",
+      title: "5 Ways Yoluno Keeps Bedtime Sacred (Even on Weeknights)",
+      excerpt: "Discover how busy families use Yoluno to maintain bedtime routines that actually stick, creating magical moments even when life gets hectic.",
       image: blogBedtimeSacred,
       readTime: "4 min",
       category: "Family Stories"
@@ -35,7 +35,7 @@ const Blog = () => {
     },
     {
       title: "Real Talk: How Journeys Boosted Our Family's Kindness Quotient",
-      excerpt: "A parent's honest account of using Paliyo's journey feature to transform sibling dynamics and build lasting habits.",
+      excerpt: "A parent's honest account of using Yoluno's journey feature to transform sibling dynamics and build lasting habits.",
       image: blogKindnessJourney,
       readTime: "5 min",
       category: "Habit Hacks"
@@ -175,7 +175,7 @@ const Blog = () => {
                         </Button>
                         <span className="text-muted-foreground">·</span>
                         <Button variant="link" className="p-0 h-auto text-primary">
-                          Try Tip in Paliyo Free
+                          Try Tip in Yoluno Free
                         </Button>
                       </div>
                     </div>

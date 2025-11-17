@@ -76,7 +76,7 @@ export default function KidsEntrypoint() {
                 backgroundSize: "200% 100%",
               }}
             >
-              Welcome to Paliyo!
+              Welcome to Yoluno!
             </motion.h1>
             
             <p className="text-2xl md:text-3xl text-foreground font-medium">

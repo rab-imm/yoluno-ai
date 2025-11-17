@@ -1,8 +1,8 @@
-# Paliyo - AI-Powered Family Storytelling Platform
+# Yoluno - AI-Powered Family Storytelling Platform
 
 ## Project Overview
 
-Paliyo is a comprehensive family storytelling and child engagement platform that combines AI-powered story generation, family history preservation, learning journeys, and interactive chat experiences for children.
+Yoluno is a comprehensive family storytelling and child engagement platform that combines AI-powered story generation, family history preservation, learning journeys, and interactive chat experiences for children.
 
 ---
 

@@ -16,7 +16,7 @@ const JourneysFeature = () => {
     {
       title: "Confidence Builder",
       description: "Daily affirmations paired with age-appropriate challenges that boost self-esteem and courage.",
-      mission: "Today's Mission: Say something kind about yourself in the mirror and share it with Paliyo!"
+      mission: "Today's Mission: Say something kind about yourself in the mirror and share it with Yoluno!"
     },
     {
       title: "Kindness Quest",
@@ -41,7 +41,7 @@ const JourneysFeature = () => {
             Turn Everyday Habits into Epic Quests
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-            Brushing teeth? A dragon-defying mission. Sharing toys? A teamwork triumph. Paliyo's journeys make growth fun, trackable, and oh-so-rewarding.
+            Brushing teeth? A dragon-defying mission. Sharing toys? A teamwork triumph. Yoluno's journeys make growth fun, trackable, and oh-so-rewarding.
           </p>
           <Button 
             size="lg" 
@@ -104,7 +104,7 @@ const JourneysFeature = () => {
                 <Heart className="h-8 w-8 text-red-500 mb-3" />
                 <h3 className="text-xl font-bold mb-3">Celebration Moments</h3>
                 <p className="text-muted-foreground">
-                  Automatic notifications when milestones are hit. Virtual high-fives from Paliyo, real hugs from you!
+                  Automatic notifications when milestones are hit. Virtual high-fives from Yoluno, real hugs from you!
                 </p>
               </Card>
             </div>

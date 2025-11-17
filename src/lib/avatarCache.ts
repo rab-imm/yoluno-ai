@@ -1,7 +1,7 @@
 // IndexedDB cache for avatar library
 // Provides persistent local storage for avatar data
 
-const DB_NAME = 'paliyo_avatar_cache';
+const DB_NAME = 'yoluno_avatar_cache';
 const STORE_NAME = 'avatars';
 const DB_VERSION = 1;
 const CACHE_DURATION = 7 * 24 * 60 * 60 * 1000; // 7 days

@@ -19,7 +19,7 @@ export const FirstTimePrompt = () => {
             </div>
           </div>
           <CardTitle className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            Welcome to Paliyo! 👨‍👩‍👧‍👦
+            Welcome to Yoluno! 👨‍👩‍👧‍👦
           </CardTitle>
           <CardDescription className="text-lg text-muted-foreground">
             First time here? No problem!
@@ -31,7 +31,7 @@ export const FirstTimePrompt = () => {
               We need a parent to set things up first.
             </p>
             <p className="text-sm text-muted-foreground">
-              It only takes a minute to create profiles for your kids and start exploring the magic of Paliyo!
+              It only takes a minute to create profiles for your kids and start exploring the magic of Yoluno!
             </p>
           </div>
 

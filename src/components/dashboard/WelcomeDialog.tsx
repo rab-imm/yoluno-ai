@@ -20,7 +20,7 @@ export function WelcomeDialog({ open, onComplete }: WelcomeDialogProps) {
   const steps = [
     {
       icon: <Sparkles className="w-12 h-12 text-child-primary mx-auto mb-4" />,
-      title: "Welcome to Paliyo AI! 🎉",
+      title: "Welcome to Yoluno AI! 🎉",
       description: "A safe, fun learning companion for your children. Let's get you started!",
     },
     {

@@ -41,7 +41,7 @@ const Features = () => {
     {
       icon: Home,
       title: "Family History",
-      description: "Chat with echoes of your family's past. 'Tell me about Grandma's adventures'—and Paliyo shares stories from your uploaded memories, keeping heritage alive in their voice.",
+      description: "Chat with echoes of your family's past. 'Tell me about Grandma's adventures'—and Yoluno shares stories from your uploaded memories, keeping heritage alive in their voice.",
       path: "/features/family",
       color: "text-emerald-400",
       premium: true,
@@ -58,7 +58,7 @@ const Features = () => {
         <div className="absolute inset-0">
           <img 
             src={featuresHero} 
-            alt="Paliyo's 4 core features - Stories, Journeys, Learning, and Family History"
+            alt="Yoluno's 4 core features - Stories, Journeys, Learning, and Family History"
             className="w-full h-full object-cover opacity-30"
             fetchPriority="high"
           />
@@ -66,10 +66,10 @@ const Features = () => {
         </div>
         <div className="max-w-6xl mx-auto text-center relative z-10">
           <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Discover Paliyo's World
+            Discover Yoluno's World
           </h1>
           <p className="text-xl md:text-2xl text-foreground/90 mb-8 max-w-3xl mx-auto drop-shadow-lg">
-            Where Kids Explore and Parents Empower. Dive deeper into the modes that make Paliyo indispensable.
+            Where Kids Explore and Parents Empower. Dive deeper into the modes that make Yoluno indispensable.
           </p>
           <Button 
             size="lg" 

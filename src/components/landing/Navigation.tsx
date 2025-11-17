@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate, useLocation } from "react-router-dom";
-import { Shield, Menu, X, ChevronDown, Sparkles, Heart, Sun, Home, Gamepad2 } from "lucide-react";
+import { Menu, X, ChevronDown, Sparkles, Heart, Sun, Home, Gamepad2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import yolunoLogo from "@/assets/yoluno-logo.svg";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -66,10 +67,7 @@ export const Navigation = () => {
             onClick={() => navigate("/")}
             className="flex items-center gap-2 hover:opacity-80 transition-opacity"
           >
-            <div className="p-2 bg-gradient-to-br from-primary to-accent rounded-lg">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-xl">YOLUNO</span>
+            <img src={yolunoLogo} alt="Yoluno" className="h-10 w-auto" />
           </button>
 
           {/* Desktop Navigation */}
