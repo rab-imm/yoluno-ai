@@ -17,7 +17,7 @@ import controlCenterDashboard from "@/assets/control-center-dashboard.jpg";
 import testimonialSarah from "@/assets/testimonial-sarah-t.jpg";
 import testimonialMike from "@/assets/testimonial-mike-r.jpg";
 import testimonialLena from "@/assets/testimonial-lena-k.jpg";
-import yolunoLogoVertical from "@/assets/yoluno-logo-vertical.svg";
+import yolunoLogoVertical from "@/assets/yoluno-logo-vertical-new.png";
 const Index = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
