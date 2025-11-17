@@ -1219,6 +1219,50 @@ export type Database = {
           },
         ]
       }
+      message_validation_logs: {
+        Row: {
+          action_taken: string
+          child_id: string
+          created_at: string | null
+          flag_level: string
+          flag_reasons: Json | null
+          id: string
+          message: string
+          parent_notified: boolean | null
+          validation_stage: string
+        }
+        Insert: {
+          action_taken: string
+          child_id: string
+          created_at?: string | null
+          flag_level: string
+          flag_reasons?: Json | null
+          id?: string
+          message: string
+          parent_notified?: boolean | null
+          validation_stage: string
+        }
+        Update: {
+          action_taken?: string
+          child_id?: string
+          created_at?: string | null
+          flag_level?: string
+          flag_reasons?: Json | null
+          id?: string
+          message?: string
+          parent_notified?: boolean | null
+          validation_stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_validation_logs_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "child_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parent_approved_content: {
         Row: {
           approved_at: string

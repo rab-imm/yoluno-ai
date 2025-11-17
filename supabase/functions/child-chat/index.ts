@@ -70,7 +70,7 @@ serve(async (req) => {
     // Get child profile with age and personality
     const { data: childData, error: childError } = await supabase
       .from('child_profiles')
-      .select('age, personality_mode')
+      .select('age, personality_mode, parent_id')
       .eq('id', childId)
       .single();
 
@@ -84,6 +84,7 @@ serve(async (req) => {
 
     const childAge = childData?.age || 8;
     const personalityMode = childData?.personality_mode || 'curious_explorer';
+    const parentId = childData?.parent_id;
 
     // ADAPTIVE CONVERSATION MEMORY SYSTEM
     
@@ -221,6 +222,85 @@ serve(async (req) => {
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // PHASE 1 GUARDRAILS: Validate message BEFORE AI processing
+    console.log('Running Phase 1 validation for child message...');
+    
+    let validationResult: any;
+    try {
+      const validationResponse = await fetch(
+        `${supabaseUrl}/functions/v1/validate-child-message`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            childId,
+            message,
+            approvedTopics,
+            childAge
+          }),
+        }
+      );
+
+      if (validationResponse.ok) {
+        validationResult = await validationResponse.json();
+        console.log(`Validation result: ${validationResult.flagLevel} - ${validationResult.flagReasons.join(', ')}`);
+
+        // Log validation to database
+        await supabase
+          .from('message_validation_logs')
+          .insert({
+            child_id: childId,
+            message: message,
+            validation_stage: 'request',
+            flag_level: validationResult.flagLevel,
+            flag_reasons: validationResult.flagReasons,
+            action_taken: validationResult.actionTaken,
+            parent_notified: validationResult.parentNotify
+          });
+
+        // Handle RED flag - block completely
+        if (validationResult.flagLevel === 'red') {
+          console.error(`RED FLAG: Blocking message from child ${childId}`);
+          
+          // Notify parent if needed
+          if (validationResult.parentNotify && parentId) {
+            await supabase
+              .from('child_feedback')
+              .insert({
+                parent_id: parentId,
+                child_id: childId,
+                message: `⚠️ ALERT: Your child attempted to ask: "${message}". This was blocked for: ${validationResult.flagReasons.join(', ')}`,
+                is_read: false
+              });
+          }
+
+          return new Response(
+            JSON.stringify({ 
+              message: "I don't think that's a good topic for us to chat about. Let's talk about something fun instead! How about one of your approved topics? 🌟" 
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+      } else {
+        console.warn('Validation service unavailable, proceeding with strict mode');
+        validationResult = {
+          flagLevel: 'yellow',
+          flagReasons: ['Validation service unavailable'],
+          actionTaken: 'strict_mode'
+        };
+      }
+    } catch (validationError) {
+      console.error('Validation error:', validationError);
+      validationResult = {
+        flagLevel: 'yellow',
+        flagReasons: ['Validation error'],
+        actionTaken: 'strict_mode'
+      };
     }
 
     // ===== NEW: Try to match with pre-written content first =====
@@ -443,12 +523,20 @@ AGE GUIDANCE (Child is ${childAge} years old - Upper Elementary):
       });
     }
 
+    // Adjust system prompt based on validation level
+    const strictnessLevel = validationResult?.flagLevel === 'yellow' ? 'EXTRA STRICT' : 'NORMAL';
+    const strictModeWarning = validationResult?.flagLevel === 'yellow' 
+      ? `\n\n⚠️ STRICT MODE ACTIVE: This question triggered safety concerns: ${validationResult.flagReasons.join(', ')}. Be EXTRA careful to keep the response positive, age-appropriate, and strictly within approved topics.\n`
+      : '';
+
     const systemPrompt = `You are a friendly AI buddy for children. You can ONLY talk about these approved topics: ${approvedTopics.join(', ')}.
 
 ${ageGuidance}
 
 PERSONALITY MODE: ${personalityMode.replace('_', ' ').toUpperCase()}
-${personalityInstruction}${memoryContext}${summaryContext}${familyContext}
+${personalityInstruction}${memoryContext}${summaryContext}${familyContext}${strictModeWarning}
+
+STRICTNESS LEVEL: ${strictnessLevel}
 
 CRITICAL SAFETY RULES:
 1. NEVER discuss violence, weapons, scary content, drugs, alcohol, or inappropriate topics
@@ -529,7 +617,7 @@ Be warm, enthusiastic, and make every conversation meaningful!`;
     }
 
     const aiData = await aiResponse.json();
-    const assistantMessage = aiData.choices[0].message.content;
+    let assistantMessage = aiData.choices[0].message.content;
 
     // Response quality validation
     if (!assistantMessage || assistantMessage.trim().length < 10) {
@@ -538,6 +626,98 @@ Be warm, enthusiastic, and make every conversation meaningful!`;
         JSON.stringify({ message: "Hmm, I got a bit confused! Can you ask me that in a different way? 🤔" }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+    }
+
+    // PHASE 1 GUARDRAILS: Enhanced AI Response Validation
+    console.log('Running Phase 1 response validation...');
+    
+    // 1. Topic adherence check using AI
+    const topicCheckPrompt = `You are a response validator. Check if this AI response stays within the approved topics and is appropriate.
+
+Original question: "${message}"
+Approved topics: ${approvedTopics.join(', ')}
+Child's age: ${childAge}
+AI's response: "${assistantMessage}"
+
+Verify:
+1. Does the response stay within approved topics?
+2. Is it age-appropriate for a ${childAge}-year-old?
+3. Does it contain any concerning content?
+4. Is it actually answering the question appropriately?
+
+Respond with ONLY valid JSON:
+{
+  "isValid": true/false,
+  "flagLevel": "green/yellow/red",
+  "issues": ["issue1", "issue2"],
+  "shouldBlock": true/false
+}`;
+
+    let responseValidation;
+    try {
+      const responseCheckCall = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'google/gemini-2.5-flash',
+          messages: [
+            { role: 'system', content: 'You are a response validation system. Respond with ONLY valid JSON.' },
+            { role: 'user', content: topicCheckPrompt }
+          ],
+          temperature: 0.1,
+        }),
+      });
+
+      if (responseCheckCall.ok) {
+        const responseCheckData = await responseCheckCall.json();
+        let validationContent = responseCheckData.choices[0].message.content.trim();
+        
+        // Clean JSON
+        if (validationContent.startsWith('```json')) {
+          validationContent = validationContent.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+        } else if (validationContent.startsWith('```')) {
+          validationContent = validationContent.replace(/```\n?/g, '');
+        }
+        
+        responseValidation = JSON.parse(validationContent);
+        
+        // Log response validation
+        await supabase
+          .from('message_validation_logs')
+          .insert({
+            child_id: childId,
+            message: assistantMessage,
+            validation_stage: 'response',
+            flag_level: responseValidation.flagLevel,
+            flag_reasons: responseValidation.issues || [],
+            action_taken: responseValidation.shouldBlock ? 'blocked' : 'allowed',
+            parent_notified: responseValidation.flagLevel === 'red'
+          });
+
+        // Block concerning responses
+        if (responseValidation.shouldBlock || responseValidation.flagLevel === 'red') {
+          console.error(`BLOCKED AI RESPONSE: ${responseValidation.issues.join(', ')}`);
+          
+          // Notify parent
+          if (parentId) {
+            await supabase
+              .from('child_feedback')
+              .insert({
+                parent_id: parentId,
+                child_id: childId,
+                message: `⚠️ AI Response Blocked: Original question: "${message}". Response blocked for: ${responseValidation.issues.join(', ')}`,
+                is_read: false
+              });
+          }
+          
+          assistantMessage = `You know what? Let's talk about something more fun! What would you like to know about ${approvedTopics[0]}? 🎉`;
+        }
+      }
+    } catch (responseValidationError) {
+      console.error('Response validation error:', responseValidationError);
     }
 
     // Check if response inappropriately discusses unapproved topics
