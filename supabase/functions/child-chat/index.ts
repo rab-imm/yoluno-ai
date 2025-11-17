@@ -16,6 +16,82 @@ const CONCERNING_KEYWORDS = [
   'drug', 'alcohol', 'beer', 'wine'
 ];
 
+// Helper function: Get or create active session
+async function getOrCreateActiveSession(supabase: any, childId: string) {
+  const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+  
+  // Try to find an active session
+  const { data: existingSession } = await supabase
+    .from('chat_session_metrics')
+    .select('*')
+    .eq('child_id', childId)
+    .gte('session_start', thirtyMinutesAgo.toISOString())
+    .is('session_end', null)
+    .single();
+
+  if (existingSession) {
+    return existingSession;
+  }
+
+  // Create new session
+  const { data: newSession } = await supabase
+    .from('chat_session_metrics')
+    .insert({
+      child_id: childId,
+      session_start: new Date().toISOString(),
+      total_messages: 0,
+      topics_discussed: []
+    })
+    .select()
+    .single();
+
+  return newSession;
+}
+
+// Helper function: Update session metrics
+async function updateSessionMetrics(
+  supabase: any,
+  sessionId: string,
+  childId: string,
+  message: string,
+  validationResult: any,
+  topic?: string
+) {
+  try {
+    // Get current session
+    const { data: session } = await supabase
+      .from('chat_session_metrics')
+      .select('*')
+      .eq('id', sessionId)
+      .single();
+
+    if (!session) return;
+
+    const totalMessages = (session.total_messages || 0) + 1;
+    const flaggedMessages = validationResult.flagLevel !== 'green' 
+      ? (session.flagged_messages || 0) + 1 
+      : session.flagged_messages || 0;
+    
+    let topicsDiscussed = session.topics_discussed || [];
+    if (topic && !topicsDiscussed.includes(topic)) {
+      topicsDiscussed = [...topicsDiscussed, topic];
+    }
+
+    // Update session
+    await supabase
+      .from('chat_session_metrics')
+      .update({
+        total_messages: totalMessages,
+        flagged_messages: flaggedMessages,
+        topics_discussed: topicsDiscussed,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', sessionId);
+  } catch (error) {
+    console.error('Error updating session metrics:', error);
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -198,6 +274,35 @@ serve(async (req) => {
     }
 
     console.log(`Loaded ${finalMessages.length} messages from ${allMessages.length} total (estimated ${totalTokens} tokens)`);
+
+    // PHASE 2: Check rate limit
+    console.log('Checking rate limits...');
+    const rateLimitResponse = await fetch(
+      `${supabaseUrl}/functions/v1/check-rate-limit`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ childId }),
+      }
+    );
+
+    if (rateLimitResponse.status === 429) {
+      const rateLimitData = await rateLimitResponse.json();
+      return new Response(JSON.stringify({
+        message: rateLimitData.message || 'Please slow down! Take a break and come back soon. 😊',
+        rateLimitExceeded: true
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 429
+      });
+    }
+
+    // PHASE 2: Get or create session
+    const session = await getOrCreateActiveSession(supabase, childId);
+    console.log(`Session ID: ${session?.id}`);
 
     // Get approved topics for this child
     const { data: topics, error: topicsError } = await supabase
@@ -759,6 +864,19 @@ Respond with ONLY valid JSON:
     // BACKGROUND TASKS: Extract memories and update stats (non-blocking)
     (async () => {
       try {
+        // PHASE 2: Update session metrics
+        if (session && validationResult) {
+          await updateSessionMetrics(
+            supabase,
+            session.id,
+            childId,
+            message,
+            validationResult,
+            approvedTopics[0]
+          );
+          console.log('Session metrics updated');
+        }
+
         // 1. Track conversation stats
         let detectedTopic = null;
         for (const topic of approvedTopics) {
