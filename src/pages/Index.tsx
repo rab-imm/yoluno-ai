@@ -17,6 +17,7 @@ import controlCenterDashboard from "@/assets/control-center-dashboard.jpg";
 import testimonialSarah from "@/assets/testimonial-sarah-t.jpg";
 import testimonialMike from "@/assets/testimonial-mike-r.jpg";
 import testimonialLena from "@/assets/testimonial-lena-k.jpg";
+import yolunoLogoVertical from "@/assets/yoluno-logo-vertical.svg";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -118,8 +119,12 @@ const Index = () => {
         </div>
         <div className="container mx-auto max-w-6xl relative z-10">
           <div className="text-center space-y-6">
-            <div className="inline-block p-3 bg-gradient-to-br from-primary to-accent rounded-3xl mb-4 animate-bounce-gentle">
-              <Shield className="h-12 w-12 text-white" />
+            <div className="inline-block p-4 mb-4 animate-bounce-gentle">
+              <img 
+                src={yolunoLogoVertical} 
+                alt="Yoluno Logo" 
+                className="h-24 w-24 md:h-28 md:w-28"
+              />
             </div>
             <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-foreground tracking-tight drop-shadow-lg">
               YOLUNO
