@@ -16,6 +16,7 @@ import { PhotoLibraryPanel } from "./family/PhotoLibraryPanel";
 import { PhotoUploader } from "./family/PhotoUploader";
 import { CreateRelationshipDialog } from "./family/CreateRelationshipDialog";
 import { ReactFlowProvider } from "@xyflow/react";
+import { TreeExportPanel } from "./family/TreeExportPanel";
 
 interface FamilyMember {
   id: string;
@@ -183,6 +184,15 @@ export const FamilyTreeBuilder = () => {
   const handleMemberClick = (member: FamilyMember) => {
     setSelectedMember(member);
     setMemberDetailOpen(true);
+  };
+
+  const exportFamilyData = () => {
+    const exportData = {
+      members,
+      relationships,
+      exportDate: new Date().toISOString(),
+    };
+    return JSON.stringify(exportData, null, 2);
   };
 
   return (
@@ -356,13 +366,15 @@ export const FamilyTreeBuilder = () => {
                     </CardContent>
                   </Card>
                 ) : (
-                  <ReactFlowProvider>
-                    <FamilyTreeFlow
-                      members={members}
-                      relationships={relationships}
-                      onMemberClick={handleMemberClick}
-                    />
-                  </ReactFlowProvider>
+                  <div id="family-tree-export">
+                    <ReactFlowProvider>
+                      <FamilyTreeFlow
+                        members={members}
+                        relationships={relationships}
+                        onMemberClick={handleMemberClick}
+                      />
+                    </ReactFlowProvider>
+                  </div>
                 )}
               </TabsContent>
 
@@ -448,12 +460,19 @@ export const FamilyTreeBuilder = () => {
       </div>
 
       {/* Photo Library Sidebar */}
-      <div className="lg:col-span-1">
+      <div className="lg:col-span-1 space-y-6">
         <Card className="sticky top-6">
           <CardContent className="pt-6">
             <PhotoLibraryPanel members={members} />
           </CardContent>
         </Card>
+        
+        {members.length > 0 && (
+          <TreeExportPanel 
+            treeElementId="family-tree-export"
+            exportData={exportFamilyData}
+          />
+        )}
       </div>
 
       {/* Enhanced Member Detail Dialog */}
