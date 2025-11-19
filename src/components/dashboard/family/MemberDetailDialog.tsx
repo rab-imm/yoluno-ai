@@ -13,6 +13,7 @@ interface FamilyMember {
   id: string;
   name: string;
   relationship?: string;
+  specific_label?: string;
   birth_date?: string;
   location?: string;
   bio?: string;
@@ -147,8 +148,17 @@ export const MemberDetailDialog = ({ member, open, onClose, onUpdate }: MemberDe
             )}
             <div>
               <h2 className="text-2xl">{member.name}</h2>
-              {member.relationship && (
-                <p className="text-sm text-muted-foreground">{member.relationship}</p>
+              {member.specific_label ? (
+                <p className="text-sm text-muted-foreground">
+                  <span className="font-semibold">{member.specific_label}</span>
+                  {member.relationship && (
+                    <span className="text-xs ml-1">({member.relationship})</span>
+                  )}
+                </p>
+              ) : (
+                member.relationship && (
+                  <p className="text-sm text-muted-foreground">{member.relationship}</p>
+                )
               )}
             </div>
           </DialogTitle>
