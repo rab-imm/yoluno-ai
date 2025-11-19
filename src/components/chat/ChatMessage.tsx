@@ -22,21 +22,29 @@ export function ChatMessage({ message, childAvatar = "🤖", customAvatarUrl, av
     : null;
   
   const [photoUrls, setPhotoUrls] = useState<{ [key: string]: string }>({});
+  const [extractedPhotoIds, setExtractedPhotoIds] = useState<string[]>([]);
 
   useEffect(() => {
-    if (message.photos && message.photos.length > 0) {
-      loadPhotos();
-    }
-  }, [message.photos]);
-
-  const loadPhotos = async () => {
-    if (!message.photos) return;
+    // Extract photo IDs from [PHOTO:id] tags in message content
+    const photoRegex = /\[PHOTO:([^\]]+)\]/g;
+    const matches = [...message.content.matchAll(photoRegex)];
+    const photoIds = matches.map(match => match[1]);
     
+    // Combine with any existing photos array
+    const allPhotoIds = [...new Set([...(message.photos || []), ...photoIds])];
+    
+    if (allPhotoIds.length > 0) {
+      setExtractedPhotoIds(allPhotoIds);
+      loadPhotos(allPhotoIds);
+    }
+  }, [message.content, message.photos]);
+
+  const loadPhotos = async (photoIds: string[]) => {
     const urls: { [key: string]: string } = {};
-    for (const photoId of message.photos) {
+    for (const photoId of photoIds) {
       const { data } = await supabase
         .from('family_photos')
-        .select('image_url')
+        .select('image_url, ai_caption')
         .eq('id', photoId)
         .single();
       
@@ -72,15 +80,15 @@ export function ChatMessage({ message, childAvatar = "🤖", customAvatarUrl, av
           <p className="text-base leading-relaxed whitespace-pre-wrap">{displayContent}</p>
           
           {/* Display family photos inline */}
-          {message.photos && message.photos.length > 0 && (
+          {extractedPhotoIds.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-2">
-              {message.photos.map((photoId) => (
+              {extractedPhotoIds.map((photoId) => (
                 photoUrls[photoId] && (
                   <img 
                     key={photoId}
                     src={photoUrls[photoId]}
                     alt="Family photo"
-                    className="rounded-lg w-32 h-32 object-cover border-2 border-primary/20"
+                    className="rounded-lg w-40 h-40 object-cover border-2 border-child-primary/30 hover:border-child-primary/50 transition-all cursor-pointer shadow-md hover:shadow-lg"
                   />
                 )
               ))}
