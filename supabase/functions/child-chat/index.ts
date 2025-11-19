@@ -454,7 +454,9 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
             childId,
             message,
             approvedTopics,
-            childAge
+            childAge,
+            hasFamilyAccess: hasFamilyAccess,
+            isFamilyQuery: hasFamilyQuery
           }),
         }
       );
