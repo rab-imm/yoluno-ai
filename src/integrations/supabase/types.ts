@@ -667,6 +667,48 @@ export type Database = {
         }
         Relationships: []
       }
+      family_events: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_date: string
+          event_type: string
+          id: string
+          location: string | null
+          parent_id: string
+          photos: Json | null
+          related_member_ids: string[] | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_date: string
+          event_type?: string
+          id?: string
+          location?: string | null
+          parent_id: string
+          photos?: Json | null
+          related_member_ids?: string[] | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_date?: string
+          event_type?: string
+          id?: string
+          location?: string | null
+          parent_id?: string
+          photos?: Json | null
+          related_member_ids?: string[] | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       family_history_access: {
         Row: {
           age_restriction:
