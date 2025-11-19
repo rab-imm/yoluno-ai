@@ -22,7 +22,22 @@ serve(async (req) => {
   }
 
   try {
-    const { childId, message, approvedTopics, childAge } = await req.json();
+    const { childId, message, approvedTopics, childAge, hasFamilyAccess, isFamilyQuery } = await req.json();
+
+    // Auto-approve family queries when family access is enabled
+    if (hasFamilyAccess && isFamilyQuery) {
+      console.log(`✅ Auto-approving family query for child ${childId}`);
+      return new Response(
+        JSON.stringify({
+          isAllowed: true,
+          flagLevel: 'green',
+          flagReasons: ['Approved family history question'],
+          parentNotify: false,
+          actionTaken: 'allowed'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
@@ -37,7 +52,16 @@ serve(async (req) => {
 
 Child's age: ${childAge}
 Approved topics for this child: ${approvedTopics.join(', ')}
+Family history enabled: ${hasFamilyAccess}
+Is family query: ${isFamilyQuery}
 Child's message: "${message}"
+
+IMPORTANT: If family history is enabled (${hasFamilyAccess}) AND this is a family query (${isFamilyQuery}), questions about family members should be ALLOWED and flagged as GREEN.
+
+Examples of ALLOWED family queries when family history is enabled:
+- "Who is my dad?" → green
+- "Tell me about my grandma" → green
+- "Who are my parents?" → green
 
 Analyze for:
 1. TOPIC RELEVANCE: Does this question relate to any of the approved topics? Use semantic understanding, not just keywords.
