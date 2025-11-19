@@ -810,18 +810,30 @@ Be warm, enthusiastic, and make every conversation meaningful!`;
     console.log('Running Phase 1 response validation...');
     
     // 1. Topic adherence check using AI
-    const topicCheckPrompt = `You are a response validator. Check if this AI response stays within the approved topics and is appropriate.
+    const topicCheckPrompt = `You are a response validator. Check if this AI response stays within the approved topics OR family history context and is appropriate.
 
 Original question: "${message}"
-Approved topics: ${approvedTopics.join(', ')}
+${familyContext && hasFamilyQuery 
+  ? `✅ FAMILY QUERY: This is an approved family history question. Responses about family members, relationships, and family stories are ALLOWED.`
+  : `Approved topics: ${approvedTopics.join(', ')}`
+}
 Child's age: ${childAge}
 AI's response: "${assistantMessage}"
+Has family context: ${!!familyContext}
 
 Verify:
-1. Does the response stay within approved topics?
+1. ${familyContext && hasFamilyQuery 
+     ? 'Is the response appropriately answering the family question using provided context?' 
+     : 'Does the response stay within approved topics?'
+   }
 2. Is it age-appropriate for a ${childAge}-year-old?
 3. Does it contain any concerning content?
 4. Is it actually answering the question appropriately?
+
+${familyContext && hasFamilyQuery 
+  ? 'IMPORTANT: Family history responses should be APPROVED as long as they are age-appropriate and answer the family question.'
+  : ''
+}
 
 Respond with ONLY valid JSON:
 {
