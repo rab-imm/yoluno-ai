@@ -6,6 +6,33 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper function to build relationship path explanations
+function buildRelationshipPath(
+  memberId: string,
+  relationships: any[],
+  members: any[],
+  childId: string
+): string {
+  // Simple relationship explanation based on stored relationship field
+  const member = members.find(m => m.id === memberId);
+  if (!member || !member.relationship) return '';
+
+  const rel = member.relationship.toLowerCase();
+  
+  // Map common relationships to child-friendly explanations
+  if (rel.includes('grandm')) return "your parent's mother (your grandmother)";
+  if (rel.includes('grandf')) return "your parent's father (your grandfather)";
+  if (rel.includes('aunt')) return "your parent's sister (your aunt)";
+  if (rel.includes('uncle')) return "your parent's brother (your uncle)";
+  if (rel.includes('cousin')) return "your aunt or uncle's child (your cousin)";
+  if (rel.includes('sibling') || rel.includes('brother') || rel.includes('sister')) {
+    return "your parent's sibling";
+  }
+  if (rel.includes('great-grand')) return "your grandparent's parent (your great-grandparent)";
+  
+  return `your ${rel}`;
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -43,10 +70,10 @@ serve(async (req) => {
     const parentId = access.parent_id;
     const ageRestriction = access.age_restriction;
 
-    // Get child's age for filtering
+    // Get child's age and parent info for filtering
     const { data: child } = await supabase
       .from('child_profiles')
-      .select('age')
+      .select('age, parent_id')
       .eq('id', childId)
       .single();
 
@@ -57,13 +84,34 @@ serve(async (req) => {
     // Search query (lowercase for case-insensitive search)
     const searchQuery = query.toLowerCase();
 
+    // Expanded keyword detection for family queries
+    const familyKeywords = ['grandma', 'grandpa', 'grandmother', 'grandfather', 'uncle', 'aunt', 
+      'cousin', 'sibling', 'brother', 'sister', 'nephew', 'niece', 'mom', 'dad', 'mother', 
+      'father', 'parent', 'great-grandparent', 'ancestor', 'family', 'relative', 
+      'who is', 'tell me about', 'what about', 'how am i related'];
+
     // Search family members
     const { data: members } = await supabase
       .from('family_members')
       .select('*')
       .eq('parent_id', parentId)
       .or(`name.ilike.%${searchQuery}%,relationship.ilike.%${searchQuery}%,bio.ilike.%${searchQuery}%`)
-      .limit(5);
+      .limit(10);
+
+    // Get ALL relationships to build relationship graph
+    const { data: relationships } = await supabase
+      .from('family_relationships')
+      .select('*')
+      .eq('parent_id', parentId);
+
+    // Build relationship explanations for found members
+    const membersWithRelationships = (members || []).map(member => {
+      const relationshipPath = buildRelationshipPath(member.id, relationships || [], members || [], childId);
+      return {
+        ...member,
+        relationshipExplanation: relationshipPath
+      };
+    });
 
     // Search stories with age filtering
     let storiesQuery = supabase
@@ -90,13 +138,32 @@ serve(async (req) => {
       .or(`ai_caption.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`)
       .limit(5);
 
-    console.log(`Found ${members?.length || 0} members, ${stories?.length || 0} stories, ${photos?.length || 0} photos`);
+    // Get relevant family events for found members
+    const memberIds = (members || []).map(m => m.id);
+    let events = [];
+    if (memberIds.length > 0) {
+      const { data: eventsData } = await supabase
+        .from('family_events')
+        .select('*')
+        .eq('parent_id', parentId)
+        .order('event_date', { ascending: false })
+        .limit(10);
+      
+      // Filter events that involve the found members
+      events = (eventsData || []).filter(event => 
+        event.related_member_ids?.some((id: string) => memberIds.includes(id))
+      );
+    }
 
-    // Build context object
+    console.log(`Found ${members?.length || 0} members, ${stories?.length || 0} stories, ${photos?.length || 0} photos, ${events.length} events`);
+
+    // Build enhanced context object
     const context = {
-      members: members || [],
+      members: membersWithRelationships,
       stories: stories || [],
-      photos: photos || []
+      photos: photos || [],
+      events: events,
+      relationships: relationships || []
     };
 
     return new Response(
