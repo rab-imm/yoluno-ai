@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Plus, Users, Trash2, User, Grid3x3, Network } from "lucide-react";
+import { Plus, Users, Trash2, User, Grid3x3, Network, Upload } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FamilyTreeFlow } from "./family/FamilyTreeFlow";
 import { MemberDetailDialog } from "./family/MemberDetailDialog";
@@ -17,6 +17,8 @@ import { PhotoUploader } from "./family/PhotoUploader";
 import { CreateRelationshipDialog } from "./family/CreateRelationshipDialog";
 import { ReactFlowProvider } from "@xyflow/react";
 import { TreeExportPanel } from "./family/TreeExportPanel";
+import { TreeImportDialog } from "./family/TreeImportDialog";
+import { TreeSearch } from "./family/TreeSearch";
 
 interface FamilyMember {
   id: string;
@@ -58,6 +60,7 @@ export const FamilyTreeBuilder = () => {
   const [viewMode, setViewMode] = useState<"tree" | "grid">("tree");
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [croppedArea, setCroppedArea] = useState<any>(null);
+  const [user, setUser] = useState<any>(null);
   const [formData, setFormData] = useState({
     name: "",
     relationship: "",
@@ -65,6 +68,9 @@ export const FamilyTreeBuilder = () => {
     location: "",
     bio: "",
   });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [relationshipFilter, setRelationshipFilter] = useState<string | null>(null);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchMembers();
@@ -74,6 +80,8 @@ export const FamilyTreeBuilder = () => {
   const fetchMembers = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+    
+    setUser(user);
 
     const { data, error } = await supabase
       .from("family_members")
@@ -195,6 +203,44 @@ export const FamilyTreeBuilder = () => {
     return JSON.stringify(exportData, null, 2);
   };
 
+  // Filter members based on search query and relationship filter
+  const filteredMembers = useMemo(() => {
+    let filtered = members;
+
+    // Apply search query filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (member) =>
+          member.name.toLowerCase().includes(query) ||
+          member.relationship?.toLowerCase().includes(query) ||
+          member.bio?.toLowerCase().includes(query) ||
+          member.location?.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply relationship type filter
+    if (relationshipFilter) {
+      filtered = filtered.filter(
+        (member) => member.relationship === relationshipFilter
+      );
+    }
+
+    return filtered;
+  }, [members, searchQuery, relationshipFilter]);
+
+  // Filter relationships to only show those connected to filtered members
+  const filteredRelationships = useMemo(() => {
+    if (!searchQuery && !relationshipFilter) return relationships;
+    
+    const filteredMemberIds = new Set(filteredMembers.map(m => m.id));
+    return relationships.filter(
+      (rel) =>
+        filteredMemberIds.has(rel.person_id) &&
+        filteredMemberIds.has(rel.related_person_id)
+    );
+  }, [relationships, filteredMembers, searchQuery, relationshipFilter]);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* Main Tree Area */}
@@ -309,6 +355,14 @@ export const FamilyTreeBuilder = () => {
                 <Network className="w-4 h-4 mr-2" />
                 Add Relationship
               </Button>
+              
+              <Button 
+                onClick={() => setImportDialogOpen(true)}
+                variant="outline"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Import
+              </Button>
             </div>
             </div>
 
@@ -324,7 +378,16 @@ export const FamilyTreeBuilder = () => {
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="tree" className="mt-6">
+              <TabsContent value="tree" className="mt-6 space-y-4">
+                {members.length > 0 && (
+                  <TreeSearch 
+                    onSearchChange={setSearchQuery}
+                    onRelationshipFilter={setRelationshipFilter}
+                    searchQuery={searchQuery}
+                    relationshipFilter={relationshipFilter}
+                  />
+                )}
+                
                 {members.length === 0 ? (
                   <Card>
                     <CardContent className="flex flex-col items-center justify-center py-16 px-6">
@@ -369,8 +432,8 @@ export const FamilyTreeBuilder = () => {
                   <div id="family-tree-export">
                     <ReactFlowProvider>
                       <FamilyTreeFlow
-                        members={members}
-                        relationships={relationships}
+                        members={filteredMembers}
+                        relationships={filteredRelationships}
                         onMemberClick={handleMemberClick}
                       />
                     </ReactFlowProvider>
@@ -393,7 +456,7 @@ export const FamilyTreeBuilder = () => {
                   </Card>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {members.map((member) => (
+                  {filteredMembers.map((member) => (
                     <Card
                       key={member.id}
                       className="cursor-pointer hover:shadow-lg transition-shadow"
@@ -496,6 +559,17 @@ export const FamilyTreeBuilder = () => {
           fetchRelationships();
           toast.success("Relationship created!");
         }}
+      />
+
+      {/* Tree Import Dialog */}
+      <TreeImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onImportComplete={() => {
+          fetchMembers();
+          fetchRelationships();
+        }}
+        parentId={user?.id || ""}
       />
     </div>
   );
