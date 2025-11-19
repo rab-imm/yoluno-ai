@@ -24,6 +24,7 @@ interface FamilyMember {
   id: string;
   name: string;
   relationship?: string;
+  specific_label?: string;
   birth_date?: string;
   location?: string;
   bio?: string;
@@ -64,6 +65,7 @@ export const FamilyTreeBuilder = () => {
   const [formData, setFormData] = useState({
     name: "",
     relationship: "",
+    specific_label: "",
     birth_date: "",
     location: "",
     bio: "",
@@ -167,7 +169,7 @@ export const FamilyTreeBuilder = () => {
 
     toast.success("Family member added!");
     setDialogOpen(false);
-    setFormData({ name: "", relationship: "", birth_date: "", location: "", bio: "" });
+    setFormData({ name: "", relationship: "", specific_label: "", birth_date: "", location: "", bio: "" });
     setPhotoFile(null);
     setCroppedArea(null);
     fetchMembers();
@@ -307,6 +309,25 @@ export const FamilyTreeBuilder = () => {
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div className="grid gap-2">
+                      <Label htmlFor="specific_label">Specific Label (Optional)</Label>
+                      <Input
+                        id="specific_label"
+                        value={formData.specific_label}
+                        onChange={(e) => setFormData({ ...formData, specific_label: e.target.value })}
+                        placeholder={
+                          formData.relationship === 'parent' ? 'e.g., Dad, Mom, Papa, Mama' :
+                          formData.relationship === 'grandparent' ? 'e.g., Grandma, Grandpa, Nana' :
+                          formData.relationship === 'aunt_uncle' ? 'e.g., Aunt Sarah, Uncle John' :
+                          formData.relationship === 'sibling' ? 'e.g., Brother, Sister' :
+                          'e.g., Uncle Tom'
+                        }
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        This helps the AI understand who's who when your child asks questions
+                      </p>
                     </div>
 
                     <div className="grid gap-2">
@@ -489,8 +510,17 @@ export const FamilyTreeBuilder = () => {
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </CardTitle>
-                            {member.relationship && (
-                              <CardDescription>{member.relationship}</CardDescription>
+                            {member.specific_label ? (
+                              <CardDescription>
+                                <span className="font-semibold">{member.specific_label}</span>
+                                {member.relationship && (
+                                  <span className="text-xs ml-1">({member.relationship})</span>
+                                )}
+                              </CardDescription>
+                            ) : (
+                              member.relationship && (
+                                <CardDescription>{member.relationship}</CardDescription>
+                              )
                             )}
                           </div>
                         </div>

@@ -15,7 +15,14 @@ function buildRelationshipPath(
 ): string {
   // Simple relationship explanation based on stored relationship field
   const member = members.find(m => m.id === memberId);
-  if (!member || !member.relationship) return '';
+  if (!member) return '';
+  
+  // Prioritize specific_label if available
+  if (member.specific_label) {
+    return member.specific_label.toLowerCase();
+  }
+  
+  if (!member.relationship) return '';
 
   const rel = member.relationship.toLowerCase();
   
@@ -85,27 +92,63 @@ serve(async (req) => {
     const searchQuery = query.toLowerCase();
 
     // Extract relationship keywords from the query
-    function extractFamilyKeywords(q: string): string[] {
-      const keywords: string[] = [];
+    function extractFamilyKeywords(q: string): { generic: string[], specific: string[] } {
+      const generic: string[] = [];
+      const specific: string[] = [];
       
-      // Direct relationship mentions
-      if (q.match(/\b(dad|father|papa|daddy)\b/)) keywords.push('parent', 'father');
-      if (q.match(/\b(mom|mother|mama|mommy)\b/)) keywords.push('parent', 'mother');
-      if (q.match(/\b(parents?)\b/)) keywords.push('parent');
-      if (q.match(/\b(grandm|grandmother|nana|granny)\b/)) keywords.push('grandmother', 'grandparent');
-      if (q.match(/\b(grandf|grandfather|grandpa|gramps)\b/)) keywords.push('grandfather', 'grandparent');
-      if (q.match(/\b(uncle)\b/)) keywords.push('uncle');
-      if (q.match(/\b(aunt|auntie)\b/)) keywords.push('aunt');
-      if (q.match(/\b(sibling|brother|sister)\b/)) keywords.push('sibling', 'brother', 'sister');
-      if (q.match(/\b(cousin)\b/)) keywords.push('cousin');
+      // Dad/Father keywords
+      if (q.match(/\b(dad|daddy|papa|father)\b/i)) {
+        generic.push('parent');
+        specific.push('dad', 'daddy', 'papa', 'father');
+      }
       
-      return keywords;
+      // Mom/Mother keywords
+      if (q.match(/\b(mom|mommy|mama|mother)\b/i)) {
+        generic.push('parent');
+        specific.push('mom', 'mommy', 'mama', 'mother');
+      }
+      
+      // Grandma keywords
+      if (q.match(/\b(grandm|grandmother|nana|granny|grammy)\b/i)) {
+        generic.push('grandparent');
+        specific.push('grandma', 'grandmother', 'nana', 'granny');
+      }
+      
+      // Grandpa keywords
+      if (q.match(/\b(grandf|grandfather|grandpa|gramps|pop)\b/i)) {
+        generic.push('grandparent');
+        specific.push('grandpa', 'grandfather', 'gramps', 'pop');
+      }
+      
+      // Uncle/Aunt keywords
+      if (q.match(/\b(uncle)\b/i)) {
+        generic.push('aunt_uncle');
+        specific.push('uncle');
+      }
+      if (q.match(/\b(aunt|auntie)\b/i)) {
+        generic.push('aunt_uncle');
+        specific.push('aunt', 'auntie');
+      }
+      
+      // Sibling keywords
+      if (q.match(/\b(sibling|brother|sister)\b/i)) {
+        generic.push('sibling');
+        specific.push('sibling', 'brother', 'sister');
+      }
+      
+      // Cousin keywords
+      if (q.match(/\b(cousin)\b/i)) {
+        generic.push('cousin');
+        specific.push('cousin');
+      }
+      
+      return { generic, specific };
     }
 
     const extractedKeywords = extractFamilyKeywords(searchQuery);
     
     console.log(`Search query: "${searchQuery}"`);
-    console.log(`Extracted keywords: ${extractedKeywords.join(', ') || 'none'}`);
+    console.log(`Extracted keywords - Specific: ${extractedKeywords.specific.join(', ') || 'none'}, Generic: ${extractedKeywords.generic.join(', ') || 'none'}`);
 
     // Build smart query based on extracted keywords
     let membersQuery = supabase
@@ -113,13 +156,26 @@ serve(async (req) => {
       .select('*')
       .eq('parent_id', parentId);
 
-    if (extractedKeywords.length > 0) {
-      // If we extracted relationship keywords, search for those in the relationship field
-      const relationshipFilters = extractedKeywords
-        .map(k => `relationship.ilike.%${k}%`)
-        .join(',');
-      membersQuery = membersQuery.or(relationshipFilters);
-      console.log(`Searching for relationships: ${extractedKeywords.join(', ')}`);
+    if (extractedKeywords.specific.length > 0 || extractedKeywords.generic.length > 0) {
+      // Build filters for both specific labels and generic relationships
+      const filters: string[] = [];
+      
+      // Priority 1: Search specific_label field
+      if (extractedKeywords.specific.length > 0) {
+        extractedKeywords.specific.forEach(k => {
+          filters.push(`specific_label.ilike.%${k}%`);
+        });
+      }
+      
+      // Priority 2: Search generic relationship field
+      if (extractedKeywords.generic.length > 0) {
+        extractedKeywords.generic.forEach(k => {
+          filters.push(`relationship.ilike.%${k}%`);
+        });
+      }
+      
+      membersQuery = membersQuery.or(filters.join(','));
+      console.log(`Searching for specific labels: ${extractedKeywords.specific.join(', ')}, relationships: ${extractedKeywords.generic.join(', ')}`);
     } else if (searchQuery.length > 3) {
       // Otherwise use original search on name/bio (but not relationship to avoid false matches)
       membersQuery = membersQuery.or(

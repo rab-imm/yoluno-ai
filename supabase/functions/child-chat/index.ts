@@ -370,7 +370,10 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
             familyContext += 'FAMILY MEMBERS (with relationship connections):\n';
             familyData.context.members.forEach((member: any) => {
               familyContext += `\n${member.name}:`;
-              if (member.relationshipExplanation) {
+              // Prioritize specific_label for clear identification
+              if (member.specific_label) {
+                familyContext += `\n  → Your ${member.specific_label}`;
+              } else if (member.relationshipExplanation) {
                 familyContext += `\n  → Relationship: ${member.relationshipExplanation}`;
               } else if (member.relationship) {
                 familyContext += `\n  → ${member.relationship}`;
@@ -380,6 +383,10 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
               if (member.location) familyContext += `\n  → Location: ${member.location}`;
               familyContext += '\n';
             });
+            familyContext += '\n✨ USING SPECIFIC LABELS:\n';
+            familyContext += '- Use the specific labels (like "Dad", "Grandma") naturally in responses\n';
+            familyContext += '- When a child asks "who is my dad?", talk about the person labeled as "Dad"\n';
+            familyContext += '- Make responses warm and personal using these family-specific labels\n\n';
           }
           
           // Add family events

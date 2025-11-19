@@ -765,6 +765,7 @@ export type Database = {
           parent_id: string
           photo_url: string | null
           relationship: string | null
+          specific_label: string | null
           tree_position_x: number | null
           tree_position_y: number | null
           updated_at: string
@@ -780,6 +781,7 @@ export type Database = {
           parent_id: string
           photo_url?: string | null
           relationship?: string | null
+          specific_label?: string | null
           tree_position_x?: number | null
           tree_position_y?: number | null
           updated_at?: string
@@ -795,6 +797,7 @@ export type Database = {
           parent_id?: string
           photo_url?: string | null
           relationship?: string | null
+          specific_label?: string | null
           tree_position_x?: number | null
           tree_position_y?: number | null
           updated_at?: string
