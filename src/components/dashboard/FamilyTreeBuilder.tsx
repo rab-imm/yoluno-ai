@@ -156,6 +156,7 @@ export const FamilyTreeBuilder = () => {
       parent_id: user.id,
       name: formData.name,
       relationship: formData.relationship || null,
+      specific_label: formData.specific_label || null,
       birth_date: formData.birth_date || null,
       location: formData.location || null,
       bio: formData.bio || null,
