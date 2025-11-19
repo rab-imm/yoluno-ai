@@ -108,6 +108,13 @@ serve(async (req) => {
         specific.push('mom', 'mommy', 'mama', 'mother');
       }
       
+      // Parent/Parents keywords (generic - both mom and dad)
+      if (q.match(/\b(parent|parents)\b/i)) {
+        generic.push('parent');
+        // Also add common specific labels in case they're set
+        specific.push('mom', 'dad', 'mama', 'papa', 'mother', 'father');
+      }
+      
       // Grandma keywords
       if (q.match(/\b(grandm|grandmother|nana|granny|grammy)\b/i)) {
         generic.push('grandparent');
