@@ -320,7 +320,115 @@ serve(async (req) => {
 
     const approvedTopics = topics?.map(t => t.topic) || [];
 
-    if (approvedTopics.length === 0) {
+    // FAMILY QUERY DETECTION - Check this BEFORE topics validation
+    let familyContext = '';
+    let hasFamilyAccess = false;
+    const familyKeywords = ['family', 'grandma', 'grandpa', 'grandmother', 'grandfather', 
+      'uncle', 'aunt', 'cousin', 'relative', 'ancestor', 'sibling', 'brother', 'sister',
+      'mom', 'dad', 'mother', 'father', 'parent', 'nephew', 'niece', 'great-grandparent',
+      'who is', 'tell me about', 'what about', 'how am i related', 'my family'];
+    
+    const hasFamilyQuery = familyKeywords.some(keyword => 
+      messageLower.includes(keyword)
+    );
+    
+    if (hasFamilyQuery) {
+      console.log('🌳 Detected family-related query, fetching enhanced family context...');
+      try {
+        const familyResponse = await fetch(`${supabaseUrl}/functions/v1/get-family-context`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            childId: childId,
+            query: message
+          })
+        });
+        
+        const familyData = await familyResponse.json();
+        
+        if (familyData.hasAccess && familyData.context) {
+          hasFamilyAccess = true;
+          familyContext = '\n\n=== FAMILY HISTORY CONTEXT ===\n';
+          
+          // Add comprehensive family guidance
+          familyContext += `
+FAMILY GUIDANCE FOR AGE ${childAge}:
+- When discussing family members, ALWAYS explain the relationship connection clearly
+- Age-appropriate language: ${childAge < 8 ? 'Use simple terms like "your mommy\'s mommy" for grandmother' : 'Use proper relationship terms with clear explanations'}
+- Reference specific stories and events to make family history come alive
+- When mentioning photos, ALWAYS use [PHOTO:id] format so the child can see them
+- Make connections warm and personal: "Your grandpa loved gardening, just like you!"
+- If you don't have information, say: "I don't know about that person yet. Maybe ask your parent to add them to the family tree!"
+
+`;
+          
+          // Add family members with relationship explanations
+          if (familyData.context.members && familyData.context.members.length > 0) {
+            familyContext += 'FAMILY MEMBERS (with relationship connections):\n';
+            familyData.context.members.forEach((member: any) => {
+              familyContext += `\n${member.name}:`;
+              if (member.relationshipExplanation) {
+                familyContext += `\n  → Relationship: ${member.relationshipExplanation}`;
+              } else if (member.relationship) {
+                familyContext += `\n  → ${member.relationship}`;
+              }
+              if (member.bio) familyContext += `\n  → Bio: ${member.bio}`;
+              if (member.birth_date) familyContext += `\n  → Born: ${member.birth_date}`;
+              if (member.location) familyContext += `\n  → Location: ${member.location}`;
+              familyContext += '\n';
+            });
+          }
+          
+          // Add family events
+          if (familyData.context.events && familyData.context.events.length > 0) {
+            familyContext += '\nFAMILY EVENTS:\n';
+            familyData.context.events.forEach((event: any) => {
+              familyContext += `- ${event.title} (${event.event_date})`;
+              if (event.description) familyContext += `: ${event.description}`;
+              familyContext += '\n';
+            });
+          }
+          
+          // Add family stories
+          if (familyData.context.stories && familyData.context.stories.length > 0) {
+            familyContext += '\nFAMILY STORIES:\n';
+            familyData.context.stories.forEach((story: any) => {
+              familyContext += `- "${story.title}"`;
+              if (story.ai_summary) familyContext += `: ${story.ai_summary}`;
+              familyContext += '\n';
+            });
+          }
+          
+          // Add family photos
+          if (familyData.context.photos && familyData.context.photos.length > 0) {
+            familyContext += '\nFAMILY PHOTOS (Remember to use [PHOTO:id] format!):\n';
+            familyData.context.photos.forEach((photo: any) => {
+              const caption = photo.ai_caption || photo.description || 'Family photo';
+              familyContext += `- [PHOTO:${photo.id}] ${caption}\n`;
+            });
+          }
+          
+          // Add relationships
+          if (familyData.context.relationships && familyData.context.relationships.length > 0) {
+            familyContext += '\nFAMILY RELATIONSHIPS:\n';
+            familyData.context.relationships.forEach((rel: any) => {
+              familyContext += `- ${rel.relationship_type} connection\n`;
+            });
+          }
+          
+          familyContext += '\n=== END FAMILY CONTEXT ===\n';
+          console.log('✅ Family context loaded with', familyData.context.members?.length || 0, 'members');
+        }
+      } catch (error) {
+        console.error('Error fetching family context:', error);
+      }
+    }
+
+    // Only require topics if no family context is available
+    if (approvedTopics.length === 0 && !hasFamilyAccess) {
       return new Response(
         JSON.stringify({
           message: "Oops! Your parent hasn't picked any topics for us to talk about yet. Ask them to add some fun topics! 🎯"
@@ -555,105 +663,7 @@ AGE GUIDANCE (Child is ${childAge} years old - Upper Elementary):
 
     const relevantTopics = findRelevantTopics(message);
 
-    // Enhanced family history context detection
-    let familyContext = '';
-    const familyKeywords = ['family', 'grandma', 'grandpa', 'grandmother', 'grandfather', 
-      'uncle', 'aunt', 'cousin', 'relative', 'ancestor', 'sibling', 'brother', 'sister',
-      'mom', 'dad', 'mother', 'father', 'parent', 'nephew', 'niece', 'great-grandparent',
-      'who is', 'tell me about', 'what about', 'how am i related', 'my family'];
-    
-    const hasFamilyQuery = familyKeywords.some(keyword => 
-      messageLower.includes(keyword)
-    );
-    
-    if (hasFamilyQuery) {
-      console.log('Detected family-related query, fetching enhanced family context...');
-      try {
-        const familyResponse = await fetch(`${supabaseUrl}/functions/v1/get-family-context`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${supabaseKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            childId: childId,
-            query: message
-          })
-        });
-        
-        const familyData = await familyResponse.json();
-        
-        if (familyData.hasAccess && familyData.context) {
-          familyContext = '\n\n=== FAMILY HISTORY CONTEXT ===\n';
-          
-          // Add comprehensive family guidance
-          familyContext += `
-FAMILY GUIDANCE FOR AGE ${childAge}:
-- When discussing family members, ALWAYS explain the relationship connection clearly
-- Age-appropriate language: ${childAge < 8 ? 'Use simple terms like "your mommy\'s mommy" for grandmother' : 'Use proper relationship terms with clear explanations'}
-- Reference specific stories and events to make family history come alive
-- When mentioning photos, ALWAYS use [PHOTO:id] format so the child can see them
-- Make connections warm and personal: "Your grandpa loved gardening, just like you!"
-- If you don't have information, say: "I don't know about that person yet. Maybe ask your parent to add them to the family tree!"
-
-`;
-          
-          // Add family members with relationship explanations
-          if (familyData.context.members && familyData.context.members.length > 0) {
-            familyContext += 'FAMILY MEMBERS (with relationship connections):\n';
-            familyData.context.members.forEach((member: any) => {
-              familyContext += `\n${member.name}:`;
-              if (member.relationshipExplanation) {
-                familyContext += `\n  → Relationship: ${member.relationshipExplanation}`;
-              } else if (member.relationship) {
-                familyContext += `\n  → ${member.relationship}`;
-              }
-              if (member.bio) familyContext += `\n  → Bio: ${member.bio}`;
-              if (member.birth_date) familyContext += `\n  → Born: ${member.birth_date}`;
-              if (member.location) familyContext += `\n  → Location: ${member.location}`;
-              familyContext += '\n';
-            });
-          }
-          
-          // Add family events
-          if (familyData.context.events && familyData.context.events.length > 0) {
-            familyContext += '\nFAMILY EVENTS:\n';
-            familyData.context.events.forEach((event: any) => {
-              familyContext += `- ${event.title} (${event.event_date})`;
-              if (event.description) familyContext += `: ${event.description}`;
-              familyContext += '\n';
-            });
-          }
-          
-          // Add family stories
-          if (familyData.context.stories && familyData.context.stories.length > 0) {
-            familyContext += '\nFAMILY STORIES:\n';
-            familyData.context.stories.forEach((story: any) => {
-              familyContext += `- "${story.title}"`;
-              if (story.ai_summary) familyContext += `: ${story.ai_summary}`;
-              familyContext += '\n';
-            });
-          }
-          
-          // Add photos with IDs
-          if (familyData.context.photos && familyData.context.photos.length > 0) {
-            familyContext += '\nFAMILY PHOTOS AVAILABLE:\n';
-            familyData.context.photos.forEach((photo: any) => {
-              familyContext += `- [PHOTO:${photo.id}]`;
-              if (photo.ai_caption) familyContext += ` - ${photo.ai_caption}`;
-              if (photo.description) familyContext += ` (${photo.description})`;
-              if (photo.date_taken) familyContext += ` (taken: ${photo.date_taken})`;
-              familyContext += '\n';
-            });
-            familyContext += '\n⚠️ CRITICAL: When mentioning these photos, YOU MUST include their IDs in the format [PHOTO:id] so the child can see them!\n';
-          }
-          
-          familyContext += '\n=== END FAMILY CONTEXT ===\n';
-        }
-      } catch (familyError) {
-        console.error('Error fetching family context:', familyError);
-      }
-    }
+    // Family context already loaded above (before topics check)
 
     // Build memory context string
     let memoryContext = '';
