@@ -14,6 +14,7 @@ import { FamilyTreeFlow } from "./family/FamilyTreeFlow";
 import { MemberDetailDialog } from "./family/MemberDetailDialog";
 import { PhotoLibraryPanel } from "./family/PhotoLibraryPanel";
 import { PhotoUploader } from "./family/PhotoUploader";
+import { CreateRelationshipDialog } from "./family/CreateRelationshipDialog";
 import { ReactFlowProvider } from "@xyflow/react";
 
 interface FamilyMember {
@@ -50,6 +51,7 @@ export const FamilyTreeBuilder = () => {
   const [relationships, setRelationships] = useState<FamilyRelationship[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [relationshipDialogOpen, setRelationshipDialogOpen] = useState(false);
   const [memberDetailOpen, setMemberDetailOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<FamilyMember | null>(null);
   const [viewMode, setViewMode] = useState<"tree" | "grid">("tree");
@@ -198,14 +200,15 @@ export const FamilyTreeBuilder = () => {
                   {members.length} family member{members.length !== 1 ? "s" : ""}
                 </p>
               </div>
-
-              <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Add Family Member
-                  </Button>
-                </DialogTrigger>
+              
+              <div className="flex items-center gap-2">
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button>
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Member
+                    </Button>
+                  </DialogTrigger>
                 <DialogContent className="max-w-2xl">
                   <DialogHeader>
                     <DialogTitle>Add Family Member</DialogTitle>
@@ -287,6 +290,16 @@ export const FamilyTreeBuilder = () => {
                   </div>
                 </DialogContent>
               </Dialog>
+              
+              <Button 
+                onClick={() => setRelationshipDialogOpen(true)}
+                variant="outline"
+                disabled={members.length < 2}
+              >
+                <Network className="w-4 h-4 mr-2" />
+                Add Relationship
+              </Button>
+            </div>
             </div>
 
             <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as "tree" | "grid")}>
@@ -304,12 +317,42 @@ export const FamilyTreeBuilder = () => {
               <TabsContent value="tree" className="mt-6">
                 {members.length === 0 ? (
                   <Card>
-                    <CardContent className="flex flex-col items-center justify-center py-12">
-                      <Users className="w-16 h-16 text-muted-foreground mb-4" />
-                      <p className="text-lg font-medium mb-2">No family members yet</p>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Start building your family tree
+                    <CardContent className="flex flex-col items-center justify-center py-16 px-6">
+                      <div className="rounded-full bg-primary/10 p-6 mb-6">
+                        <Users className="w-16 h-16 text-primary" />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-2">Start Your Family Tree</h3>
+                      <p className="text-muted-foreground text-center max-w-md mb-6">
+                        Begin by adding family members. Once you have at least two members, 
+                        you can create relationships between them to build your family tree.
                       </p>
+                      <div className="flex flex-col gap-2 text-sm text-muted-foreground text-left bg-muted/50 p-4 rounded-lg max-w-md">
+                        <p className="font-semibold text-foreground mb-1">Getting Started:</p>
+                        <p>1. Click "Add Member" to add family members</p>
+                        <p>2. Add photos and details for each person</p>
+                        <p>3. Use "Add Relationship" to connect family members</p>
+                        <p>4. Explore the tree and grid views</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : relationships.length === 0 ? (
+                  <Card>
+                    <CardContent className="flex flex-col items-center justify-center py-12 px-6">
+                      <div className="rounded-full bg-chart-2/10 p-6 mb-6">
+                        <Network className="w-12 h-12 text-chart-2" />
+                      </div>
+                      <h3 className="text-xl font-semibold mb-2">Add Relationships</h3>
+                      <p className="text-muted-foreground text-center max-w-md mb-4">
+                        You have {members.length} family member{members.length !== 1 ? 's' : ''}, 
+                        but no relationships yet. Click "Add Relationship" to connect them!
+                      </p>
+                      <Button 
+                        onClick={() => setRelationshipDialogOpen(true)}
+                        className="mt-2"
+                      >
+                        <Network className="w-4 h-4 mr-2" />
+                        Add Your First Relationship
+                      </Button>
                     </CardContent>
                   </Card>
                 ) : (
@@ -324,7 +367,20 @@ export const FamilyTreeBuilder = () => {
               </TabsContent>
 
               <TabsContent value="grid" className="mt-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {members.length === 0 ? (
+                  <Card>
+                    <CardContent className="flex flex-col items-center justify-center py-16 px-6">
+                      <div className="rounded-full bg-primary/10 p-6 mb-6">
+                        <Grid3x3 className="w-16 h-16 text-primary" />
+                      </div>
+                      <h3 className="text-2xl font-semibold mb-2">No Family Members Yet</h3>
+                      <p className="text-muted-foreground text-center max-w-md mb-4">
+                        Add your first family member to get started with your family tree.
+                      </p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {members.map((member) => (
                     <Card
                       key={member.id}
@@ -384,6 +440,7 @@ export const FamilyTreeBuilder = () => {
                     </Card>
                   ))}
                 </div>
+                )}
               </TabsContent>
             </Tabs>
           </>
@@ -408,6 +465,18 @@ export const FamilyTreeBuilder = () => {
           setSelectedMember(null);
         }}
         onUpdate={fetchMembers}
+      />
+
+      {/* Create Relationship Dialog */}
+      <CreateRelationshipDialog
+        open={relationshipDialogOpen}
+        onClose={() => setRelationshipDialogOpen(false)}
+        members={members}
+        relationships={relationships}
+        onRelationshipCreated={() => {
+          fetchRelationships();
+          toast.success("Relationship created!");
+        }}
       />
     </div>
   );

@@ -20,6 +20,7 @@ import { calculateTreeLayout, exportTreeToJSON } from "@/lib/familyTreeLayout";
 import { TreeControls } from "./TreeControls";
 import { TreeExportPanel } from "./TreeExportPanel";
 import { RelationshipEditor } from "./RelationshipEditor";
+import { TreeSearch } from "./TreeSearch";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
@@ -95,24 +96,63 @@ export const FamilyTreeFlow = ({ members, relationships, onMemberClick }: Family
     to: string;
   } | null>(null);
   const [useCustomLayout, setUseCustomLayout] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [relationshipFilter, setRelationshipFilter] = useState<string | null>(null);
   const reactFlowWrapper = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const { fitView, zoomIn, zoomOut, setViewport, getViewport } = useReactFlow();
 
+  // Filter members based on search and relationship filter
+  const filteredMembers = useMemo(() => {
+    let filtered = members;
+
+    // Apply search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(member =>
+        member.name.toLowerCase().includes(query)
+      );
+    }
+
+    // Apply relationship filter
+    if (relationshipFilter) {
+      const filteredIds = new Set(filtered.map(m => m.id));
+      const relatedIds = new Set<string>();
+      
+      relationships.forEach(rel => {
+        if (rel.relationship_type === relationshipFilter) {
+          if (filteredIds.has(rel.person_id)) relatedIds.add(rel.person_id);
+          if (filteredIds.has(rel.related_person_id)) relatedIds.add(rel.related_person_id);
+        }
+      });
+      
+      filtered = filtered.filter(m => relatedIds.has(m.id));
+    }
+
+    return filtered;
+  }, [members, searchQuery, relationshipFilter, relationships]);
+
   // Calculate layout using advanced algorithm
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
-    const layout = calculateTreeLayout(members, relationships, useCustomLayout);
+    const layout = calculateTreeLayout(filteredMembers, relationships, useCustomLayout);
     return {
-      nodes: layout.nodes.map(node => ({
-        ...node,
-        data: { 
-          member: node.data.member,
-          onClick: onMemberClick 
-        } as NodeData,
-      })),
+      nodes: layout.nodes.map(node => {
+        const member = (node.data as { member: FamilyMember }).member;
+        return {
+          ...node,
+          data: { 
+            member,
+            onClick: onMemberClick 
+          } as NodeData,
+          className: searchQuery && 
+            member.name.toLowerCase().includes(searchQuery.toLowerCase())
+              ? "ring-2 ring-primary ring-offset-2"
+              : "",
+        };
+      }),
       edges: layout.edges,
     };
-  }, [members, relationships, onMemberClick, useCustomLayout]);
+  }, [filteredMembers, relationships, onMemberClick, useCustomLayout, searchQuery]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<NodeData>>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
