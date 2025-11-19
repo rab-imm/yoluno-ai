@@ -4,6 +4,7 @@ import { FamilyStoryArchive } from "./FamilyStoryArchive";
 import { FamilyPhotoLibrary } from "./FamilyPhotoLibrary";
 import { FamilyHistorySettings } from "./FamilyHistorySettings";
 import { FamilyTimeline } from "./family/FamilyTimeline";
+import { FamilyEventsManager } from "./family/FamilyEventsManager";
 
 export const FamilyHistoryManager = () => {
   return (
@@ -16,9 +17,10 @@ export const FamilyHistoryManager = () => {
       </div>
 
       <Tabs defaultValue="tree" className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="tree">Family Tree</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="tree">Tree</TabsTrigger>
           <TabsTrigger value="timeline">Timeline</TabsTrigger>
+          <TabsTrigger value="events">Events</TabsTrigger>
           <TabsTrigger value="stories">Stories</TabsTrigger>
           <TabsTrigger value="photos">Photos</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -30,6 +32,10 @@ export const FamilyHistoryManager = () => {
 
         <TabsContent value="timeline" className="mt-6">
           <FamilyTimeline />
+        </TabsContent>
+
+        <TabsContent value="events" className="mt-6">
+          <FamilyEventsManager />
         </TabsContent>
 
         <TabsContent value="stories" className="mt-6">
