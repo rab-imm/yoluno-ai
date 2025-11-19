@@ -84,19 +84,56 @@ serve(async (req) => {
     // Search query (lowercase for case-insensitive search)
     const searchQuery = query.toLowerCase();
 
-    // Expanded keyword detection for family queries
-    const familyKeywords = ['grandma', 'grandpa', 'grandmother', 'grandfather', 'uncle', 'aunt', 
-      'cousin', 'sibling', 'brother', 'sister', 'nephew', 'niece', 'mom', 'dad', 'mother', 
-      'father', 'parent', 'great-grandparent', 'ancestor', 'family', 'relative', 
-      'who is', 'tell me about', 'what about', 'how am i related'];
+    // Extract relationship keywords from the query
+    function extractFamilyKeywords(q: string): string[] {
+      const keywords: string[] = [];
+      
+      // Direct relationship mentions
+      if (q.match(/\b(dad|father|papa|daddy)\b/)) keywords.push('parent', 'father');
+      if (q.match(/\b(mom|mother|mama|mommy)\b/)) keywords.push('parent', 'mother');
+      if (q.match(/\b(parents?)\b/)) keywords.push('parent');
+      if (q.match(/\b(grandm|grandmother|nana|granny)\b/)) keywords.push('grandmother', 'grandparent');
+      if (q.match(/\b(grandf|grandfather|grandpa|gramps)\b/)) keywords.push('grandfather', 'grandparent');
+      if (q.match(/\b(uncle)\b/)) keywords.push('uncle');
+      if (q.match(/\b(aunt|auntie)\b/)) keywords.push('aunt');
+      if (q.match(/\b(sibling|brother|sister)\b/)) keywords.push('sibling', 'brother', 'sister');
+      if (q.match(/\b(cousin)\b/)) keywords.push('cousin');
+      
+      return keywords;
+    }
 
-    // Search family members
-    const { data: members } = await supabase
+    const extractedKeywords = extractFamilyKeywords(searchQuery);
+    
+    console.log(`Search query: "${searchQuery}"`);
+    console.log(`Extracted keywords: ${extractedKeywords.join(', ') || 'none'}`);
+
+    // Build smart query based on extracted keywords
+    let membersQuery = supabase
       .from('family_members')
       .select('*')
-      .eq('parent_id', parentId)
-      .or(`name.ilike.%${searchQuery}%,relationship.ilike.%${searchQuery}%,bio.ilike.%${searchQuery}%`)
-      .limit(10);
+      .eq('parent_id', parentId);
+
+    if (extractedKeywords.length > 0) {
+      // If we extracted relationship keywords, search for those in the relationship field
+      const relationshipFilters = extractedKeywords
+        .map(k => `relationship.ilike.%${k}%`)
+        .join(',');
+      membersQuery = membersQuery.or(relationshipFilters);
+      console.log(`Searching for relationships: ${extractedKeywords.join(', ')}`);
+    } else if (searchQuery.length > 3) {
+      // Otherwise use original search on name/bio (but not relationship to avoid false matches)
+      membersQuery = membersQuery.or(
+        `name.ilike.%${searchQuery}%,bio.ilike.%${searchQuery}%`
+      );
+      console.log(`Searching for name/bio containing: "${searchQuery}"`);
+    } else {
+      // For very short or general queries, return all members
+      console.log(`Short/general query, fetching all family members`);
+    }
+
+    const { data: members } = await membersQuery.limit(10);
+    
+    console.log(`Found ${members?.length || 0} family members`);
 
     // Get ALL relationships to build relationship graph
     const { data: relationships } = await supabase
