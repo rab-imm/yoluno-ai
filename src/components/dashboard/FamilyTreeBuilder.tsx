@@ -19,6 +19,8 @@ import { ReactFlowProvider } from "@xyflow/react";
 import { TreeExportPanel } from "./family/TreeExportPanel";
 import { TreeImportDialog } from "./family/TreeImportDialog";
 import { TreeSearch } from "./family/TreeSearch";
+import { VoiceFormRecorder } from "./family/VoiceFormRecorder";
+import { Mic, FileText } from "lucide-react";
 
 interface FamilyMember {
   id: string;
@@ -73,6 +75,8 @@ export const FamilyTreeBuilder = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [relationshipFilter, setRelationshipFilter] = useState<string | null>(null);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [inputMethod, setInputMethod] = useState<"select" | "manual" | "voice">("select");
+  const [voiceStep, setVoiceStep] = useState<"photo" | "record">("photo");
 
   useEffect(() => {
     fetchMembers();
@@ -115,6 +119,35 @@ export const FamilyTreeBuilder = () => {
     }
 
     setRelationships(data || []);
+  };
+
+  const handleVoiceComplete = (extractedData: any) => {
+    setFormData({
+      name: extractedData.name || "",
+      relationship: extractedData.relationship || "",
+      specific_label: extractedData.specific_label || "",
+      birth_date: extractedData.birth_date || "",
+      location: extractedData.location || "",
+      bio: extractedData.bio || "",
+    });
+    setInputMethod("manual");
+    toast.success("Information extracted! Please review and edit if needed.");
+  };
+
+  const resetDialog = () => {
+    setDialogOpen(false);
+    setInputMethod("select");
+    setVoiceStep("photo");
+    setFormData({
+      name: "",
+      relationship: "",
+      specific_label: "",
+      birth_date: "",
+      location: "",
+      bio: "",
+    });
+    setPhotoFile(null);
+    setCroppedArea(null);
   };
 
   const handleAddMember = async () => {
@@ -169,10 +202,7 @@ export const FamilyTreeBuilder = () => {
     }
 
     toast.success("Family member added!");
-    setDialogOpen(false);
-    setFormData({ name: "", relationship: "", specific_label: "", birth_date: "", location: "", bio: "" });
-    setPhotoFile(null);
-    setCroppedArea(null);
+    resetDialog();
     fetchMembers();
   };
 
@@ -261,7 +291,10 @@ export const FamilyTreeBuilder = () => {
               </div>
               
               <div className="flex items-center gap-2">
-                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <Dialog open={dialogOpen} onOpenChange={(open) => {
+                  setDialogOpen(open);
+                  if (!open) resetDialog();
+                }}>
                   <DialogTrigger asChild>
                     <Button>
                       <Plus className="w-4 h-4 mr-2" />
@@ -273,6 +306,82 @@ export const FamilyTreeBuilder = () => {
                     <DialogTitle>Add Family Member</DialogTitle>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
+                    {inputMethod === "select" && (
+                      <div className="space-y-4">
+                        <p className="text-sm text-muted-foreground text-center">
+                          Choose how you'd like to add this family member:
+                        </p>
+                        <div className="grid grid-cols-2 gap-4">
+                          <Button
+                            variant="outline"
+                            className="h-32 flex flex-col gap-2"
+                            onClick={() => setInputMethod("manual")}
+                          >
+                            <FileText className="h-8 w-8" />
+                            <span className="font-semibold">Fill Form Manually</span>
+                            <span className="text-xs text-muted-foreground">
+                              Type in all details
+                            </span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="h-32 flex flex-col gap-2"
+                            onClick={() => setInputMethod("voice")}
+                          >
+                            <Mic className="h-8 w-8" />
+                            <span className="font-semibold">Use Voice Recording</span>
+                            <span className="text-xs text-muted-foreground">
+                              Describe them naturally
+                            </span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {inputMethod === "voice" && voiceStep === "photo" && (
+                      <div className="space-y-4">
+                        <div className="text-center space-y-2">
+                          <h4 className="font-semibold">Step 1: Add Photo (Optional)</h4>
+                          <p className="text-sm text-muted-foreground">
+                            Upload a photo of this family member, or skip to voice recording
+                          </p>
+                        </div>
+                        <PhotoUploader
+                          onPhotoSelected={(file, croppedAreaPixels) => {
+                            setPhotoFile(file);
+                            setCroppedArea(croppedAreaPixels);
+                          }}
+                          currentPhotoUrl={photoFile ? URL.createObjectURL(photoFile) : undefined}
+                        />
+                        <div className="flex gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => setInputMethod("select")}
+                            className="flex-1"
+                          >
+                            Back
+                          </Button>
+                          <Button
+                            onClick={() => setVoiceStep("record")}
+                            className="flex-1"
+                          >
+                            {photoFile ? "Next: Record" : "Skip to Recording"}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+
+                    {inputMethod === "voice" && voiceStep === "record" && (
+                      <VoiceFormRecorder
+                        onComplete={handleVoiceComplete}
+                        onCancel={() => {
+                          setVoiceStep("photo");
+                        }}
+                      />
+                    )}
+
+                    {inputMethod === "manual" && (
+                      <>
                     <div className="grid gap-2">
                       <Label>Photo</Label>
                       <PhotoUploader
@@ -362,9 +471,22 @@ export const FamilyTreeBuilder = () => {
                       />
                     </div>
 
-                    <Button onClick={handleAddMember} disabled={!formData.name}>
-                      Add Member
-                    </Button>
+                    <div className="flex gap-2">
+                      {inputMethod === "manual" && (
+                        <Button
+                          variant="outline"
+                          onClick={() => setInputMethod("select")}
+                          className="flex-1"
+                        >
+                          Back
+                        </Button>
+                      )}
+                      <Button onClick={handleAddMember} disabled={!formData.name} className="flex-1">
+                        Add Member
+                      </Button>
+                    </div>
+                    </>
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>

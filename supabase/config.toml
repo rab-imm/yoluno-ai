@@ -1,1 +1,4 @@
 project_id = "mgswzlazagpojpsxfiby"
+
+[functions.transcribe-family-member]
+verify_jwt = false
