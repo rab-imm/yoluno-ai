@@ -19,10 +19,9 @@ serve(async (req) => {
     }
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    const lovableApiKey = Deno.env.get('LOVABLE_API_KEY');
 
-    if (!openAIApiKey || !lovableApiKey) {
-      throw new Error('API keys not configured');
+    if (!openAIApiKey) {
+      throw new Error('OpenAI API key not configured');
     }
 
     console.log('Processing audio for family member extraction...');
@@ -58,15 +57,15 @@ serve(async (req) => {
 
     console.log('Transcription:', transcription);
 
-    // Step 2: Extract structured data using Lovable AI with tool calling
-    const extractionResponse = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    // Step 2: Extract structured data using OpenAI GPT-5-mini with tool calling
+    const extractionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gpt-5-mini-2025-08-07',
         messages: [
           {
             role: 'system',
@@ -80,39 +79,41 @@ serve(async (req) => {
         tools: [
           {
             type: "function",
-            name: "extract_family_member",
-            description: "Extract structured family member information from transcription",
-            parameters: {
-              type: "object",
-              properties: {
-                name: { 
-                  type: "string", 
-                  description: "Full name of the family member" 
+            function: {
+              name: "extract_family_member",
+              description: "Extract structured family member information from transcription",
+              parameters: {
+                type: "object",
+                properties: {
+                  name: { 
+                    type: "string", 
+                    description: "Full name of the family member" 
+                  },
+                  relationship: { 
+                    type: "string",
+                    enum: ["parent", "child", "spouse", "sibling", "grandparent", "grandchild", "aunt_uncle", "niece_nephew", "cousin", "other"],
+                    description: "Relationship type to the user"
+                  },
+                  specific_label: { 
+                    type: "string", 
+                    description: "Specific label like Dad, Mom, Grandma, Uncle John, etc." 
+                  },
+                  birth_date: { 
+                    type: "string", 
+                    description: "Birth date in YYYY-MM-DD format. If only year mentioned, use YYYY-01-01. If approximate (like 'in the 80s'), use best guess." 
+                  },
+                  location: { 
+                    type: "string", 
+                    description: "Location in 'City, Country' format or just city/country if only one mentioned" 
+                  },
+                  bio: { 
+                    type: "string", 
+                    description: "2-3 sentence biography summarizing key memories, personality traits, or details mentioned" 
+                  }
                 },
-                relationship: { 
-                  type: "string",
-                  enum: ["parent", "child", "spouse", "sibling", "grandparent", "grandchild", "aunt_uncle", "niece_nephew", "cousin", "other"],
-                  description: "Relationship type to the user"
-                },
-                specific_label: { 
-                  type: "string", 
-                  description: "Specific label like Dad, Mom, Grandma, Uncle John, etc." 
-                },
-                birth_date: { 
-                  type: "string", 
-                  description: "Birth date in YYYY-MM-DD format. If only year mentioned, use YYYY-01-01. If approximate (like 'in the 80s'), use best guess." 
-                },
-                location: { 
-                  type: "string", 
-                  description: "Location in 'City, Country' format or just city/country if only one mentioned" 
-                },
-                bio: { 
-                  type: "string", 
-                  description: "2-3 sentence biography summarizing key memories, personality traits, or details mentioned" 
-                }
-              },
-              required: ["name"],
-              additionalProperties: false
+                required: ["name"],
+                additionalProperties: false
+              }
             }
           }
         ],
