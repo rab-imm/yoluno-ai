@@ -18,7 +18,6 @@ import {
 import "@xyflow/react/dist/style.css";
 import { calculateTreeLayout, exportTreeToJSON } from "@/lib/familyTreeLayout";
 import { TreeControls } from "./TreeControls";
-import { TreeExportPanel } from "./TreeExportPanel";
 import { RelationshipEditor } from "./RelationshipEditor";
 import { TreeSearch } from "./TreeSearch";
 import { supabase } from "@/integrations/supabase/client";
@@ -304,11 +303,6 @@ export const FamilyTreeFlow = ({ members, relationships, onMemberClick }: Family
             isFullscreen={isFullscreen}
             currentZoom={currentZoom}
             onZoomChange={handleZoomChange}
-          />
-          
-          <TreeExportPanel
-            treeElementId="family-tree-container"
-            exportData={handleExportData}
           />
         </Panel>
 
