@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Edit3, Save, X } from "lucide-react";
+import { Edit3, Save, X, ChevronDown, ChevronUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface RelationshipEditorProps {
@@ -43,6 +43,12 @@ export const RelationshipEditor = ({
 }: RelationshipEditorProps) => {
   const [newType, setNewType] = useState<string>("");
   const [isSaving, setIsSaving] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Auto-expand when relationship is selected
+  if (selectedRelationship && isCollapsed) {
+    setIsCollapsed(false);
+  }
 
   const handleSave = async () => {
     if (!selectedRelationship || !newType) return;
@@ -70,23 +76,36 @@ export const RelationshipEditor = ({
   };
 
   return (
-    <Card className="p-4 space-y-4">
+    <Card className="p-4 space-y-4 max-w-md">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold flex items-center gap-2">
           <Edit3 className="w-4 h-4" />
           Relationship Editor
         </h3>
         
-        <Button
-          size="sm"
-          variant={isEditMode ? "default" : "outline"}
-          onClick={onToggleEditMode}
-        >
-          {isEditMode ? "Exit Edit Mode" : "Edit Mode"}
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant={isEditMode ? "default" : "outline"}
+            onClick={onToggleEditMode}
+          >
+            {isEditMode ? "Exit" : "Edit"}
+          </Button>
+          
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="px-2"
+          >
+            {isCollapsed ? <ChevronDown className="w-4 h-4" /> : <ChevronUp className="w-4 h-4" />}
+          </Button>
+        </div>
       </div>
 
-      {isEditMode && (
+      {!isCollapsed && (
+        <>
+          {isEditMode && (
         <div className="text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
           <p className="font-medium mb-2">Edit Mode Active:</p>
           <ul className="space-y-1 text-xs">
@@ -165,6 +184,8 @@ export const RelationshipEditor = ({
             </Button>
           </div>
         </div>
+      )}
+        </>
       )}
     </Card>
   );
