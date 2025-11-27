@@ -49,7 +49,7 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="border-t bg-[#FEF6E4]">
       <div className="container mx-auto px-4 py-12">
         {/* Top Row: Logo + Links */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-12">
@@ -145,8 +145,11 @@ export const Footer = () => {
         <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40 animate-fade-in">
           <Button 
             onClick={() => navigate("/auth")} 
-            className="w-full shadow-2xl"
+            className="w-full shadow-2xl text-white"
             size="lg"
+            style={{ backgroundColor: "#2BD4D0" }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
           >
             Start Free Today
           </Button>

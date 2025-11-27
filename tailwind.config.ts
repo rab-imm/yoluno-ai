@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        heading: ['Lexend', 'sans-serif'],
+        sans: ['Bricolage Grotesque', 'sans-serif'],
+        heading: ['Bricolage Grotesque', 'sans-serif'],
+        playful: ['Bricolage Grotesque', 'Fredoka One', 'Baloo 2', 'Comfortaa', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

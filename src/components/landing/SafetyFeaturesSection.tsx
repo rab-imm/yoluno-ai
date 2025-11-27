@@ -1,0 +1,184 @@
+import React from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Lock, Shield, CheckCircle, Eye } from "lucide-react";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+
+// Lottie animation path
+const familyLottiePath = new URL("../../assets/lottie/Family (3).lottie", import.meta.url).href;
+// Top Wave Component
+const WaveTop = () => (
+    <svg className="w-full h-auto block -mb-px" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path fill="#EDF7FF" fillOpacity="1" d="M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,128C960,139,1056,181,1152,197.3C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+    </svg>
+);
+// Bottom Wave Component
+const WaveBottom = () => (
+    <svg className="w-full h-auto block -mt-px" viewBox="0 0 1440 320" preserveAspectRatio="none">
+        <path fill="#EDF7FF" fillOpacity="1" d="M0,128L48,144C96,160,192,192,288,186.7C384,181,480,139,576,122.7C672,107,768,117,864,138.7C960,160,1056,192,1152,186.7C1248,181,1344,139,1392,117.3L1440,96L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
+    </svg>
+);
+export const SafetyFeaturesSection = () => {
+    const navigate = useNavigate();
+
+    return (
+        <div className="relative w-full">
+            {/* Top Wave */}
+            <WaveTop />
+            <section className="relative py-0 bg-[#EDF7FF] overflow-hidden -mt-24 -mb-4">
+                <div className="container mx-auto px-[30px] relative z-10">
+                    <div className="max-w-7xl mx-auto pt-0 pb-2">
+                        {/* Hero Section - Text Left, Image Right */}
+                        <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center mb-2">
+                            {/* Left Side - Text Content */}
+                            <motion.div
+                                className="relative"
+                                initial={{ opacity: 0, x: -50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8 }}
+                            >
+                                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-2 font-playful leading-tight relative z-10">
+                                    Designed with Child Psychologists + AI Experts.
+                                </h2>
+                                <p className="text-lg md:text-xl text-gray-700 font-playful leading-relaxed relative z-10">
+                                    Your family's safety is not a feature. <span className="font-bold">It's the foundation.</span>
+                                </p>
+                            </motion.div>
+
+                            {/* Right Side - Lottie Animation */}
+                            <motion.div
+                                className="relative"
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.8, delay: 0.2 }}
+                            >
+                                <div className="relative w-full max-w-lg mx-auto">
+                                    <div className="w-full h-auto" style={{ aspectRatio: "1 / 1", minHeight: "300px" }}>
+                                        <DotLottieReact
+                                            src={familyLottiePath}
+                                            loop
+                                            autoplay
+                                            className="w-full h-full"
+                                        />
+                                    </div>
+                                </div>
+                            </motion.div>
+                        </div>
+
+                        {/* Safety Cards Grid */}
+                        <div className="grid md:grid-cols-3 gap-3 lg:gap-4 mb-2">
+                            {[
+                                {
+                                    icon: <Lock className="w-8 h-8" style={{ color: "#2563EB" }} />,
+                                    title: "Parent Allowlist Only",
+                                    description: "Every piece of content starts with your green light.",
+                                    iconBgColor: "#DBEAFE",
+                                },
+                                {
+                                    icon: <Shield className="w-8 h-8" style={{ color: "#34D399" }} />,
+                                    title: "Closed Knowledge Sandbox",
+                                    description: "Responses drawn exclusively from your approved library.",
+                                    iconBgColor: "#D1FAE5",
+                                },
+                                {
+                                    icon: <CheckCircle className="w-8 h-8" style={{ color: "#A78BFA" }} />,
+                                    title: "Child-Safe Tone & Filters",
+                                    description: "Warm, age-appropriate language with built-in empathy.",
+                                    iconBgColor: "#F3E8FF",
+                                },
+                            ].map((feature, index) => (
+                                <motion.div
+                                    key={index}
+                                    className="rounded-xl p-6 transition-all duration-300"
+                                    initial={{ opacity: 0, y: 30 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{
+                                        delay: index * 0.15,
+                                        duration: 0.5
+                                    }}
+                                    whileHover={{
+                                        scale: 1.02,
+                                        y: -4
+                                    }}
+                                >
+                                    <div className="flex flex-row items-start gap-3 text-left">
+                                        {/* Icon */}
+                                        <div
+                                            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
+                                            style={{ backgroundColor: feature.iconBgColor }}
+                                        >
+                                            {feature.icon}
+                                        </div>
+                                        {/* Text Content */}
+                                        <div className="flex-1">
+                                            {/* Title */}
+                                            <h3 className="text-xl font-bold text-gray-900 mb-1 font-playful">
+                                                {feature.title}
+                                            </h3>
+                                            {/* Description */}
+                                            <p className="text-gray-700 font-playful leading-relaxed">
+                                                {feature.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        {/* Full Conversation Logs Section */}
+                        <div className="mt-2">
+                            <motion.div
+                                className="max-w-4xl mx-auto"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ duration: 0.6 }}
+                            >
+                                {/* Main Card */}
+                                <div className="rounded-2xl p-4 lg:p-6 mb-0">
+                                    <div className="flex items-start gap-4">
+                                        {/* Icon */}
+                                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                                            <Eye className="w-8 h-8 text-blue-600" />
+                                        </div>
+                                        
+                                        {/* Content */}
+                                        <div className="flex-1">
+                                            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-playful">
+                                                Full Conversation Logs
+                                            </h3>
+                                            <p className="text-gray-700 font-playful leading-relaxed mb-3">
+                                                Review, export, or share anytime. Plus, automatic alerts for any flagged moments.
+                                            </p>
+                                            <p className="text-gray-600 italic font-playful text-sm">
+                                                Our Safety Charter outlines it all—audited annually for COPPA compliance.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CTA Button */}
+                                <div className="flex justify-center mt-12">
+                                    <motion.button
+                                        onClick={() => navigate("/safety")}
+                                        className="rounded-xl px-8 py-4 shadow-md hover:shadow-lg transition-all duration-300 text-white font-semibold font-playful"
+                                        style={{ backgroundColor: "#2BD4D0" }}
+                                        whileHover={{ scale: 1.05, y: -2, backgroundColor: "#24B8B4" }}
+                                        whileTap={{ scale: 0.98 }}
+                                    >
+                                        Read Our Safety Charter
+                                    </motion.button>
+                                </div>
+                            </motion.div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {/* Bottom Wave */}
+            <WaveBottom />
+        </div>
+    );
+};

@@ -20,7 +20,7 @@ All colors MUST be HSL.
     /* Trust blue for parent interface */
     --primary: 221 83% 53%;
     --primary-foreground: 0 0% 100%;
-    
+
     /* Light background variations */
     --secondary: 210 40% 98%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -40,52 +40,52 @@ All colors MUST be HSL.
     --ring: 221 83% 53%;
 
     --radius: 1rem;
-    
+
     /* Custom tokens for child mode */
     --child-primary: 283 89% 68%;
     --child-secondary: 340 82% 67%;
     --child-bg: 270 50% 98%;
-    
+
     /* Story mode tokens */
     --story-magic: 271 76% 63%;
     --story-magic-light: 271 76% 90%;
     --story-bedtime: 243 75% 59%;
     --story-bedtime-dark: 243 75% 40%;
-    
+
     /* Three Pillar Color Tokens */
     /* Imagination (Stories) - Purple/Indigo */
     --imagination-primary: 271 76% 63%;
     --imagination-secondary: 243 75% 59%;
     --imagination-light: 271 76% 90%;
-    
+
     /* Growth (Journeys) - Fresh Green */
     --growth-primary: 142 76% 45%;
     --growth-secondary: 158 64% 52%;
     --growth-light: 142 76% 90%;
-    
+
     /* Curiosity (Learning) - Warm Yellow/Sky */
     --curiosity-primary: 45 100% 51%;
     --curiosity-secondary: 210 100% 60%;
     --curiosity-light: 45 100% 90%;
-    
+
     /* Success states */
     --success: 142 76% 36%;
     --success-foreground: 0 0% 100%;
-    
+
     /* Warning for gentle refusals */
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
-    
+
     /* Gradients */
     --gradient-playful: linear-gradient(135deg, hsl(283 89% 68%), hsl(340 82% 67%));
     --gradient-trust: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 63%));
     --gradient-story: linear-gradient(135deg, hsl(271 76% 63%), hsl(243 75% 59%));
-    
+
     /* Shadows */
     --shadow-soft: 0 4px 6px -1px hsl(221 83% 53% / 0.1);
     --shadow-playful: 0 10px 30px -10px hsl(283 89% 68% / 0.3);
     --shadow-story: 0 20px 40px -15px hsl(271 76% 63% / 0.4);
-    
+
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -113,7 +113,7 @@ All colors MUST be HSL.
     --learning-secondary: 195 90% 55%;
     --learning-bg: 210 40% 98%;
     --learning-accent: 210 100% 50%;
-    
+
     /* Story Time Theme */
     --story-primary: 280 100% 70%;
     --story-secondary: 300 100% 75%;
@@ -149,11 +149,11 @@ All colors MUST be HSL.
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 221 83% 53%;
-    
+
     --child-primary: 283 89% 68%;
     --child-secondary: 340 82% 67%;
     --child-bg: 270 30% 10%;
-    
+
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
     --sidebar-background: 240 5.9% 10%;
@@ -174,92 +174,119 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 400;
   }
-  
+
   /* Playful animations for child mode */
   @keyframes bounce-gentle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
-  
+
   @keyframes pulse-glow {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.5;
+    }
   }
-  
+
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
   }
-  
+
   @keyframes fade-in {
     0% {
       opacity: 0;
       transform: translateY(10px);
     }
+
     100% {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
+
   .animate-bounce-gentle {
     animation: bounce-gentle 2s ease-in-out infinite;
   }
-  
+
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
-  
+
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
-  
+
   .animate-fade-in {
     animation: fade-in 0.5s ease-out forwards;
   }
-  
+
   .animation-delay-200 {
     animation-delay: 200ms;
   }
-  
+
   .animation-delay-400 {
     animation-delay: 400ms;
   }
-  
+
   .animation-delay-600 {
     animation-delay: 600ms;
   }
-  
+
   .animation-delay-2000 {
     animation-delay: 2000ms;
   }
-  
+
   .mode-transition {
     animation: fade-in 0.3s ease-out;
   }
-  
+
   /* Mobile-safe bottom padding for iOS notch/home indicator */
   .safe-bottom {
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
+
   .pb-safe {
     padding-bottom: max(env(safe-area-inset-bottom), 1rem);
   }
-  
+
   /* Hover scale utility */
   .hover-scale-102 {
     transition: transform 0.2s ease;
   }
-  
+
   .hover-scale-102:hover {
     transform: scale(1.02);
   }
-  
+
   /* Touch-friendly minimum sizes */
   @media (max-width: 768px) {
-    button, a, [role="button"] {
+
+    button,
+    a,
+    [role="button"] {
       min-height: 44px;
       min-width: 44px;
     }
