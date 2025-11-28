@@ -36,20 +36,13 @@ export function StoryPreview({
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(storyData.content);
-  const [isPlaying, setIsPlaying] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const playAudio = () => {
-    if (!audioContent) return;
-
-    const audio = new Audio(`data:audio/mp3;base64,${audioContent}`);
-    audio.onended = () => setIsPlaying(false);
-    audio.onerror = () => {
-      setIsPlaying(false);
-      toast.error("Failed to play audio");
-    };
-    audio.play();
-    setIsPlaying(true);
+  const formatDuration = (seconds: number | null) => {
+    if (!seconds) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const saveAndSendToBedtime = async () => {
@@ -162,25 +155,32 @@ export function StoryPreview({
           </div>
         )}
 
-        {/* Audio Preview */}
+        {/* Audio Narration */}
         {audioContent && (
-          <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={playAudio}
-              disabled={isPlaying}
-            >
-              {isPlaying ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <Volume2 className="w-4 h-4 mr-2" />
-              )}
-              {isPlaying ? "Playing..." : "Preview Audio"}
-            </Button>
-            <span className="text-sm text-muted-foreground">
-              Narrated by {wizardSettings.narrationVoice}
-            </span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-lg flex items-center gap-2">
+                <Volume2 className="w-5 h-5" />
+                Audio Narration
+              </h3>
+              <Badge variant="secondary" className="flex items-center gap-1">
+                <span className="text-xs">{formatDuration(audioDuration)}</span>
+              </Badge>
+            </div>
+            <div className="p-6 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg border border-border/50 space-y-4">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                <span className="font-medium">Voice:</span>
+                <span className="capitalize">{wizardSettings.narrationVoice}</span>
+              </div>
+              <audio
+                controls
+                className="w-full"
+                src={`data:audio/mp3;base64,${audioContent}`}
+                preload="metadata"
+              >
+                Your browser does not support the audio element.
+              </audio>
+            </div>
           </div>
         )}
 
