@@ -28,9 +28,9 @@ export const GentleSmartSection = () => {
 
   return (
     <section className="relative py-6 lg:py-8 bg-[#FEF6E4] overflow-hidden">
-      <div className="container mx-auto px-[30px] relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-start gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-12">
             {/* Left Side - Content */}
             <div className="flex-1 w-full">
               {/* Section Header */}
@@ -42,16 +42,16 @@ export const GentleSmartSection = () => {
                 transition={{ duration: 0.6 }}
               >
                 {/* Decorative cloud behind title */}
-                <CloudShape className="top-0 left-0 -translate-y-4" fillColor="#BAE6FD" />
+                <CloudShape className="top-0 left-0 -translate-y-4 hidden sm:block" fillColor="#BAE6FD" />
                 
                 {/* Spark decorative element */}
-                <div className="absolute top-0 right-0 opacity-30">
+                <div className="absolute top-0 right-0 opacity-30 hidden sm:block">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M12 2 L13 8 L19 8 L14 12 L16 18 L12 14 L8 18 L10 12 L5 8 L11 8 Z" fill="#FBCFE8" />
                   </svg>
                 </div>
 
-                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 font-playful relative z-10">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 sm:mb-6 font-playful relative z-10">
                   Gentle, Smart, 
                   <br />
                   Emotionally Aware.
@@ -60,10 +60,10 @@ export const GentleSmartSection = () => {
             </div>
 
             {/* Right Side - Subtitle */}
-            <div className="flex flex-col items-end lg:items-start flex-shrink-0">
+            <div className="flex flex-col items-start flex-shrink-0 w-full lg:w-auto">
               {/* Subtitle Text */}
               <motion.p
-                className="text-base md:text-lg text-gray-700 font-playful leading-relaxed max-w-md text-left"
+                className="text-sm sm:text-base md:text-lg text-gray-700 font-playful leading-relaxed max-w-md text-left"
                 initial={{ opacity: 0, y: -20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -76,7 +76,7 @@ export const GentleSmartSection = () => {
 
           {/* Bullet Points as Pills - Full Width Centered */}
           <motion.div
-            className="flex flex-nowrap gap-4 md:gap-6 lg:gap-8 list-none justify-center items-center w-full pt-12"
+            className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 lg:gap-8 list-none justify-center items-center w-full pt-8 sm:pt-12"
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -85,7 +85,7 @@ export const GentleSmartSection = () => {
             {bulletPoints.map((point, index) => (
               <motion.div
                 key={index}
-                className="inline-flex items-center rounded-full px-6 py-3 shadow-sm hover:shadow-md transition-all duration-300 flex-shrink-0"
+                className="inline-flex items-center rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-sm hover:shadow-md transition-all duration-300"
                 style={{ backgroundColor: point.bgColor }}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ export const GentleSmartSection = () => {
                 transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -2 }}
               >
-                <p className="text-sm md:text-base font-semibold text-gray-900 font-playful whitespace-nowrap">
+                <p className="text-xs sm:text-sm md:text-base font-semibold text-gray-900 font-playful whitespace-nowrap">
                   {point.text}
                 </p>
               </motion.div>

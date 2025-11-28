@@ -8,7 +8,7 @@ import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 const familyLottiePath = new URL("../../assets/lottie/Family (3).lottie", import.meta.url).href;
 // Top Wave Component
 const WaveTop = () => (
-    <svg className="w-full h-auto block -mb-px" viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <svg className="w-full h-auto block" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '80px', minHeight: '60px' }}>
         <path fill="#EDF7FF" fillOpacity="1" d="M0,160L48,176C96,192,192,224,288,224C384,224,480,192,576,165.3C672,139,768,117,864,128C960,139,1056,181,1152,197.3C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
     </svg>
 );
@@ -24,10 +24,12 @@ export const SafetyFeaturesSection = () => {
     return (
         <div className="relative w-full">
             {/* Top Wave */}
-            <WaveTop />
-            <section className="relative py-0 bg-[#EDF7FF] overflow-hidden -mt-24 -mb-4">
-                <div className="container mx-auto px-[30px] relative z-10">
-                    <div className="max-w-7xl mx-auto pt-0 pb-2">
+            <div className="relative -mb-px">
+                <WaveTop />
+            </div>
+            <section className="relative py-0 bg-[#EDF7FF] overflow-hidden -mb-4">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="max-w-7xl mx-auto pt-4 sm:pt-8 lg:pt-12 pb-2">
                         {/* Hero Section - Text Left, Image Right */}
                         <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center mb-2">
                             {/* Left Side - Text Content */}
@@ -38,10 +40,10 @@ export const SafetyFeaturesSection = () => {
                                 viewport={{ once: true }}
                                 transition={{ duration: 0.8 }}
                             >
-                                <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-2 font-playful leading-tight relative z-10">
+                                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-2 sm:mb-4 font-playful leading-tight relative z-10">
                                     Designed with Child Psychologists + AI Experts.
                                 </h2>
-                                <p className="text-lg md:text-xl text-gray-700 font-playful leading-relaxed relative z-10">
+                                <p className="text-base sm:text-lg md:text-xl text-gray-700 font-playful leading-relaxed relative z-10">
                                     Your family's safety is not a feature. <span className="font-bold">It's the foundation.</span>
                                 </p>
                             </motion.div>
@@ -55,7 +57,7 @@ export const SafetyFeaturesSection = () => {
                                 transition={{ duration: 0.8, delay: 0.2 }}
                             >
                                 <div className="relative w-full max-w-lg mx-auto">
-                                    <div className="w-full h-auto" style={{ aspectRatio: "1 / 1", minHeight: "300px" }}>
+                                    <div className="w-full h-auto" style={{ aspectRatio: "1 / 1", minHeight: "250px" }}>
                                         <DotLottieReact
                                             src={familyLottiePath}
                                             loop
@@ -68,7 +70,7 @@ export const SafetyFeaturesSection = () => {
                         </div>
 
                         {/* Safety Cards Grid */}
-                        <div className="grid md:grid-cols-3 gap-3 lg:gap-4 mb-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-3 lg:gap-4 mb-2">
                             {[
                                 {
                                     icon: <Lock className="w-8 h-8" />,
@@ -91,7 +93,7 @@ export const SafetyFeaturesSection = () => {
                             ].map((feature, index) => (
                                 <motion.div
                                     key={index}
-                                    className="rounded-xl p-6 transition-all duration-300"
+                                    className="rounded-xl p-4 sm:p-6 transition-all duration-300"
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     viewport={{ once: true }}
@@ -107,7 +109,7 @@ export const SafetyFeaturesSection = () => {
                                     <div className="flex flex-row items-start gap-3 text-left">
                                         {/* Icon */}
                                         <div
-                                            className="w-16 h-16 flex items-center justify-center flex-shrink-0 bg-white"
+                                            className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center flex-shrink-0 bg-white"
                                             style={{ borderRadius: feature.borderRadius }}
                                         >
                                             <div className="text-black">
@@ -117,11 +119,11 @@ export const SafetyFeaturesSection = () => {
                                         {/* Text Content */}
                                         <div className="flex-1">
                                             {/* Title */}
-                                            <h3 className="text-xl font-bold text-gray-900 mb-1 font-playful">
+                                            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-1 font-playful">
                                                 {feature.title}
                                             </h3>
                                             {/* Description */}
-                                            <p className="text-gray-700 font-playful leading-relaxed">
+                                            <p className="text-sm sm:text-base text-gray-700 font-playful leading-relaxed">
                                                 {feature.description}
                                             </p>
                                         </div>
@@ -131,7 +133,7 @@ export const SafetyFeaturesSection = () => {
                         </div>
 
                         {/* Full Conversation Logs Section */}
-                        <div className="mt-10 lg:mt-16">
+                        <div className="mt-8 sm:mt-10 lg:mt-16">
                             <motion.div
                                 className="max-w-4xl mx-auto"
                                 initial={{ opacity: 0, y: 30 }}
@@ -140,36 +142,36 @@ export const SafetyFeaturesSection = () => {
                                 transition={{ duration: 0.6 }}
                             >
                                 {/* Main Card */}
-                                <div className="rounded-2xl p-4 lg:p-6 mb-0 bg-[#F4D5F7]">
-                                    <div className="flex items-center gap-4">
+                                <div className="rounded-2xl p-4 sm:p-5 lg:p-6 mb-0 bg-[#F4D5F7]">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                                         {/* Icon */}
                                         <div 
-                                            className="w-16 h-16 flex items-center justify-center flex-shrink-0 self-start bg-white"
+                                            className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center flex-shrink-0 bg-white"
                                             style={{ borderRadius: "40% 60% 60% 40% / 70% 30% 70% 30%" }}
                                         >
                                             <div className="text-black">
-                                                <Eye className="w-8 h-8" />
+                                                <Eye className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8" />
                                             </div>
                                         </div>
                                         
                                         {/* Content */}
-                                        <div className="flex-1">
-                                            <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-playful">
+                                        <div className="flex-1 w-full sm:w-auto">
+                                            <h3 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2 font-playful">
                                                 Full Conversation Logs
                                             </h3>
-                                            <p className="text-gray-700 font-playful leading-relaxed mb-3">
+                                            <p className="text-sm sm:text-base text-gray-700 font-playful leading-relaxed mb-3">
                                                 Review, export, or share anytime. Plus, automatic alerts for any flagged moments.
                                             </p>
-                                            <p className="text-gray-600 italic font-playful text-sm">
+                                            <p className="text-xs sm:text-sm text-gray-600 italic font-playful">
                                                 Our Safety Charter outlines it all—audited annually for COPPA compliance.
                                             </p>
                                         </div>
 
                                         {/* CTA Button */}
-                                        <div className="flex items-center flex-shrink-0">
+                                        <div className="flex items-center flex-shrink-0 w-full sm:w-auto">
                                             <motion.button
                                                 onClick={() => navigate("/safety")}
-                                                className="rounded-xl px-6 py-3 shadow-md hover:shadow-lg transition-all duration-300 text-white font-semibold font-playful whitespace-nowrap"
+                                                className="rounded-xl px-4 sm:px-6 py-2.5 sm:py-3 shadow-md hover:shadow-lg transition-all duration-300 text-white font-semibold font-playful text-sm sm:text-base w-full sm:w-auto text-center"
                                                 style={{ backgroundColor: "#2BD4D0" }}
                                                 whileHover={{ scale: 1.05, y: -2, backgroundColor: "#24B8B4" }}
                                                 whileTap={{ scale: 0.98 }}

@@ -46,7 +46,7 @@ const WavyButton = ({ onClick }: { onClick: () => void }) => {
   return (
     <motion.button
       onClick={onClick}
-      className="relative group text-white font-bold text-lg px-12 py-5 inline-block cursor-pointer overflow-hidden"
+      className="relative group text-white font-bold text-sm sm:text-base md:text-lg px-6 sm:px-8 md:px-12 py-3 sm:py-4 md:py-5 inline-block cursor-pointer overflow-hidden"
       whileTap={{ scale: 0.95 }}
       style={{
         background: "#2BD4D0",
@@ -140,7 +140,7 @@ export const Hero = () => {
 
   return (
     <>
-      <section className="relative min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-hidden pt-0 pb-12 lg:pt-0 lg:pb-16 px-[10px] flex flex-col justify-center">
+      <section className="relative min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 overflow-hidden pt-0 pb-12 lg:pt-0 lg:pb-16 px-4 sm:px-6 lg:px-8 flex flex-col justify-center">
         {/* Decorative background dots and shapes */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {/* Floating Scribble 1 - Top Left */}
@@ -631,7 +631,7 @@ export const Hero = () => {
           />
         </div>
 
-        <div className="container mx-auto px-4 relative z-10 max-w-7xl -translate-x-4">
+        <div className="container mx-auto px-0 sm:px-4 relative z-10 max-w-7xl">
           <motion.div
             className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-center justify-between"
             variants={containerVariants}
@@ -693,23 +693,19 @@ export const Hero = () => {
 
             {/* Center Column - Text and Button */}
             <motion.div
-              className="flex-1 space-y-5 text-center px-4 lg:px-8"
+              className="flex-1 space-y-4 sm:space-y-5 text-center px-2 sm:px-4 lg:px-8"
               variants={itemVariants}
             >
-              <h1 className="text-3xl md:text-4xl lg:text-8xl font-extrabold text-gray-900 leading-tight font-playful whitespace-nowrap">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl xl:text-8xl font-extrabold text-gray-900 leading-tight font-playful">
                 Safe AI 
                 <br />
                 for Growing Minds
               </h1>
               <motion.p
-                className="text-lg md:text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl mx-auto font-playful"
+                className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl mx-auto font-playful px-2"
                 variants={itemVariants}
               >
-               Spark imagination, build confidence, and learn through play
-               <br />
-               with an AI companion that's warm, wise, and always
-               <br />
-               parent-approved.
+               Spark imagination, build confidence, and learn through play with an AI companion that's warm, wise, and always parent-approved.
               </motion.p>
 
               {/* Wavy/scalloped button with yellow hover */}
@@ -777,9 +773,9 @@ export const Hero = () => {
         </div>
 
         {/* Feature Pills - Bottom of Hero Section */}
-        <div className="container mx-auto px-4 relative z-10 max-w-7xl pt-4 pb-8">
+        <div className="container mx-auto px-2 sm:px-4 relative z-10 max-w-7xl pt-4 pb-8">
           <motion.div
-            className="flex flex-wrap justify-center items-center gap-3"
+            className="flex flex-wrap justify-center items-center gap-2 sm:gap-3"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
@@ -794,15 +790,15 @@ export const Hero = () => {
               return (
                 <motion.div
                   key={item.text}
-                  className="px-4 py-2 bg-white/80 backdrop-blur-sm border-2 border-gray-300 rounded-full text-xs font-semibold text-gray-700 font-playful shadow-md flex items-center gap-2 whitespace-nowrap"
+                  className="px-3 sm:px-4 py-1.5 sm:py-2 bg-white/80 backdrop-blur-sm border-2 border-gray-300 rounded-full text-xs font-semibold text-gray-700 font-playful shadow-md flex items-center gap-1.5 sm:gap-2"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.5 + index * 0.1, duration: 0.3 }}
                   whileHover={{ scale: 1.05, borderColor: "#9333EA" }}
                   style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
                 >
-                  <IconComponent size={14} weight="bold" className="text-gray-700" />
-                  {item.text}
+                  <IconComponent size={12} weight="bold" className="text-gray-700 sm:w-3.5 sm:h-3.5" />
+                  <span className="whitespace-nowrap">{item.text}</span>
                 </motion.div>
               );
             })}

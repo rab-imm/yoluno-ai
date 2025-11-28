@@ -42,14 +42,14 @@ export const Navigation = () => {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#EDF7FF] border-b border-blue-200">
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20">
           {/* Logo */}
           <button
             onClick={() => navigate("/")}
             className="flex items-center hover:opacity-80 transition-opacity"
           >
-            <img src={yolunoLogo} alt="Yoluno" className="h-10 w-auto" />
+            <img src={yolunoLogo} alt="Yoluno" className="h-8 sm:h-10 w-auto" />
           </button>
 
           {/* Desktop Navigation */}

@@ -43,10 +43,10 @@ export const BrightFuturesSection = () => {
         />
       </div>
 
-      <div className="container mx-auto px-[30px] relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
             {/* Left Side - Text Content */}
             <motion.div
               className="relative"
@@ -56,23 +56,23 @@ export const BrightFuturesSection = () => {
               transition={{ duration: 0.8 }}
             >
               {/* Decorative cloud behind "Building bright futures" */}
-              <CloudShape className="top-0 left-0 -translate-y-8 -translate-x-8" fillColor="#BAE6FD" />
+              <CloudShape className="top-0 left-0 -translate-y-8 -translate-x-8 hidden sm:block" fillColor="#BAE6FD" />
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 font-playful leading-tight relative z-10">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 sm:mb-6 font-playful leading-tight relative z-10">
               Parent-Curated.
               </h2>
-              <p className="text-lg md:text-xl text-gray-700 font-playful leading-relaxed relative z-10 mb-6">
+              <p className="text-base sm:text-lg md:text-xl text-gray-700 font-playful leading-relaxed relative z-10 mb-6">
               Unlike AI tools that answer anything, Yoluno only answers what YOU approve.
-              <br />
-               <br />You choose the topics.
-               <br />
-               <br />You choose the limits.
-               <br />
-               <br />We handle the safety.
+              <br className="hidden sm:block" />
+               <br className="hidden sm:block" />You choose the topics.
+               <br className="hidden sm:block" />
+               <br className="hidden sm:block" />You choose the limits.
+               <br className="hidden sm:block" />
+               <br className="hidden sm:block" />We handle the safety.
               </p>
               <motion.button
                 onClick={() => navigate("/auth")}
-                className="text-white font-bold py-3 px-8 rounded-full font-playful text-base transition-all duration-300 shadow-md hover:shadow-lg"
+                className="text-white font-bold py-2.5 sm:py-3 px-6 sm:px-8 rounded-full font-playful text-sm sm:text-base transition-all duration-300 shadow-md hover:shadow-lg"
                 style={{ backgroundColor: "#2BD4D0" }}
                 whileHover={{ scale: 1.05, backgroundColor: "#24B8B4" }}
                 whileTap={{ scale: 0.98 }}

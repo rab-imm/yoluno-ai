@@ -76,7 +76,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-[#FEF6E4]">
       <Navigation />
-      <div className="px-[10px]">
+      <div className="px-4 sm:px-6 lg:px-8">
         <Hero />
         <ChildExperiencesSection />
         <BrightFuturesSection />
