@@ -7,8 +7,10 @@ import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useStoryUsage } from "@/hooks/useStoryUsage";
 import { Button } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Library } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { StoriesLibrary } from "./StoriesLibrary";
 
 interface EnhancedStoryBuilderProps {
   childId: string;
@@ -25,6 +27,7 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
   const [audioContent, setAudioContent] = useState<string | null>(null);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
   const [parentId, setParentId] = useState<string>("");
+  const [showLibrary, setShowLibrary] = useState(false);
   const { usage, loading: usageLoading, incrementUsage } = useStoryUsage(parentId);
 
   useEffect(() => {
@@ -257,19 +260,41 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
 
   if (stage === "wizard") {
     return (
-      <div className="space-y-4">
-        {/* Usage indicator */}
-        <div className="text-center text-sm text-muted-foreground">
-          {usage.count} of {usage.limit === Infinity ? "unlimited" : usage.limit} stories created this month
+      <>
+        <div className="space-y-4">
+          {/* Header with Library button */}
+          <div className="flex items-center justify-between">
+            <div className="text-center text-sm text-muted-foreground flex-1">
+              {usage.count} of {usage.limit === Infinity ? "unlimited" : usage.limit} stories created this month
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => setShowLibrary(true)}
+              className="flex items-center gap-2"
+            >
+              <Library className="w-4 h-4" />
+              My Stories
+            </Button>
+          </div>
+          <StoryWizard
+            childId={childId}
+            childName={childName}
+            childAge={childAge}
+            onComplete={handleWizardComplete}
+            onCancel={onComplete}
+          />
         </div>
-        <StoryWizard
-          childId={childId}
-          childName={childName}
-          childAge={childAge}
-          onComplete={handleWizardComplete}
-          onCancel={onComplete}
-        />
-      </div>
+
+        {/* Stories Library Dialog */}
+        <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
+          <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-2xl">My Story Collection</DialogTitle>
+            </DialogHeader>
+            <StoriesLibrary childId={childId} childName={childName} />
+          </DialogContent>
+        </Dialog>
+      </>
     );
   }
 
