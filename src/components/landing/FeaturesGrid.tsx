@@ -6,8 +6,7 @@ interface BenefitCard {
   icon: React.ReactNode;
   title: string;
   description: string;
-  iconColor: string;
-  iconBgColor: string;
+  borderRadius?: string;
 }
 
 const BenefitCard = ({ benefit, delay }: { benefit: BenefitCard; delay: number }) => {
@@ -23,10 +22,10 @@ const BenefitCard = ({ benefit, delay }: { benefit: BenefitCard; delay: number }
       <div className="flex flex-col items-center text-center">
         {/* Icon */}
         <div 
-          className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-          style={{ backgroundColor: benefit.iconBgColor }}
+          className="w-16 h-16 flex items-center justify-center mb-4 bg-white"
+          style={{ borderRadius: benefit.borderRadius || "60% 40% 30% 70% / 60% 30% 70% 40%" }}
         >
-          <div style={{ color: benefit.iconColor }}>
+          <div className="text-black">
             {benefit.icon}
           </div>
         </div>
@@ -53,22 +52,19 @@ export const FeaturesGrid = () => {
       icon: <CheckCircle className="w-8 h-8" />,
       title: "Lifetime Loyalty Discount",
       description: "Lock in special pricing forever",
-      iconColor: "#10B981",
-      iconBgColor: "#D1FAE5",
+      borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
     },
     {
       icon: <Sparkles className="w-8 h-8" />,
       title: 'Exclusive "Founding Seedling" Badge',
       description: "Digital collectible for early adopters",
-      iconColor: "#F97316",
-      iconBgColor: "#FED7AA",
+      borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%",
     },
     {
       icon: <Heart className="w-8 h-8" />,
       title: "Priority Feature Requests",
       description: "Shape the future of Yoluno",
-      iconColor: "#EF4444",
-      iconBgColor: "#FEE2E2",
+      borderRadius: "50% 50% 50% 50% / 60% 40% 60% 40%",
     },
   ];
 

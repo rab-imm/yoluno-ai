@@ -71,22 +71,22 @@ export const SafetyFeaturesSection = () => {
                         <div className="grid md:grid-cols-3 gap-3 lg:gap-4 mb-2">
                             {[
                                 {
-                                    icon: <Lock className="w-8 h-8" style={{ color: "#2563EB" }} />,
+                                    icon: <Lock className="w-8 h-8" />,
                                     title: "Parent Allowlist Only",
                                     description: "Every piece of content starts with your green light.",
-                                    iconBgColor: "#DBEAFE",
+                                    borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
                                 },
                                 {
-                                    icon: <Shield className="w-8 h-8" style={{ color: "#34D399" }} />,
+                                    icon: <Shield className="w-8 h-8" />,
                                     title: "Closed Knowledge Sandbox",
                                     description: "Responses drawn exclusively from your approved library.",
-                                    iconBgColor: "#D1FAE5",
+                                    borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%",
                                 },
                                 {
-                                    icon: <CheckCircle className="w-8 h-8" style={{ color: "#A78BFA" }} />,
+                                    icon: <CheckCircle className="w-8 h-8" />,
                                     title: "Child-Safe Tone & Filters",
                                     description: "Warm, age-appropriate language with built-in empathy.",
-                                    iconBgColor: "#F3E8FF",
+                                    borderRadius: "50% 50% 50% 50% / 60% 40% 60% 40%",
                                 },
                             ].map((feature, index) => (
                                 <motion.div
@@ -107,10 +107,12 @@ export const SafetyFeaturesSection = () => {
                                     <div className="flex flex-row items-start gap-3 text-left">
                                         {/* Icon */}
                                         <div
-                                            className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0"
-                                            style={{ backgroundColor: feature.iconBgColor }}
+                                            className="w-16 h-16 flex items-center justify-center flex-shrink-0 bg-white"
+                                            style={{ borderRadius: feature.borderRadius }}
                                         >
-                                            {feature.icon}
+                                            <div className="text-black">
+                                                {feature.icon}
+                                            </div>
                                         </div>
                                         {/* Text Content */}
                                         <div className="flex-1">
@@ -129,7 +131,7 @@ export const SafetyFeaturesSection = () => {
                         </div>
 
                         {/* Full Conversation Logs Section */}
-                        <div className="mt-2">
+                        <div className="mt-10 lg:mt-16">
                             <motion.div
                                 className="max-w-4xl mx-auto"
                                 initial={{ opacity: 0, y: 30 }}
@@ -138,11 +140,16 @@ export const SafetyFeaturesSection = () => {
                                 transition={{ duration: 0.6 }}
                             >
                                 {/* Main Card */}
-                                <div className="rounded-2xl p-4 lg:p-6 mb-0">
-                                    <div className="flex items-start gap-4">
+                                <div className="rounded-2xl p-4 lg:p-6 mb-0 bg-[#F4D5F7]">
+                                    <div className="flex items-center gap-4">
                                         {/* Icon */}
-                                        <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                                            <Eye className="w-8 h-8 text-blue-600" />
+                                        <div 
+                                            className="w-16 h-16 flex items-center justify-center flex-shrink-0 self-start bg-white"
+                                            style={{ borderRadius: "40% 60% 60% 40% / 70% 30% 70% 30%" }}
+                                        >
+                                            <div className="text-black">
+                                                <Eye className="w-8 h-8" />
+                                            </div>
                                         </div>
                                         
                                         {/* Content */}
@@ -157,20 +164,20 @@ export const SafetyFeaturesSection = () => {
                                                 Our Safety Charter outlines it all—audited annually for COPPA compliance.
                                             </p>
                                         </div>
-                                    </div>
-                                </div>
 
-                                {/* CTA Button */}
-                                <div className="flex justify-center mt-12">
-                                    <motion.button
-                                        onClick={() => navigate("/safety")}
-                                        className="rounded-xl px-8 py-4 shadow-md hover:shadow-lg transition-all duration-300 text-white font-semibold font-playful"
-                                        style={{ backgroundColor: "#2BD4D0" }}
-                                        whileHover={{ scale: 1.05, y: -2, backgroundColor: "#24B8B4" }}
-                                        whileTap={{ scale: 0.98 }}
-                                    >
-                                        Read Our Safety Charter
-                                    </motion.button>
+                                        {/* CTA Button */}
+                                        <div className="flex items-center flex-shrink-0">
+                                            <motion.button
+                                                onClick={() => navigate("/safety")}
+                                                className="rounded-xl px-6 py-3 shadow-md hover:shadow-lg transition-all duration-300 text-white font-semibold font-playful whitespace-nowrap"
+                                                style={{ backgroundColor: "#2BD4D0" }}
+                                                whileHover={{ scale: 1.05, y: -2, backgroundColor: "#24B8B4" }}
+                                                whileTap={{ scale: 0.98 }}
+                                            >
+                                                Read Our Safety Charter
+                                            </motion.button>
+                                        </div>
+                                    </div>
                                 </div>
                             </motion.div>
                         </div>

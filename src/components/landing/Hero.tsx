@@ -696,14 +696,20 @@ export const Hero = () => {
               className="flex-1 space-y-5 text-center px-4 lg:px-8"
               variants={itemVariants}
             >
-              <h1 className="text-3xl md:text-4xl lg:text-6xl font-extrabold text-gray-900 leading-tight font-playful whitespace-nowrap">
-                Safe AI for Growing Minds.
+              <h1 className="text-3xl md:text-4xl lg:text-8xl font-extrabold text-gray-900 leading-tight font-playful whitespace-nowrap">
+                Safe AI 
+                <br />
+                for Growing Minds
               </h1>
               <motion.p
                 className="text-lg md:text-xl lg:text-2xl text-gray-600 leading-relaxed max-w-2xl mx-auto font-playful"
                 variants={itemVariants}
               >
-               Your child's smart, gentle, and parent-approved AI buddy.
+               Spark imagination, build confidence, and learn through play
+               <br />
+               with an AI companion that's warm, wise, and always
+               <br />
+               parent-approved.
               </motion.p>
 
               {/* Wavy/scalloped button with yellow hover */}

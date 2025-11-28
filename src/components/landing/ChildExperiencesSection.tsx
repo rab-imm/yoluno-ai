@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Shield, Sparkles, Heart } from "lucide-react";
+import { Shield, Sparkles, Heart, BookOpen } from "lucide-react";
 import { BunnyFaceIcon } from "./Icons";
 
 interface FeatureCard {
@@ -7,6 +7,9 @@ interface FeatureCard {
   description: string;
   icon: React.ReactNode;
   iconColor: string;
+  bgColor: string;
+  borderColor: string;
+  borderRadius: string;
 }
 
 const features: FeatureCard[] = [
@@ -15,24 +18,36 @@ const features: FeatureCard[] = [
     description: "Parent-approved content only",
     icon: <Shield className="w-6 h-6" />,
     iconColor: "#14B8A6", // Teal-green
+    bgColor: "#CCFBF1", // Darker teal
+    borderColor: "#99F6E4", // Darker pastel teal
+    borderRadius: "60% 40% 30% 70% / 60% 30% 70% 40%",
   },
   {
     title: "Learning",
     description: "Curated knowledge packs",
-    icon: <Sparkles className="w-6 h-6" />,
+    icon: <BookOpen className="w-6 h-6" />,
     iconColor: "#F97316", // Orange
+    bgColor: "#FED7AA", // Darker orange
+    borderColor: "#FDBA74", // Darker pastel orange
+    borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%",
   },
   {
     title: "Magic",
     description: "Personalized stories & adventures",
     icon: <Sparkles className="w-6 h-6" />,
     iconColor: "#9333EA", // Purple
+    bgColor: "#F3E8FF", // Darker purple
+    borderColor: "#E9D5FF", // Darker pastel purple
+    borderRadius: "50% 50% 50% 50% / 60% 40% 60% 40%",
   },
   {
     title: "Emotional Care",
     description: "Listens, encourages, grows with them",
     icon: <Heart className="w-6 h-6" />,
     iconColor: "#EC4899", // Pink
+    bgColor: "#FBCFE8", // Darker pink
+    borderColor: "#F9A8D4", // Darker pastel pink
+    borderRadius: "40% 60% 60% 40% / 70% 30% 70% 30%",
   },
 ];
 
@@ -57,30 +72,35 @@ const CloudShape = ({ className = "", fillColor = "#FBCFE8" }: { className?: str
 const FeatureCard = ({ feature, delay }: { feature: FeatureCard; delay: number }) => {
   return (
     <motion.div
-      className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow"
+      className="rounded-xl p-10 shadow-sm hover:shadow-md transition-all duration-300 min-h-[250px] min-w-[310px]"
+      style={{
+        backgroundColor: feature.bgColor,
+      }}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
     >
       <div className="flex flex-col items-center text-center">
-        {/* Icon Circle */}
+        {/* Icon with Abstract Blob Shape */}
         <div
-          className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-          style={{ backgroundColor: feature.iconColor }}
+          className="w-16 h-16 flex items-center justify-center mb-6 bg-white"
+          style={{
+            borderRadius: feature.borderRadius,
+          }}
         >
-          <div className="text-white">
+          <div className="text-black">
             {feature.icon}
           </div>
         </div>
         
         {/* Title */}
-        <h3 className="text-xl font-bold text-gray-900 mb-2 font-playful">
+        <h3 className="text-3xl font-bold text-gray-900 mb-3 font-playful">
           {feature.title}
         </h3>
         
         {/* Description */}
-        <p className="text-sm text-gray-600 font-playful leading-relaxed">
+        <p className="text-md text-gray-600 font-playful leading-relaxed">
           {feature.description}
         </p>
       </div>
@@ -118,7 +138,7 @@ export const ChildExperiencesSection = () => {
           </motion.div>
 
           {/* Features Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             {features.map((feature, index) => (
               <FeatureCard
                 key={index}

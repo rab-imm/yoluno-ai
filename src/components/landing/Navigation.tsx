@@ -41,7 +41,7 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
+    <nav className="sticky top-0 z-50 bg-[#EDF7FF] border-b border-blue-200">
       <div className="container mx-auto px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo */}
@@ -98,7 +98,7 @@ export const Navigation = () => {
 
           {/* Mobile Menu Button */}
           <button
-            className="lg:hidden p-2 hover:bg-gray-50 rounded-lg transition-colors"
+            className="lg:hidden p-2 hover:bg-blue-100 rounded-lg transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -112,7 +112,7 @@ export const Navigation = () => {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden py-6 space-y-1 border-t border-gray-100 animate-fade-in">
+          <div className="lg:hidden py-6 space-y-1 border-t border-blue-200 animate-fade-in">
             {navLinks.map((link) => (
               <button
                 key={link.path}
@@ -121,8 +121,8 @@ export const Navigation = () => {
                   setMobileMenuOpen(false);
                 }}
                 className={`block w-full text-left px-4 py-3 text-[15px] font-medium rounded-lg transition-colors ${isActive(link.path)
-                    ? "text-gray-900 bg-gray-50"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                    ? "text-gray-900 bg-blue-100"
+                    : "text-gray-600 hover:bg-blue-100 hover:text-gray-900"
                   }`}
               >
                 {link.label}
