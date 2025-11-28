@@ -72,7 +72,7 @@ const CloudShape = ({ className = "", fillColor = "#FBCFE8" }: { className?: str
 const FeatureCard = ({ feature, delay }: { feature: FeatureCard; delay: number }) => {
   return (
     <motion.div
-      className="rounded-xl p-6 sm:p-8 lg:p-10 shadow-sm hover:shadow-md transition-all duration-300 min-h-[200px] sm:min-h-[250px] w-full"
+      className="rounded-xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-sm hover:shadow-md transition-all duration-300 min-h-[180px] sm:min-h-[200px] md:min-h-[250px] w-full"
       style={{
         backgroundColor: feature.bgColor,
       }}
@@ -84,7 +84,7 @@ const FeatureCard = ({ feature, delay }: { feature: FeatureCard; delay: number }
       <div className="flex flex-col items-center text-center">
         {/* Icon with Abstract Blob Shape */}
         <div
-          className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 flex items-center justify-center mb-4 sm:mb-6 bg-white"
+          className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 flex items-center justify-center mb-3 sm:mb-4 md:mb-6 bg-white"
           style={{
             borderRadius: feature.borderRadius,
           }}
@@ -95,12 +95,12 @@ const FeatureCard = ({ feature, delay }: { feature: FeatureCard; delay: number }
         </div>
         
         {/* Title */}
-        <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 font-playful">
+        <h3 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 font-playful">
           {feature.title}
         </h3>
         
         {/* Description */}
-        <p className="text-sm sm:text-base text-gray-600 font-playful leading-relaxed">
+        <p className="text-xs sm:text-sm md:text-base text-gray-600 font-playful leading-relaxed">
           {feature.description}
         </p>
       </div>
@@ -110,12 +110,12 @@ const FeatureCard = ({ feature, delay }: { feature: FeatureCard; delay: number }
 
 export const ChildExperiencesSection = () => {
   return (
-    <section className="relative py-20 lg:py-28 bg-[#FEF6E4] overflow-hidden">
+    <section className="relative py-12 sm:py-16 md:py-20 lg:py-28 bg-[#FEF6E4] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <motion.div
-            className="text-center mb-8 sm:mb-12 relative"
+            className="text-center mb-6 sm:mb-8 md:mb-12 relative"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -129,16 +129,16 @@ export const ChildExperiencesSection = () => {
               <BunnyFaceIcon size={60} />
             </div>
 
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 sm:mb-6 font-playful relative z-10 px-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 mb-3 sm:mb-4 md:mb-6 font-playful relative z-10 px-2 leading-tight">
               What Makes Yoluno Different?
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-gray-700 font-playful max-w-3xl mx-auto leading-relaxed px-2">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 font-playful max-w-3xl mx-auto leading-relaxed px-2">
               Because kids deserve more than a chatbot. They deserve safety, learning, magic, and emotional care. Yoluno delivers all four — in one beautiful experience.
             </p>
           </motion.div>
 
           {/* Features Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6 lg:gap-8">
             {features.map((feature, index) => (
               <FeatureCard
                 key={index}

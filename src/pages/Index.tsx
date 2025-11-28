@@ -74,10 +74,11 @@ const Index = () => {
 
   // Default: Show childcare landing page
   return (
-    <div className="min-h-screen bg-[#FEF6E4]">
-      <Navigation />
+    <div className="min-h-screen bg-[#FEF6E4] overflow-x-hidden">
+      <Navigation /> 
+      <Hero />
+     
       <div className="px-4 sm:px-6 lg:px-8">
-        <Hero />
         <ChildExperiencesSection />
         <BrightFuturesSection />
         <GentleSmartSection />

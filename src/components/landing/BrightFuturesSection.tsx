@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { WavyCTAButton } from "./WavyCTAButton";
 
 // Decorative cloud shape for text background
 const CloudShape = ({ className = "", fillColor = "#BAE6FD" }: { className?: string; fillColor?: string }) => (
@@ -25,11 +26,11 @@ export const BrightFuturesSection = () => {
   const babyImage = "/src/assets/dashboard.png";
 
   return (
-    <section className="relative py-20 lg:py-28 bg-[#FEF6E4] overflow-hidden">
+    <section className="relative py-12 sm:py-16 md:py-20 lg:py-28 bg-[#FEF6E4] overflow-hidden">
       {/* Decorative background clouds */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
-          className="absolute w-96 h-96 bg-blue-200 opacity-10"
+          className="absolute w-96 h-96 bg-blue-200 opacity-10 hidden sm:block"
           style={{ top: "5%", right: "-10%" }}
           animate={{
             scale: [1, 1.1, 1],
@@ -46,7 +47,7 @@ export const BrightFuturesSection = () => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto">
           {/* Hero Section */}
-          <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-6 sm:gap-8 md:gap-12 lg:gap-16 items-center">
             {/* Left Side - Text Content */}
             <motion.div
               className="relative"
@@ -58,10 +59,10 @@ export const BrightFuturesSection = () => {
               {/* Decorative cloud behind "Building bright futures" */}
               <CloudShape className="top-0 left-0 -translate-y-8 -translate-x-8 hidden sm:block" fillColor="#BAE6FD" />
 
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 sm:mb-6 font-playful leading-tight relative z-10">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 mb-3 sm:mb-4 md:mb-6 font-playful leading-tight relative z-10">
               Parent-Curated.
               </h2>
-              <p className="text-base sm:text-lg md:text-xl text-gray-700 font-playful leading-relaxed relative z-10 mb-6">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-700 font-playful leading-relaxed relative z-10 mb-4 sm:mb-6">
               Unlike AI tools that answer anything, Yoluno only answers what YOU approve.
               <br className="hidden sm:block" />
                <br className="hidden sm:block" />You choose the topics.
@@ -70,15 +71,11 @@ export const BrightFuturesSection = () => {
                <br className="hidden sm:block" />
                <br className="hidden sm:block" />We handle the safety.
               </p>
-              <motion.button
-                onClick={() => navigate("/auth")}
-                className="text-white font-bold py-2.5 sm:py-3 px-6 sm:px-8 rounded-full font-playful text-sm sm:text-base transition-all duration-300 shadow-md hover:shadow-lg"
-                style={{ backgroundColor: "#2BD4D0" }}
-                whileHover={{ scale: 1.05, backgroundColor: "#24B8B4" }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Get Early Access
-              </motion.button>
+              <WavyCTAButton 
+                onClick={() => navigate("/auth")} 
+                text="Get Early Access"
+                size="sm"
+              />
             </motion.div>
 
             {/* Right Side - Baby Image with Cloud Cutout */}

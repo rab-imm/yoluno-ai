@@ -41,102 +41,43 @@ export const Navigation = () => {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#EDF7FF] border-b border-blue-200">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20">
-          {/* Logo */}
-          <button
-            onClick={() => navigate("/")}
-            className="flex items-center hover:opacity-80 transition-opacity"
-          >
-            <img src={yolunoLogo} alt="Yoluno" className="h-8 sm:h-10 w-auto" />
-          </button>
+    <nav className="fixed top-0 left-0 right-0 z-50 pt-4 px-4 sm:px-6 lg:px-8 bg-transparent" style={{ position: 'fixed' }}>
+      <div className="container mx-auto">
+        <div className="bg-[#EDF7FF]/50 backdrop-blur-md border border-white/30 rounded-2xl shadow-xl shadow-blue-100/20">
+          <div className="flex items-center justify-between h-20 sm:h-24 px-4 sm:px-6 lg:px-8">
+            {/* Logo */}
+            <button
+              onClick={() => navigate("/")}
+              className="flex items-center hover:opacity-80 transition-opacity"
+            >
+              <img src={yolunoLogo} alt="Yoluno" className="h-14 sm:h-20 w-auto" />
+            </button>
 
-          {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <button
-                key={link.path}
-                onClick={() => navigate(link.path)}
-                className={`text-[15px] font-medium transition-colors relative py-1 ${isActive(link.path)
-                    ? "text-gray-900"
-                    : "text-gray-600 hover:text-gray-900"
-                  }`}
-              >
-                {link.label}
-                {isActive(link.path) && (
-                  <span className="absolute -bottom-[21px] left-0 right-0 h-0.5 bg-gray-900" />
-                )}
-              </button>
-            ))}
-          </div>
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <button
+                  key={link.path}
+                  onClick={() => navigate(link.path)}
+                  className={`text-lg font-bold transition-colors relative py-1 ${isActive(link.path)
+                      ? "text-gray-900"
+                      : "text-gray-600 hover:text-gray-900"
+                    }`}
+                >
+                  {link.label}
+                  {isActive(link.path) && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-full" />
+                  )}
+                </button>
+              ))}
+            </div>
 
-          {/* Desktop CTA Button */}
-          <div className="hidden lg:flex items-center">
-            {!isParentLoggedIn ? (
-              <Button
-                onClick={() => navigate("/auth")}
-                className="px-6 py-2.5 h-auto text-[15px] font-medium rounded-full text-white shadow-sm"
-                style={{ backgroundColor: "#2BD4D0" }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
-              >
-                Start Free
-              </Button>
-            ) : (
-              <Button
-                onClick={() => navigate("/dashboard")}
-                className="px-6 py-2.5 h-auto text-[15px] font-medium rounded-full text-white shadow-sm"
-                style={{ backgroundColor: "#2BD4D0" }}
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
-              >
-                Dashboard
-              </Button>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2 hover:bg-blue-100 rounded-lg transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6 text-gray-900" />
-            ) : (
-              <Menu className="h-6 w-6 text-gray-900" />
-            )}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden py-6 space-y-1 border-t border-blue-200 animate-fade-in">
-            {navLinks.map((link) => (
-              <button
-                key={link.path}
-                onClick={() => {
-                  navigate(link.path);
-                  setMobileMenuOpen(false);
-                }}
-                className={`block w-full text-left px-4 py-3 text-[15px] font-medium rounded-lg transition-colors ${isActive(link.path)
-                    ? "text-gray-900 bg-blue-100"
-                    : "text-gray-600 hover:bg-blue-100 hover:text-gray-900"
-                  }`}
-              >
-                {link.label}
-              </button>
-            ))}
-
-            <div className="pt-4 px-4">
+            {/* Desktop CTA Button */}
+            <div className="hidden lg:flex items-center">
               {!isParentLoggedIn ? (
                 <Button
-                  onClick={() => {
-                    navigate("/auth");
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-3 h-auto text-[15px] font-medium rounded-full text-white"
+                  onClick={() => navigate("/auth")}
+                  className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
                   style={{ backgroundColor: "#2BD4D0" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
@@ -145,11 +86,8 @@ export const Navigation = () => {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => {
-                    navigate("/dashboard");
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full py-3 h-auto text-[15px] font-medium rounded-full text-white"
+                  onClick={() => navigate("/dashboard")}
+                  className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
                   style={{ backgroundColor: "#2BD4D0" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
@@ -158,8 +96,72 @@ export const Navigation = () => {
                 </Button>
               )}
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="lg:hidden p-2 hover:bg-white/30 rounded-lg transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-7 w-7 text-gray-900" />
+              ) : (
+                <Menu className="h-7 w-7 text-gray-900" />
+              )}
+            </button>
           </div>
-        )}
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="lg:hidden py-6 space-y-1 border-t border-white/30 animate-fade-in rounded-b-2xl">
+              {navLinks.map((link) => (
+                <button
+                  key={link.path}
+                  onClick={() => {
+                    navigate(link.path);
+                    setMobileMenuOpen(false);
+                  }}
+                  className={`block w-full text-left px-4 py-3 text-lg font-bold rounded-lg transition-colors ${isActive(link.path)
+                      ? "text-gray-900 bg-white/40"
+                      : "text-gray-600 hover:bg-white/30 hover:text-gray-900"
+                    }`}
+                >
+                  {link.label}
+                </button>
+              ))}
+
+              <div className="pt-4 px-4">
+                {!isParentLoggedIn ? (
+                  <Button
+                    onClick={() => {
+                      navigate("/auth");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
+                    style={{ backgroundColor: "#2BD4D0" }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                  >
+                    Start Free
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => {
+                      navigate("/dashboard");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
+                    style={{ backgroundColor: "#2BD4D0" }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                  >
+                    Dashboard
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

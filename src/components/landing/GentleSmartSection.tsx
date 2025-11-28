@@ -27,15 +27,15 @@ export const GentleSmartSection = () => {
   ];
 
   return (
-    <section className="relative py-6 lg:py-8 bg-[#FEF6E4] overflow-hidden">
+    <section className="relative py-8 sm:py-10 md:py-12 lg:py-16 bg-[#FEF6E4] overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-start gap-6 sm:gap-8 lg:gap-12">
+          <div className="flex flex-col lg:flex-row items-start gap-4 sm:gap-6 md:gap-8 lg:gap-12">
             {/* Left Side - Content */}
             <div className="flex-1 w-full">
               {/* Section Header */}
               <motion.div
-                className="text-left mb-6 relative"
+                className="text-left mb-4 sm:mb-6 relative"
                 initial={{ opacity: 0, y: -20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -51,7 +51,7 @@ export const GentleSmartSection = () => {
                   </svg>
                 </div>
 
-                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 sm:mb-6 font-playful relative z-10">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 mb-3 sm:mb-4 md:mb-6 font-playful relative z-10 leading-tight">
                   Gentle, Smart, 
                   <br />
                   Emotionally Aware.
@@ -63,7 +63,7 @@ export const GentleSmartSection = () => {
             <div className="flex flex-col items-start flex-shrink-0 w-full lg:w-auto">
               {/* Subtitle Text */}
               <motion.p
-                className="text-sm sm:text-base md:text-lg text-gray-700 font-playful leading-relaxed max-w-md text-left"
+                className="text-xs sm:text-sm md:text-base lg:text-lg text-gray-700 font-playful leading-relaxed max-w-md text-left"
                 initial={{ opacity: 0, y: -20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -76,7 +76,7 @@ export const GentleSmartSection = () => {
 
           {/* Bullet Points as Pills - Full Width Centered */}
           <motion.div
-            className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 lg:gap-8 list-none justify-center items-center w-full pt-8 sm:pt-12"
+            className="flex flex-wrap gap-2 sm:gap-3 md:gap-4 lg:gap-6 xl:gap-8 list-none justify-center items-center w-full pt-6 sm:pt-8 md:pt-10 lg:pt-12"
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -85,7 +85,7 @@ export const GentleSmartSection = () => {
             {bulletPoints.map((point, index) => (
               <motion.div
                 key={index}
-                className="inline-flex items-center rounded-full px-4 sm:px-6 py-2 sm:py-3 shadow-sm hover:shadow-md transition-all duration-300"
+                className="inline-flex items-center rounded-full px-3 sm:px-4 md:px-5 lg:px-6 py-1.5 sm:py-2 md:py-2.5 lg:py-3 shadow-sm hover:shadow-md transition-all duration-300"
                 style={{ backgroundColor: point.bgColor }}
                 initial={{ opacity: 0, y: 10 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -93,7 +93,7 @@ export const GentleSmartSection = () => {
                 transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
                 whileHover={{ scale: 1.05, y: -2 }}
               >
-                <p className="text-xs sm:text-sm md:text-base font-semibold text-gray-900 font-playful whitespace-nowrap">
+                <p className="text-[10px] sm:text-xs md:text-sm lg:text-base font-semibold text-gray-900 font-playful whitespace-nowrap">
                   {point.text}
                 </p>
               </motion.div>

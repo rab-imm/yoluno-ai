@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Eye } from "lucide-react";
+import { WavyCTAButton } from "./WavyCTAButton";
 
 export const ConversationLogsSection = () => {
   const navigate = useNavigate();
@@ -41,15 +42,11 @@ export const ConversationLogsSection = () => {
 
             {/* CTA Button */}
             <div className="flex justify-center">
-              <motion.button
-                onClick={() => navigate("/safety")}
-                className="rounded-xl px-8 py-4 shadow-md hover:shadow-lg transition-all duration-300 text-white font-semibold font-playful"
-                style={{ backgroundColor: "#2BD4D0" }}
-                whileHover={{ scale: 1.05, y: -2, backgroundColor: "#24B8B4" }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Read Our Safety Charter
-              </motion.button>
+              <WavyCTAButton 
+                onClick={() => navigate("/safety")} 
+                text="Read Our Safety Charter"
+                size="sm"
+              />
             </div>
           </motion.div>
         </div>

@@ -52,7 +52,7 @@ const TestimonialCard = ({ testimonial, delay }: { testimonial: Testimonial; del
 
   return (
     <motion.div
-      className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
+      className="bg-white rounded-3xl p-4 sm:p-6 md:p-8 shadow-lg hover:shadow-xl transition-all duration-300 relative overflow-hidden"
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -66,18 +66,18 @@ const TestimonialCard = ({ testimonial, delay }: { testimonial: Testimonial; del
 
       <div className="relative z-10">
         {/* Testimonial Text */}
-        <p className="text-gray-700 mb-4 sm:mb-6 leading-relaxed font-playful text-sm sm:text-base md:text-lg">
+        <p className="text-gray-700 mb-3 sm:mb-4 md:mb-6 leading-relaxed font-playful text-xs sm:text-sm md:text-base lg:text-lg">
           "{testimonial.text}"
         </p>
 
         {/* Author Info */}
-        <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
           <AvatarCircle name={testimonial.name} color={testimonial.avatarColor} />
           <div>
-            <h4 className="font-bold text-gray-900 font-playful text-base sm:text-lg">
+            <h4 className="font-bold text-gray-900 font-playful text-sm sm:text-base md:text-lg">
               {testimonial.name}
             </h4>
-            <p className="text-gray-600 font-playful text-xs sm:text-sm">
+            <p className="text-gray-600 font-playful text-[10px] sm:text-xs md:text-sm">
               {testimonial.role}
             </p>
           </div>
@@ -86,7 +86,7 @@ const TestimonialCard = ({ testimonial, delay }: { testimonial: Testimonial; del
         {/* Get Early Access Link */}
         <motion.button
           onClick={() => navigate("/auth")}
-          className="font-semibold text-xs sm:text-sm font-playful flex items-center gap-1 group"
+          className="font-semibold text-[10px] sm:text-xs md:text-sm font-playful flex items-center gap-1 group"
           style={{ color: "#2BD4D0" }}
           whileHover={{ x: 4, color: "#24B8B4" }}
           transition={{ duration: 0.2 }}
@@ -101,7 +101,7 @@ const TestimonialCard = ({ testimonial, delay }: { testimonial: Testimonial; del
 
 export const TestimonialsSection = () => {
   return (
-    <section className="relative pt-8 sm:pt-0 pb-12 sm:pb-20 lg:pb-28 bg-[#FEF6E4] overflow-hidden -mt-8 sm:-mt-16">
+    <section className="relative pt-6 sm:pt-8 md:pt-0 pb-10 sm:pb-16 md:pb-20 lg:pb-28 bg-[#FEF6E4] overflow-hidden -mt-6 sm:-mt-8 md:-mt-16">
       {/* Decorative background elements */}
       <div className="absolute inset-0 pointer-events-none">
         <motion.div
@@ -137,19 +137,19 @@ export const TestimonialsSection = () => {
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
           <motion.div
-            className="text-center mb-8 sm:mb-12 lg:mb-16"
+            className="text-center mb-6 sm:mb-8 md:mb-12 lg:mb-16"
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-4 sm:mb-6 font-playful px-2">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 mb-3 sm:mb-4 md:mb-6 font-playful px-2 leading-tight">
               What Families Are Saying
             </h2>
           </motion.div>
 
           {/* Testimonials Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {testimonials.map((testimonial, index) => (
               <TestimonialCard
                 key={index}
