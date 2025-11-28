@@ -11,6 +11,9 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders });
   }
 
+  console.log('text-to-speech function invoked at:', new Date().toISOString());
+  console.log('Request method:', req.method);
+
   try {
     const { text, voice } = await req.json();
 

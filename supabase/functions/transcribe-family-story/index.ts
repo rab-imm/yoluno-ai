@@ -12,6 +12,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('transcribe-family-story function invoked at:', new Date().toISOString());
+  console.log('Request method:', req.method);
+
   try {
     const { audioBase64, fileName, parentId, title, durationMinutes } = await req.json();
 

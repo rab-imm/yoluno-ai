@@ -12,6 +12,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('generate-story-narration function invoked at:', new Date().toISOString());
+  console.log('Request method:', req.method);
+
   try {
     const { storyText, voice } = await req.json();
     
