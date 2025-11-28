@@ -11,6 +11,9 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  console.log('transcribe-family-member function invoked at:', new Date().toISOString());
+  console.log('Request method:', req.method);
+
   try {
     const { audio } = await req.json();
     

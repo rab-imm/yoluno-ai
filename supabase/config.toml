@@ -2,3 +2,12 @@ project_id = "mgswzlazagpojpsxfiby"
 
 [functions.transcribe-family-member]
 verify_jwt = false
+
+[functions.text-to-speech]
+verify_jwt = false
+
+[functions.generate-story-narration]
+verify_jwt = false
+
+[functions.transcribe-family-story]
+verify_jwt = false
