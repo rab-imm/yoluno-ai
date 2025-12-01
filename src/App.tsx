@@ -45,6 +45,7 @@ const Family = lazy(() => import("./pages/dashboard/Family"));
 const Content = lazy(() => import("./pages/dashboard/Content"));
 const DashboardSafety = lazy(() => import("./pages/dashboard/Safety"));
 const GenerateAvatars = lazy(() => import("./pages/dashboard/GenerateAvatars"));
+const VoiceVault = lazy(() => import("./pages/dashboard/VoiceVault"));
 
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center p-8">
@@ -91,6 +92,7 @@ const App = () => (
             <Route path="journeys/:childId" element={<Journeys />} />
             <Route path="stories/:childId" element={<Stories />} />
             <Route path="family" element={<Family />} />
+            <Route path="voice-vault" element={<VoiceVault />} />
             <Route path="content/:childId" element={<Content />} />
             <Route path="safety/:childId" element={<DashboardSafety />} />
             <Route path="generate-avatars" element={<GenerateAvatars />} />

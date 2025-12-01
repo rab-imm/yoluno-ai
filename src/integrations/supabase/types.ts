@@ -1879,6 +1879,45 @@ export type Database = {
         }
         Relationships: []
       }
+      voice_vault_clips: {
+        Row: {
+          audio_url: string
+          category: string | null
+          clip_name: string
+          created_at: string | null
+          duration_ms: number | null
+          id: string
+          is_active: boolean | null
+          parent_id: string
+          play_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          audio_url: string
+          category?: string | null
+          clip_name: string
+          created_at?: string | null
+          duration_ms?: number | null
+          id?: string
+          is_active?: boolean | null
+          parent_id: string
+          play_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          audio_url?: string
+          category?: string | null
+          clip_name?: string
+          created_at?: string | null
+          duration_ms?: number | null
+          id?: string
+          is_active?: boolean | null
+          parent_id?: string
+          play_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
