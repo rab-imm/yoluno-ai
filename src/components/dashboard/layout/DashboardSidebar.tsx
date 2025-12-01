@@ -23,6 +23,7 @@ import {
   Shield,
   Sparkles,
   LogOut,
+  Mic,
 } from "lucide-react";
 import { ChildSwitcher } from "./ChildSwitcher";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,12 @@ const sections = [
     label: "Family",
     items: [
       { title: "Family History", url: "/dashboard/family", icon: Users, noChildId: true },
+    ],
+  },
+  {
+    label: "Rewards",
+    items: [
+      { title: "Voice Vault", url: "/dashboard/voice-vault", icon: Mic, noChildId: true },
     ],
   },
   {
