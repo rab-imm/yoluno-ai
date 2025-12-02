@@ -25,34 +25,50 @@ export function MissionCompletionDialog({
   const loadVoiceClip = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        console.log("No user found for voice clip loading");
+        return;
+      }
 
       // Fetch a random active voice clip
-      const { data: clips } = await supabase
+      const { data: clips, error } = await supabase
         .from("voice_vault_clips")
         .select("id, audio_url")
         .eq("parent_id", user.id)
         .eq("is_active", true);
 
+      if (error) {
+        console.error("Error fetching voice clips:", error);
+        // Silent fail - don't ruin the celebration
+        return;
+      }
+
       if (clips && clips.length > 0) {
         const randomClip = clips[Math.floor(Math.random() * clips.length)];
         setVoiceClipUrl(randomClip.audio_url);
 
-        // Increment play count
-        const { data: currentClip } = await supabase
-          .from("voice_vault_clips")
-          .select("play_count")
-          .eq("id", randomClip.id)
-          .single();
+        // Increment play count (fire and forget - don't wait for response)
+        (async () => {
+          try {
+            const { data: currentClip } = await supabase
+              .from("voice_vault_clips")
+              .select("play_count")
+              .eq("id", randomClip.id)
+              .single();
 
-        if (currentClip) {
-          await supabase
-            .from("voice_vault_clips")
-            .update({ play_count: (currentClip.play_count || 0) + 1 })
-            .eq("id", randomClip.id);
-        }
+            if (currentClip) {
+              await supabase
+                .from("voice_vault_clips")
+                .update({ play_count: (currentClip.play_count || 0) + 1 })
+                .eq("id", randomClip.id);
+            }
+          } catch (err) {
+            console.error("Error updating play count:", err);
+          }
+        })();
       }
     } catch (error) {
+      // Silent fail - the celebration should continue without voice clip
       console.error("Error loading voice clip:", error);
     }
   };
@@ -61,9 +77,22 @@ export function MissionCompletionDialog({
     if (!voiceClipUrl || playingVoice) return;
 
     const audio = new Audio(voiceClipUrl);
+    
     audio.onended = () => setPlayingVoice(false);
-    audio.play();
-    setPlayingVoice(true);
+    
+    audio.onerror = () => {
+      // Silent fail - just reset state, don't show error to child
+      setPlayingVoice(false);
+      console.error("Voice clip playback failed");
+    };
+    
+    audio.play()
+      .then(() => setPlayingVoice(true))
+      .catch((error) => {
+        // Silent fail for playback - celebration continues without voice
+        setPlayingVoice(false);
+        console.error("Voice clip play error:", error);
+      });
   };
 
   const getMessage = () => {

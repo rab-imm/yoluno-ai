@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Play, Trash2, ToggleLeft, ToggleRight, Mic } from "lucide-react";
+import { Play, Trash2, ToggleLeft, ToggleRight, Mic, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface VoiceClip {
@@ -38,7 +39,7 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
   const [filter, setFilter] = useState<string>("all");
   const queryClient = useQueryClient();
 
-  const { data: clips = [], isLoading } = useQuery({
+  const { data: clips = [], isLoading, error: fetchError, refetch } = useQuery({
     queryKey: ["voice-vault-clips"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -62,10 +63,19 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["voice-vault-clips"] });
-      toast.success("Clip deleted");
+      toast.success("Clip deleted successfully");
     },
-    onError: () => {
-      toast.error("Failed to delete clip");
+    onError: (error: any) => {
+      console.error("Delete error:", error);
+      if (error.code === "42501") {
+        toast.error("Permission denied", {
+          description: "You don't have permission to delete this clip."
+        });
+      } else {
+        toast.error("Failed to delete clip", {
+          description: "Unable to delete the voice clip. Please try again."
+        });
+      }
     },
   });
 
@@ -77,20 +87,51 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
         .eq("id", clipId);
 
       if (error) throw error;
+      return !isActive;
     },
-    onSuccess: () => {
+    onSuccess: (newStatus) => {
       queryClient.invalidateQueries({ queryKey: ["voice-vault-clips"] });
+      toast.success(newStatus ? "Clip activated" : "Clip deactivated", {
+        description: newStatus 
+          ? "This clip will now be played as a reward." 
+          : "This clip will no longer be played."
+      });
     },
-    onError: () => {
-      toast.error("Failed to toggle clip status");
+    onError: (error: any) => {
+      console.error("Toggle error:", error);
+      toast.error("Failed to update clip", {
+        description: "Unable to change the clip status. Please try again."
+      });
     },
   });
 
   const playClip = (audioUrl: string, clipId: string) => {
     const audio = new Audio(audioUrl);
+    
     audio.onended = () => setPlayingId(null);
-    audio.play();
-    setPlayingId(clipId);
+    
+    audio.onerror = () => {
+      setPlayingId(null);
+      toast.error("Playback failed", {
+        description: "Unable to play this voice clip. The file may be corrupted or unavailable."
+      });
+    };
+    
+    audio.play()
+      .then(() => setPlayingId(clipId))
+      .catch((error) => {
+        setPlayingId(null);
+        console.error("Playback error:", error);
+        if (error.name === "NotAllowedError") {
+          toast.error("Playback blocked", {
+            description: "Your browser blocked audio playback. Please click to interact with the page first."
+          });
+        } else {
+          toast.error("Playback failed", {
+            description: "Unable to play this voice clip."
+          });
+        }
+      });
   };
 
   const filteredClips = clips.filter((clip) => {
@@ -112,7 +153,28 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
   };
 
   if (isLoading) {
-    return <div className="text-center py-8 text-muted-foreground">Loading clips...</div>;
+    return (
+      <div className="flex items-center justify-center py-8 text-muted-foreground">
+        <Loader2 className="h-6 w-6 animate-spin mr-2" />
+        Loading clips...
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return (
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Error loading clips</AlertTitle>
+        <AlertDescription className="flex items-center justify-between">
+          <span>Unable to load your voice clips. Please try again.</span>
+          <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Retry
+          </Button>
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
@@ -204,7 +266,11 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
                     onClick={() => playClip(clip.audio_url, clip.id)}
                     disabled={playingId === clip.id}
                   >
-                    <Play className="h-4 w-4 mr-2" />
+                    {playingId === clip.id ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Play className="h-4 w-4 mr-2" />
+                    )}
                     {playingId === clip.id ? "Playing..." : "Play"}
                   </Button>
 
@@ -217,6 +283,7 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
                         isActive: clip.is_active,
                       })
                     }
+                    disabled={toggleActiveMutation.isPending}
                   >
                     {clip.is_active ? (
                       <ToggleRight className="h-4 w-4 text-primary" />
@@ -229,6 +296,7 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => setDeleteId(clip.id)}
+                    disabled={deleteMutation.isPending}
                   >
                     <Trash2 className="h-4 w-4 text-destructive" />
                   </Button>
@@ -249,7 +317,7 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={deleteMutation.isPending}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => {
                 if (deleteId) {
@@ -257,7 +325,9 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
                   setDeleteId(null);
                 }
               }}
+              disabled={deleteMutation.isPending}
             >
+              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
