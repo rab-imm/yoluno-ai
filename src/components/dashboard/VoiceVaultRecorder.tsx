@@ -27,6 +27,7 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
   const [isPlaying, setIsPlaying] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [clipName, setClipName] = useState("");
+  const [clipNameError, setClipNameError] = useState("");
   const [category, setCategory] = useState<"encouragement" | "praise" | "celebration">("encouragement");
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -41,6 +42,36 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
       }
     };
   }, []);
+
+  const handleMicrophoneError = (error: any) => {
+    console.error("Error starting recording:", error);
+
+    if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") {
+      toast.error("Microphone access denied", {
+        description: "Please allow microphone access in your browser settings to record voice clips."
+      });
+    } else if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") {
+      toast.error("No microphone found", {
+        description: "Please connect a microphone to record voice clips."
+      });
+    } else if (error.name === "NotReadableError" || error.name === "TrackStartError") {
+      toast.error("Microphone unavailable", {
+        description: "Your microphone is being used by another application."
+      });
+    } else if (error.name === "OverconstrainedError") {
+      toast.error("Microphone not compatible", {
+        description: "Your microphone doesn't meet the required settings."
+      });
+    } else if (error.name === "SecurityError") {
+      toast.error("Secure connection required", {
+        description: "Voice recording requires a secure (HTTPS) connection."
+      });
+    } else {
+      toast.error("Failed to access microphone", {
+        description: "An unexpected error occurred. Please try again."
+      });
+    }
+  };
 
   const startRecording = async () => {
     try {
@@ -79,8 +110,7 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
         }
       }, 100);
     } catch (error) {
-      console.error("Error starting recording:", error);
-      toast.error("Failed to access microphone");
+      handleMicrophoneError(error);
     }
   };
 
@@ -104,14 +134,53 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
       const audio = new Audio(URL.createObjectURL(audioBlob));
       audioRef.current = audio;
       audio.onended = () => setIsPlaying(false);
-      audio.play();
+      audio.onerror = () => {
+        setIsPlaying(false);
+        toast.error("Playback failed", {
+          description: "Unable to play the recorded audio. Please try recording again."
+        });
+      };
+      audio.play().catch(() => {
+        setIsPlaying(false);
+        toast.error("Playback blocked", {
+          description: "Your browser blocked audio playback. Please try again."
+        });
+      });
       setIsPlaying(true);
     }
   };
 
+  const validateClipName = (name: string): boolean => {
+    if (name.trim().length < 2) {
+      setClipNameError("Clip name must be at least 2 characters");
+      return false;
+    }
+    if (name.trim().length > 50) {
+      setClipNameError("Clip name must be less than 50 characters");
+      return false;
+    }
+    setClipNameError("");
+    return true;
+  };
+
+  const handleClipNameChange = (value: string) => {
+    setClipName(value);
+    if (value.trim().length > 0) {
+      validateClipName(value);
+    } else {
+      setClipNameError("");
+    }
+  };
+
   const handleUpload = async () => {
-    if (!audioBlob || !clipName.trim()) {
-      toast.error("Please provide a name for your clip");
+    if (!audioBlob) {
+      toast.error("No recording found", {
+        description: "Please record a voice clip first."
+      });
+      return;
+    }
+
+    if (!validateClipName(clipName)) {
       return;
     }
 
@@ -119,15 +188,36 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      if (!user) {
+        toast.error("Session expired", {
+          description: "Please sign in again to save your voice clip."
+        });
+        return;
+      }
 
       // Upload audio to storage
       const fileName = `voice-vault/${user.id}/${Date.now()}.webm`;
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("family_audio")
         .upload(fileName, audioBlob);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error("Storage upload error:", uploadError);
+        if (uploadError.message?.includes("Payload too large")) {
+          toast.error("File too large", {
+            description: "The audio file exceeds the size limit. Please try a shorter recording."
+          });
+        } else if (uploadError.message?.includes("storage") || uploadError.message?.includes("bucket")) {
+          toast.error("Storage unavailable", {
+            description: "Unable to upload audio file. Please try again later."
+          });
+        } else {
+          toast.error("Upload failed", {
+            description: "Unable to upload audio file. Please try again."
+          });
+        }
+        return;
+      }
 
       // Get public URL
       const { data: { publicUrl } } = supabase.storage
@@ -146,14 +236,37 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
           is_active: true,
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error("Database insert error:", insertError);
+        if (insertError.code === "23505") {
+          toast.error("Duplicate clip name", {
+            description: "A clip with this name already exists. Please choose a different name."
+          });
+        } else {
+          toast.error("Failed to save clip", {
+            description: "Unable to save clip information. Please try again."
+          });
+        }
+        return;
+      }
 
-      toast.success("Voice clip saved!");
+      toast.success("Voice clip saved!", {
+        description: `"${clipName.trim()}" is ready to be played as a reward.`
+      });
       onSuccess();
       handleClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading clip:", error);
-      toast.error("Failed to save voice clip");
+      
+      if (!navigator.onLine) {
+        toast.error("No internet connection", {
+          description: "Please check your connection and try again."
+        });
+      } else {
+        toast.error("Failed to save voice clip", {
+          description: "An unexpected error occurred. Please try again."
+        });
+      }
     } finally {
       setUploading(false);
     }
@@ -162,6 +275,7 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
   const handleClose = () => {
     setAudioBlob(null);
     setClipName("");
+    setClipNameError("");
     setCategory("encouragement");
     setCountdown(0);
     setIsRecording(false);
@@ -219,6 +333,7 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
                   size="lg"
                   onClick={togglePlayback}
                   className="h-24 w-24 rounded-full"
+                  disabled={uploading}
                 >
                   {isPlaying ? (
                     <Square className="h-8 w-8" />
@@ -242,13 +357,22 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
                   id="clipName"
                   placeholder="e.g., 'Great job!'"
                   value={clipName}
-                  onChange={(e) => setClipName(e.target.value)}
+                  onChange={(e) => handleClipNameChange(e.target.value)}
+                  disabled={uploading}
+                  className={clipNameError ? "border-destructive" : ""}
                 />
+                {clipNameError && (
+                  <p className="text-sm text-destructive">{clipNameError}</p>
+                )}
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select value={category} onValueChange={(value: any) => setCategory(value)}>
+                <Select 
+                  value={category} 
+                  onValueChange={(value: any) => setCategory(value)}
+                  disabled={uploading}
+                >
                   <SelectTrigger id="category">
                     <SelectValue />
                   </SelectTrigger>
@@ -265,12 +389,13 @@ export function VoiceVaultRecorder({ open, onOpenChange, onSuccess }: VoiceVault
                   variant="outline"
                   onClick={() => setAudioBlob(null)}
                   className="flex-1"
+                  disabled={uploading}
                 >
                   Record Again
                 </Button>
                 <Button
                   onClick={handleUpload}
-                  disabled={uploading || !clipName.trim()}
+                  disabled={uploading || !clipName.trim() || !!clipNameError}
                   className="flex-1"
                 >
                   {uploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

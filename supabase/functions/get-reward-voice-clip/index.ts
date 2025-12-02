@@ -18,7 +18,17 @@ Deno.serve(async (req) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
-      throw new Error("No authorization header");
+      console.error("No authorization header provided");
+      return new Response(
+        JSON.stringify({ 
+          error: "Authentication required",
+          userMessage: "Please sign in to access voice rewards." 
+        }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
 
     const { data: { user }, error: authError } = await supabase.auth.getUser(
@@ -26,10 +36,26 @@ Deno.serve(async (req) => {
     );
 
     if (authError || !user) {
-      throw new Error("Unauthorized");
+      console.error("Authentication error:", authError);
+      return new Response(
+        JSON.stringify({ 
+          error: "Session expired",
+          userMessage: "Your session has expired. Please sign in again." 
+        }),
+        { 
+          status: 401, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
     }
 
-    const { category } = await req.json();
+    let category: string | undefined;
+    try {
+      const body = await req.json();
+      category = body.category;
+    } catch {
+      // No body or invalid JSON - continue without category filter
+    }
 
     // Build query for active clips
     let query = supabase
@@ -45,11 +71,27 @@ Deno.serve(async (req) => {
 
     const { data: clips, error: fetchError } = await query;
 
-    if (fetchError) throw fetchError;
+    if (fetchError) {
+      console.error("Database error fetching clips:", fetchError);
+      return new Response(
+        JSON.stringify({ 
+          error: "Database error",
+          userMessage: "Unable to retrieve voice clips at this time." 
+        }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, "Content-Type": "application/json" } 
+        }
+      );
+    }
 
     if (!clips || clips.length === 0) {
+      console.log("No voice clips available for user:", user.id);
       return new Response(
-        JSON.stringify({ clip: null, message: "No voice clips available" }),
+        JSON.stringify({ 
+          clip: null, 
+          message: "No voice clips available" 
+        }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -58,31 +100,42 @@ Deno.serve(async (req) => {
     const randomClip = clips[Math.floor(Math.random() * clips.length)];
 
     // Increment play count
-    const { data: currentClip } = await supabase
+    const { data: currentClip, error: countError } = await supabase
       .from("voice_vault_clips")
       .select("play_count")
       .eq("id", randomClip.id)
       .single();
 
-    if (currentClip) {
-      await supabase
+    if (countError) {
+      console.error("Error fetching play count:", countError);
+      // Continue without updating play count
+    } else if (currentClip) {
+      const { error: updateError } = await supabase
         .from("voice_vault_clips")
         .update({ play_count: (currentClip.play_count || 0) + 1 })
         .eq("id", randomClip.id);
+
+      if (updateError) {
+        console.error("Error updating play count:", updateError);
+        // Continue anyway - play count update is not critical
+      }
     }
 
-    console.log("Selected voice clip:", randomClip.clip_name);
+    console.log("Selected voice clip:", randomClip.clip_name, "for user:", user.id);
 
     return new Response(
       JSON.stringify({ clip: randomClip }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {
-    console.error("Error in get-reward-voice-clip:", error);
+    console.error("Unexpected error in get-reward-voice-clip:", error);
     return new Response(
-      JSON.stringify({ error: (error as Error).message || "Unknown error" }),
+      JSON.stringify({ 
+        error: "Internal server error",
+        userMessage: "Something went wrong. Please try again later." 
+      }),
       {
-        status: 400,
+        status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       }
     );
