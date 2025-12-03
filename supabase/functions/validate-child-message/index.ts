@@ -16,13 +16,36 @@ interface ValidationResult {
   actionTaken: 'allowed' | 'blocked' | 'strict_mode';
 }
 
+interface GuardrailSettings {
+  strictness_level: 'low' | 'medium' | 'high';
+  block_on_yellow: boolean;
+  custom_blocked_keywords: string[];
+  custom_allowed_phrases: string[];
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { childId, message, approvedTopics, childAge, hasFamilyAccess, isFamilyQuery } = await req.json();
+    const { 
+      childId, 
+      message, 
+      approvedTopics, 
+      childAge, 
+      hasFamilyAccess, 
+      isFamilyQuery,
+      guardrailSettings,
+      bypassValidation 
+    } = await req.json();
+
+    const settings: GuardrailSettings = guardrailSettings || {
+      strictness_level: 'medium',
+      block_on_yellow: false,
+      custom_blocked_keywords: [],
+      custom_allowed_phrases: []
+    };
 
     // Auto-approve family queries when family access is enabled
     if (hasFamilyAccess && isFamilyQuery) {
@@ -39,6 +62,21 @@ serve(async (req) => {
       );
     }
 
+    // If bypass validation is enabled (custom allowed phrase matched)
+    if (bypassValidation) {
+      console.log(`✅ Bypassing validation for child ${childId} due to allowed phrase`);
+      return new Response(
+        JSON.stringify({
+          isAllowed: true,
+          flagLevel: 'green',
+          flagReasons: ['Custom allowed phrase matched'],
+          parentNotify: false,
+          actionTaken: 'allowed'
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
     if (!LOVABLE_API_KEY) {
       console.error('LOVABLE_API_KEY is not configured');
       return new Response(
@@ -47,14 +85,56 @@ serve(async (req) => {
       );
     }
 
+    // Determine strictness-based instructions
+    let strictnessInstructions = '';
+    switch (settings.strictness_level) {
+      case 'low':
+        strictnessInstructions = `
+STRICTNESS LEVEL: LOW (Lenient)
+- Be more permissive with topic interpretation
+- Only flag messages that are clearly inappropriate or dangerous
+- Allow tangential topics if they're still educational
+- Yellow flag only for genuinely ambiguous safety concerns
+- Red flag only for explicit inappropriate content or manipulation`;
+        break;
+      case 'high':
+        strictnessInstructions = `
+STRICTNESS LEVEL: HIGH (Strict)
+- Be very strict about topic adherence
+- Flag anything not directly related to approved topics as yellow
+- Red flag any attempt to deviate from topics or manipulate
+- Only allow questions that clearly match approved topics
+- When in doubt, flag as yellow`;
+        break;
+      default: // medium
+        strictnessInstructions = `
+STRICTNESS LEVEL: MEDIUM (Balanced)
+- Allow reasonable topic extensions and connections
+- Flag clearly off-topic or suspicious messages as yellow
+- Red flag inappropriate content or obvious manipulation
+- Use judgment for borderline cases`;
+    }
+
     // Semantic validation using AI
     const validationPrompt = `You are a content safety validator for a children's learning app. Analyze this child's message for safety and appropriateness.
 
 Child's age: ${childAge}
-Approved topics for this child: ${approvedTopics.join(', ')}
+Approved topics for this child: ${approvedTopics?.join(', ') || 'None specified'}
 Family history enabled: ${hasFamilyAccess}
 Is family query: ${isFamilyQuery}
 Child's message: "${message}"
+
+${strictnessInstructions}
+
+${settings.custom_blocked_keywords?.length > 0 ? `
+CUSTOM BLOCKED KEYWORDS (always flag as RED if found):
+${settings.custom_blocked_keywords.join(', ')}
+` : ''}
+
+${settings.custom_allowed_phrases?.length > 0 ? `
+CUSTOM ALLOWED PHRASES (be lenient with these):
+${settings.custom_allowed_phrases.join(', ')}
+` : ''}
 
 IMPORTANT: If family history is enabled (${hasFamilyAccess}) AND this is a family query (${isFamilyQuery}), questions about family members should be ALLOWED and flagged as GREEN.
 
@@ -108,14 +188,15 @@ Examples:
 
     if (!validationResponse.ok) {
       console.error('Validation AI error:', await validationResponse.text());
-      // Fallback to strict mode on error
+      // Fallback based on strictness level
+      const fallbackLevel = settings.strictness_level === 'high' ? 'yellow' : 'green';
       return new Response(
         JSON.stringify({
           isAllowed: true,
-          flagLevel: 'yellow',
-          flagReasons: ['AI validation unavailable, using strict mode'],
+          flagLevel: fallbackLevel,
+          flagReasons: ['AI validation unavailable, using fallback mode'],
           parentNotify: false,
-          actionTaken: 'strict_mode'
+          actionTaken: fallbackLevel === 'yellow' ? 'strict_mode' : 'allowed'
         }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
@@ -135,25 +216,43 @@ Examples:
       }
       
       const parsed = JSON.parse(jsonStr);
+      
+      // Apply strictness adjustments
+      let finalFlagLevel = parsed.flagLevel;
+      
+      // In high strictness mode, upgrade green to yellow for any non-direct topic match
+      if (settings.strictness_level === 'high' && parsed.flagLevel === 'green') {
+        const topicsLower = (approvedTopics || []).map((t: string) => t.toLowerCase());
+        const messageLower = message.toLowerCase();
+        const hasDirectTopicMatch = topicsLower.some((topic: string) => 
+          messageLower.includes(topic) || topic.includes(messageLower.split(' ')[0])
+        );
+        if (!hasDirectTopicMatch && !hasFamilyAccess) {
+          finalFlagLevel = 'yellow';
+          parsed.flagReasons.push('Strict mode: No direct topic match');
+        }
+      }
+      
       result = {
-        isAllowed: parsed.isAllowed,
-        flagLevel: parsed.flagLevel,
+        isAllowed: finalFlagLevel !== 'red',
+        flagLevel: finalFlagLevel,
         flagReasons: parsed.flagReasons || [],
-        parentNotify: parsed.parentNotify,
-        actionTaken: parsed.flagLevel === 'red' ? 'blocked' : 
-                     parsed.flagLevel === 'yellow' ? 'strict_mode' : 'allowed'
+        parentNotify: parsed.parentNotify || finalFlagLevel !== 'green',
+        actionTaken: finalFlagLevel === 'red' ? 'blocked' : 
+                     finalFlagLevel === 'yellow' ? 'strict_mode' : 'allowed'
       };
 
       console.log(`Validation result for child ${childId}: ${result.flagLevel} - ${parsed.explanation}`);
     } catch (parseError) {
       console.error('Failed to parse validation response:', parseError);
-      // Fallback to strict mode
+      // Fallback based on strictness
+      const fallbackLevel = settings.strictness_level === 'high' ? 'yellow' : 'green';
       result = {
         isAllowed: true,
-        flagLevel: 'yellow',
-        flagReasons: ['Parse error, using strict mode'],
+        flagLevel: fallbackLevel as 'green' | 'yellow' | 'red',
+        flagReasons: ['Parse error, using fallback mode'],
         parentNotify: false,
-        actionTaken: 'strict_mode'
+        actionTaken: fallbackLevel === 'yellow' ? 'strict_mode' : 'allowed'
       };
     }
 

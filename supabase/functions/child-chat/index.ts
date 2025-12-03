@@ -320,6 +320,46 @@ serve(async (req) => {
 
     const approvedTopics = topics?.map(t => t.topic) || [];
 
+    // FETCH GUARDRAIL SETTINGS
+    console.log('Fetching guardrail settings...');
+    let guardrailSettings = {
+      strictness_level: 'medium',
+      block_on_yellow: false,
+      notify_on_yellow: true,
+      notify_on_green: false,
+      custom_blocked_keywords: [] as string[],
+      custom_allowed_phrases: [] as string[],
+      max_response_length: 300,
+      preferred_ai_tone: 'friendly'
+    };
+
+    try {
+      const guardrailResponse = await fetch(
+        `${supabaseUrl}/functions/v1/get-guardrail-settings`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ parentId, childId }),
+        }
+      );
+
+      if (guardrailResponse.ok) {
+        const guardrailData = await guardrailResponse.json();
+        if (guardrailData.settings) {
+          guardrailSettings = {
+            ...guardrailSettings,
+            ...guardrailData.settings
+          };
+          console.log(`Guardrail settings loaded: strictness=${guardrailSettings.strictness_level}, block_on_yellow=${guardrailSettings.block_on_yellow}`);
+        }
+      }
+    } catch (guardrailError) {
+      console.warn('Failed to fetch guardrail settings, using defaults:', guardrailError);
+    }
+
     // FAMILY QUERY DETECTION - Check this BEFORE topics validation
     let familyContext = '';
     let hasFamilyAccess = false;
@@ -447,6 +487,48 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
     // PHASE 1 GUARDRAILS: Validate message BEFORE AI processing
     console.log('Running Phase 1 validation for child message...');
     
+    // Check custom blocked keywords FIRST (before AI validation)
+    if (guardrailSettings.custom_blocked_keywords && guardrailSettings.custom_blocked_keywords.length > 0) {
+      const blockedKeywordFound = guardrailSettings.custom_blocked_keywords.find(keyword => 
+        messageLower.includes(keyword.toLowerCase())
+      );
+      
+      if (blockedKeywordFound) {
+        console.log(`🚫 Custom blocked keyword detected: "${blockedKeywordFound}"`);
+        
+        // Notify parent
+        if (parentId) {
+          await supabase.from('parent_alerts').insert({
+            parent_id: parentId,
+            child_id: childId,
+            alert_type: 'blocked_keyword',
+            title: 'Blocked Keyword Detected',
+            description: `Your child tried to ask about "${blockedKeywordFound}" which is on your blocked list.`,
+            severity: 'medium',
+            metadata: { keyword: blockedKeywordFound, message: message }
+          });
+        }
+        
+        return new Response(
+          JSON.stringify({ 
+            message: "Hmm, that's not something we should chat about. Let's pick another fun topic! What else are you curious about? 🌟" 
+          }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
+    // Check custom allowed phrases (bypass validation for these)
+    let bypassValidation = false;
+    if (guardrailSettings.custom_allowed_phrases && guardrailSettings.custom_allowed_phrases.length > 0) {
+      bypassValidation = guardrailSettings.custom_allowed_phrases.some(phrase => 
+        messageLower.includes(phrase.toLowerCase())
+      );
+      if (bypassValidation) {
+        console.log('✅ Custom allowed phrase detected, bypassing strict validation');
+      }
+    }
+    
     let validationResult: any;
     try {
       const validationResponse = await fetch(
@@ -463,7 +545,14 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
             approvedTopics,
             childAge,
             hasFamilyAccess: hasFamilyAccess,
-            isFamilyQuery: hasFamilyQuery
+            isFamilyQuery: hasFamilyQuery,
+            guardrailSettings: {
+              strictness_level: guardrailSettings.strictness_level,
+              block_on_yellow: guardrailSettings.block_on_yellow,
+              custom_blocked_keywords: guardrailSettings.custom_blocked_keywords,
+              custom_allowed_phrases: guardrailSettings.custom_allowed_phrases
+            },
+            bypassValidation
           }),
         }
       );
@@ -489,16 +578,17 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
         if (validationResult.flagLevel === 'red') {
           console.error(`RED FLAG: Blocking message from child ${childId}`);
           
-          // Notify parent if needed
-          if (validationResult.parentNotify && parentId) {
-            await supabase
-              .from('child_feedback')
-              .insert({
-                parent_id: parentId,
-                child_id: childId,
-                message: `⚠️ ALERT: Your child attempted to ask: "${message}". This was blocked for: ${validationResult.flagReasons.join(', ')}`,
-                is_read: false
-              });
+          // Notify parent
+          if (parentId) {
+            await supabase.from('parent_alerts').insert({
+              parent_id: parentId,
+              child_id: childId,
+              alert_type: 'red_flag',
+              title: 'Message Blocked',
+              description: `Your child's message was blocked: ${validationResult.flagReasons.join(', ')}`,
+              severity: 'high',
+              metadata: { message: message, reasons: validationResult.flagReasons }
+            });
           }
 
           return new Response(
@@ -507,6 +597,54 @@ FAMILY GUIDANCE FOR AGE ${childAge}:
             }),
             { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
+        }
+
+        // Handle YELLOW flag based on guardrail settings
+        if (validationResult.flagLevel === 'yellow') {
+          console.log(`YELLOW FLAG: ${validationResult.flagReasons.join(', ')}`);
+          
+          // Block if block_on_yellow is enabled
+          if (guardrailSettings.block_on_yellow) {
+            console.log('Blocking yellow-flagged message due to guardrail settings');
+            
+            if (parentId) {
+              await supabase.from('parent_alerts').insert({
+                parent_id: parentId,
+                child_id: childId,
+                alert_type: 'yellow_flag_blocked',
+                title: 'Ambiguous Message Blocked',
+                description: `Your child's message was blocked (strict mode): ${validationResult.flagReasons.join(', ')}`,
+                severity: 'medium',
+                metadata: { message: message, reasons: validationResult.flagReasons }
+              });
+            }
+            
+            return new Response(
+              JSON.stringify({ 
+                message: "I'm not sure if we should talk about that. Let's stick to your fun approved topics! What would you like to learn about? 🤔" 
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+          
+          // Notify parent if notify_on_yellow is enabled
+          if (guardrailSettings.notify_on_yellow && parentId) {
+            await supabase.from('parent_alerts').insert({
+              parent_id: parentId,
+              child_id: childId,
+              alert_type: 'yellow_flag',
+              title: 'Ambiguous Message Allowed',
+              description: `Your child asked something that was flagged but allowed: ${validationResult.flagReasons.join(', ')}`,
+              severity: 'low',
+              metadata: { message: message, reasons: validationResult.flagReasons }
+            });
+          }
+        }
+
+        // Notify on green if enabled (unusual but configurable)
+        if (validationResult.flagLevel === 'green' && guardrailSettings.notify_on_green && parentId) {
+          // Only log to analytics, don't create alerts for every green message
+          console.log('Green flag with notification enabled - logged for analytics');
         }
       } else {
         console.warn('Validation service unavailable, proceeding with strict mode');
