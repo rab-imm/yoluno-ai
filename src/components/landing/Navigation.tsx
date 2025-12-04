@@ -97,10 +97,7 @@ export const Navigation = () => {
                   </Button>
                   <Button
                     onClick={() => navigate("/kids")}
-                    className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
-                    style={{ backgroundColor: "#2BD4D0" }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                    className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm bg-child-secondary hover:opacity-90"
                   >
                     Kids Mode
                   </Button>
@@ -174,10 +171,7 @@ export const Navigation = () => {
                         navigate("/kids");
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
-                      style={{ backgroundColor: "#2BD4D0" }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                      className="w-full py-3 h-auto text-lg font-bold rounded-full text-white bg-child-secondary hover:opacity-90"
                     >
                       Kids Mode
                     </Button>
