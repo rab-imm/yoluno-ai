@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         heading: ['Lexend', 'sans-serif'],
+        playful: ['Baloo 2', 'Fredoka One', 'Comfortaa', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
