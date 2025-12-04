@@ -72,8 +72,8 @@ export const Navigation = () => {
               ))}
             </div>
 
-            {/* Desktop CTA Button */}
-            <div className="hidden lg:flex items-center">
+            {/* Desktop CTA Buttons */}
+            <div className="hidden lg:flex items-center gap-3">
               {!isParentLoggedIn ? (
                 <Button
                   onClick={() => navigate("/auth")}
@@ -85,15 +85,26 @@ export const Navigation = () => {
                   Start Free
                 </Button>
               ) : (
-                <Button
-                  onClick={() => navigate("/dashboard")}
-                  className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
-                  style={{ backgroundColor: "#2BD4D0" }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
-                >
-                  Dashboard
-                </Button>
+                <>
+                  <Button
+                    onClick={() => navigate("/dashboard")}
+                    className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
+                    style={{ backgroundColor: "#2BD4D0" }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                  >
+                    Dashboard
+                  </Button>
+                  <Button
+                    onClick={() => navigate("/kids")}
+                    className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
+                    style={{ backgroundColor: "#2BD4D0" }}
+                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                  >
+                    Kids Mode
+                  </Button>
+                </>
               )}
             </div>
 
@@ -130,7 +141,7 @@ export const Navigation = () => {
                 </button>
               ))}
 
-              <div className="pt-4 px-4">
+              <div className="pt-4 px-4 space-y-3">
                 {!isParentLoggedIn ? (
                   <Button
                     onClick={() => {
@@ -145,18 +156,32 @@ export const Navigation = () => {
                     Start Free
                   </Button>
                 ) : (
-                  <Button
-                    onClick={() => {
-                      navigate("/dashboard");
-                      setMobileMenuOpen(false);
-                    }}
-                    className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
-                    style={{ backgroundColor: "#2BD4D0" }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
-                  >
-                    Dashboard
-                  </Button>
+                  <>
+                    <Button
+                      onClick={() => {
+                        navigate("/dashboard");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
+                      style={{ backgroundColor: "#2BD4D0" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                    >
+                      Dashboard
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        navigate("/kids");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
+                      style={{ backgroundColor: "#2BD4D0" }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
+                    >
+                      Kids Mode
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
