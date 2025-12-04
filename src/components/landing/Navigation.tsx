@@ -44,7 +44,7 @@ export const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 pt-4 px-4 sm:px-6 lg:px-8 bg-transparent" style={{ position: 'fixed' }}>
       <div className="container mx-auto">
         <div className="bg-[#EDF7FF]/50 backdrop-blur-md border border-white/30 rounded-2xl shadow-xl shadow-blue-100/20">
-          <div className="flex items-center justify-between h-20 sm:h-24 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-6 h-20 sm:h-24 px-4 sm:px-6 lg:px-8">
             {/* Logo */}
             <button
               onClick={() => navigate("/")}
@@ -73,7 +73,7 @@ export const Navigation = () => {
             </div>
 
             {/* Desktop CTA Buttons */}
-            <div className="hidden lg:flex items-center gap-3">
+            <div className="hidden lg:flex items-center gap-4 ml-4">
               {!isParentLoggedIn ? (
                 <Button
                   onClick={() => navigate("/auth")}
