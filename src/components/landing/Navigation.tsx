@@ -59,14 +59,14 @@ export const Navigation = () => {
                 <button
                   key={link.path}
                   onClick={() => navigate(link.path)}
-                  className={`text-lg font-bold transition-colors relative py-1 ${isActive(link.path)
-                      ? "text-gray-900"
-                      : "text-gray-600 hover:text-gray-900"
+                  className={`text-lg font-brand font-extrabold transition-colors relative py-1 ${isActive(link.path)
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
                     }`}
                 >
                   {link.label}
                   {isActive(link.path) && (
-                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 rounded-full" />
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full" />
                   )}
                 </button>
               ))}
@@ -77,7 +77,7 @@ export const Navigation = () => {
               {!isParentLoggedIn ? (
                 <Button
                   onClick={() => navigate("/auth")}
-                  className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
+                  className="px-6 py-2.5 h-auto text-lg font-brand font-extrabold rounded-full text-white shadow-sm"
                   style={{ backgroundColor: "#2BD4D0" }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
@@ -88,7 +88,7 @@ export const Navigation = () => {
                 <>
                   <Button
                     onClick={() => navigate("/dashboard")}
-                    className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm"
+                    className="px-6 py-2.5 h-auto text-lg font-brand font-extrabold rounded-full text-white shadow-sm"
                     style={{ backgroundColor: "#2BD4D0" }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
@@ -97,7 +97,7 @@ export const Navigation = () => {
                   </Button>
                   <Button
                     onClick={() => navigate("/kids")}
-                    className="px-6 py-2.5 h-auto text-lg font-bold rounded-full text-white shadow-sm bg-child-secondary hover:opacity-90"
+                    className="px-6 py-2.5 h-auto text-lg font-brand font-extrabold rounded-full text-white shadow-sm bg-child-secondary hover:opacity-90"
                   >
                     Kids Mode
                   </Button>
@@ -129,9 +129,9 @@ export const Navigation = () => {
                     navigate(link.path);
                     setMobileMenuOpen(false);
                   }}
-                  className={`block w-full text-left px-4 py-3 text-lg font-bold rounded-lg transition-colors ${isActive(link.path)
-                      ? "text-gray-900 bg-white/40"
-                      : "text-gray-600 hover:bg-white/30 hover:text-gray-900"
+                  className={`block w-full text-left px-4 py-3 text-lg font-brand font-extrabold rounded-lg transition-colors ${isActive(link.path)
+                      ? "text-foreground bg-white/40"
+                      : "text-muted-foreground hover:bg-white/30 hover:text-foreground"
                     }`}
                 >
                   {link.label}
@@ -145,7 +145,7 @@ export const Navigation = () => {
                       navigate("/auth");
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
+                    className="w-full py-3 h-auto text-lg font-brand font-extrabold rounded-full text-white"
                     style={{ backgroundColor: "#2BD4D0" }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
                     onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
@@ -159,7 +159,7 @@ export const Navigation = () => {
                         navigate("/dashboard");
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full py-3 h-auto text-lg font-bold rounded-full text-white"
+                      className="w-full py-3 h-auto text-lg font-brand font-extrabold rounded-full text-white"
                       style={{ backgroundColor: "#2BD4D0" }}
                       onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "#24B8B4"}
                       onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "#2BD4D0"}
@@ -171,7 +171,7 @@ export const Navigation = () => {
                         navigate("/kids");
                         setMobileMenuOpen(false);
                       }}
-                      className="w-full py-3 h-auto text-lg font-bold rounded-full text-white bg-child-secondary hover:opacity-90"
+                      className="w-full py-3 h-auto text-lg font-brand font-extrabold rounded-full text-white bg-child-secondary hover:opacity-90"
                     >
                       Kids Mode
                     </Button>

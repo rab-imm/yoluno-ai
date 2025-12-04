@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
         heading: ['Lexend', 'sans-serif'],
+        brand: ['Bricolage Grotesque', 'sans-serif'],
         playful: ['Baloo 2', 'Fredoka One', 'Comfortaa', 'sans-serif'],
       },
       colors: {
