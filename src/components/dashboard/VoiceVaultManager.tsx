@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Play, Trash2, ToggleLeft, ToggleRight, Mic, AlertCircle, RefreshCw, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 
 interface VoiceClip {
   id: string;
@@ -65,15 +66,17 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
       queryClient.invalidateQueries({ queryKey: ["voice-vault-clips"] });
       toast.success("Clip deleted successfully");
     },
-    onError: (error: any) => {
-      console.error("Delete error:", error);
-      if (error.code === "42501") {
-        toast.error("Permission denied", {
-          description: "You don't have permission to delete this clip."
+    onError: (error: unknown) => {
+      const errorObj = error as { code?: string };
+      if (errorObj?.code === "42501") {
+        handleError(error, {
+          userMessage: "You don't have permission to delete this clip",
+          context: 'VoiceVaultManager.deleteMutation'
         });
       } else {
-        toast.error("Failed to delete clip", {
-          description: "Unable to delete the voice clip. Please try again."
+        handleError(error, {
+          userMessage: "Unable to delete the voice clip. Please try again.",
+          context: 'VoiceVaultManager.deleteMutation'
         });
       }
     },
@@ -97,10 +100,10 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
           : "This clip will no longer be played."
       });
     },
-    onError: (error: any) => {
-      console.error("Toggle error:", error);
-      toast.error("Failed to update clip", {
-        description: "Unable to change the clip status. Please try again."
+    onError: (error: unknown) => {
+      handleError(error, {
+        userMessage: "Unable to change the clip status. Please try again.",
+        context: 'VoiceVaultManager.toggleActiveMutation'
       });
     },
   });
@@ -112,8 +115,9 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
     
     audio.onerror = () => {
       setPlayingId(null);
-      toast.error("Playback failed", {
-        description: "Unable to play this voice clip. The file may be corrupted or unavailable."
+      handleError(new Error("Audio playback failed"), {
+        userMessage: "Unable to play this voice clip. The file may be corrupted or unavailable.",
+        context: 'VoiceVaultManager.playClip'
       });
     };
     
@@ -121,14 +125,15 @@ export function VoiceVaultManager({ onRecordNew }: VoiceVaultManagerProps) {
       .then(() => setPlayingId(clipId))
       .catch((error) => {
         setPlayingId(null);
-        console.error("Playback error:", error);
         if (error.name === "NotAllowedError") {
-          toast.error("Playback blocked", {
-            description: "Your browser blocked audio playback. Please click to interact with the page first."
+          handleError(error, {
+            userMessage: "Your browser blocked audio playback. Please click to interact with the page first.",
+            context: 'VoiceVaultManager.playClip'
           });
         } else {
-          toast.error("Playback failed", {
-            description: "Unable to play this voice clip."
+          handleError(error, {
+            userMessage: "Unable to play this voice clip.",
+            context: 'VoiceVaultManager.playClip'
           });
         }
       });

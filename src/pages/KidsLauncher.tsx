@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 import { motion } from "framer-motion";
 
@@ -44,8 +44,10 @@ export default function KidsLauncher() {
       if (error) throw error;
       setChildren(data || []);
     } catch (error) {
-      console.error("Error fetching children:", error);
-      toast.error("Failed to load profiles");
+      handleError(error, {
+        userMessage: "Failed to load profiles",
+        context: 'KidsLauncher.fetchChildren'
+      });
     } finally {
       setLoading(false);
     }

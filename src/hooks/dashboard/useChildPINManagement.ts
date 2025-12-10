@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { validatePIN } from "@/lib/pinValidation";
 
 export function useChildPINManagement(childId: string) {
@@ -30,7 +31,10 @@ export function useChildPINManagement(childId: string) {
       toast.success('PIN settings updated successfully');
     },
     onError: (error: Error) => {
-      toast.error(error.message || 'Failed to update PIN');
+      handleError(error, {
+        userMessage: error.message || 'Failed to update PIN',
+        context: 'useChildPINManagement.setPIN'
+      });
     }
   });
   

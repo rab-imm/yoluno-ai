@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Shield, Sparkles, ArrowLeft } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import type { Session } from "@supabase/supabase-js";
+import { handleError } from "@/lib/errors";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -92,9 +93,11 @@ export default function Auth() {
         setEmail("");
         setPassword("");
       }
-    } catch (error: any) {
-      toast.error("An unexpected error occurred. Please try again.");
-      console.error("Signup error:", error);
+    } catch (error) {
+      handleError(error, {
+        userMessage: "An unexpected error occurred. Please try again.",
+        context: 'Auth.handleSignUp'
+      });
     } finally {
       setLoading(false);
     }
@@ -141,9 +144,11 @@ export default function Auth() {
         toast.success("Welcome back!");
         // Navigation handled by onAuthStateChange
       }
-    } catch (error: any) {
-      console.error("[Auth] Unexpected sign in error:", error);
-      toast.error("An unexpected error occurred. Please try again.");
+    } catch (error) {
+      handleError(error, {
+        userMessage: "An unexpected error occurred. Please try again.",
+        context: 'Auth.handleSignIn'
+      });
     } finally {
       setLoading(false);
     }
@@ -165,9 +170,11 @@ export default function Auth() {
       if (error) {
         toast.error(error.message);
       }
-    } catch (error: any) {
-      toast.error("Google sign-in failed. Please try again.");
-      console.error("Google signin error:", error);
+    } catch (error) {
+      handleError(error, {
+        userMessage: "Google sign-in failed. Please try again.",
+        context: 'Auth.handleGoogleSignIn'
+      });
     }
   };
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 
 export function useTextToSpeech() {
   const [speaking, setSpeaking] = useState(false);
@@ -34,13 +34,18 @@ export function useTextToSpeech() {
       audio.onerror = () => {
         setSpeaking(false);
         setCurrentAudio(null);
-        toast.error("Failed to play audio");
+        handleError(new Error("Audio playback failed"), {
+          userMessage: "Failed to play audio",
+          context: 'useTextToSpeech.speak'
+        });
       };
 
       await audio.play();
-    } catch (error: any) {
-      console.error("TTS error:", error);
-      toast.error("Failed to generate speech");
+    } catch (error) {
+      handleError(error, {
+        userMessage: "Failed to generate speech",
+        context: 'useTextToSpeech.speak'
+      });
       setSpeaking(false);
       setCurrentAudio(null);
     }

@@ -14,6 +14,7 @@ import { Copy, Check, Lock, Link as LinkIcon, QrCode } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { handleError } from "@/lib/errors";
 
 interface EditChildProfileDialogProps {
   open: boolean;
@@ -48,7 +49,10 @@ export function EditChildProfileDialog({ open, onOpenChange, child, onSuccess }:
       const link = await createInviteLink(child.id);
       setInviteLink(link);
     } catch (error) {
-      console.error("Failed to create invite link:", error);
+      handleError(error, {
+        strategy: 'log',
+        context: 'EditChildProfileDialog.loadInviteLink'
+      });
     }
   };
 
@@ -69,7 +73,10 @@ export function EditChildProfileDialog({ open, onOpenChange, child, onSuccess }:
       toast.success('Profile updated successfully');
       onSuccess?.();
     } catch (error) {
-      toast.error('Failed to update profile');
+      handleError(error, {
+        userMessage: 'Failed to update profile',
+        context: 'EditChildProfileDialog.handleSaveGeneral'
+      });
     }
   };
 

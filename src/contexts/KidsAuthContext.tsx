@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 
 interface KidsSession {
   sessionToken: string;
@@ -54,7 +55,10 @@ export function KidsAuthProvider({ children }: { children: ReactNode }) {
             localStorage.removeItem(SESSION_STORAGE_KEY);
           }
         } catch (error) {
-          console.error("Error loading session:", error);
+          handleError(error, {
+            strategy: 'log',
+            context: 'KidsAuthContext.loadSession'
+          });
           localStorage.removeItem(SESSION_STORAGE_KEY);
         }
       }
@@ -106,7 +110,10 @@ export function KidsAuthProvider({ children }: { children: ReactNode }) {
         .single();
 
       if (childError || !child) {
-        toast.error("Profile not found");
+        handleError(childError || new Error("Profile not found"), {
+          userMessage: "Profile not found",
+          context: 'KidsAuthContext.login'
+        });
         return false;
       }
 
@@ -132,8 +139,10 @@ export function KidsAuthProvider({ children }: { children: ReactNode }) {
         });
 
       if (sessionError) {
-        console.error("Session creation error:", sessionError);
-        toast.error("Could not start session");
+        handleError(sessionError, {
+          userMessage: "Could not start session",
+          context: 'KidsAuthContext.login'
+        });
         return false;
       }
 
@@ -157,8 +166,10 @@ export function KidsAuthProvider({ children }: { children: ReactNode }) {
 
       return true;
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("Something went wrong");
+      handleError(error, {
+        userMessage: "Something went wrong",
+        context: 'KidsAuthContext.login'
+      });
       return false;
     }
   };
@@ -188,7 +199,10 @@ export function KidsAuthProvider({ children }: { children: ReactNode }) {
 
       setLastActivityTime(Date.now());
     } catch (error) {
-      console.error("Error refreshing session:", error);
+      handleError(error, {
+        strategy: 'log',
+        context: 'KidsAuthContext.refreshSession'
+      });
     }
   };
 

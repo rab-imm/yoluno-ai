@@ -1,6 +1,6 @@
 import { useParams, Navigate } from "react-router-dom";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
-import { StoryLibrary } from "@/components/dashboard/StoryLibrary";
+import { StoryLibrary } from "@/components/dashboard/stories";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 

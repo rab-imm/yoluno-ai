@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { AvatarSelector } from "./AvatarSelector";
 
 interface CreateChildDialogProps {
@@ -26,7 +27,10 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      toast.error("You must be logged in");
+      handleError(new Error("Not authenticated"), {
+        userMessage: "You must be logged in",
+        context: 'CreateChildDialog.handleSubmit'
+      });
       setLoading(false);
       return;
     }
@@ -52,7 +56,10 @@ export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChild
     });
 
     if (error) {
-      toast.error("Failed to create profile");
+      handleError(error, {
+        userMessage: "Failed to create profile",
+        context: 'CreateChildDialog.handleSubmit'
+      });
       setLoading(false);
       return;
     }

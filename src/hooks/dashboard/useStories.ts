@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 
 interface Story {
   id: string;
@@ -57,7 +58,10 @@ export function useStories(childId: string) {
     },
     onError: (err, variables, context) => {
       queryClient.setQueryData(["child-stories", childId], context?.previousStories);
-      toast.error("Failed to update favorite status");
+      handleError(err, {
+        userMessage: "Failed to update favorite status",
+        context: 'useStories.toggleFavorite'
+      });
     },
     onSuccess: (data) => {
       toast.success(data.newValue ? "Added to favorites" : "Removed from favorites");
@@ -77,8 +81,11 @@ export function useStories(childId: string) {
       queryClient.invalidateQueries({ queryKey: ["child-stories", childId] });
       toast.success("Story deleted");
     },
-    onError: () => {
-      toast.error("Failed to delete story");
+    onError: (err) => {
+      handleError(err, {
+        userMessage: "Failed to delete story",
+        context: 'useStories.deleteStory'
+      });
     },
   });
 

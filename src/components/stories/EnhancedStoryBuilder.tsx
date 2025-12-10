@@ -3,6 +3,7 @@ import { StoryWizard, StoryWizardData } from "./StoryWizard";
 import { StoryPreview } from "./StoryPreview";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { Loader2 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useStoryUsage } from "@/hooks/useStoryUsage";
@@ -106,7 +107,10 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
       });
 
       if (storyError) {
-        console.error("Story generation error:", storyError);
+        handleError(storyError, {
+          strategy: 'log',
+          context: 'EnhancedStoryBuilder.generateStory'
+        });
         throw new Error("Failed to generate story text");
       }
       
@@ -138,7 +142,10 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
           });
 
           if (illustrationsError) {
-            console.error("Illustrations error:", illustrationsError);
+            handleError(illustrationsError, {
+              strategy: 'log',
+              context: 'EnhancedStoryBuilder.generateStory.illustrations'
+            });
             toast.warning("Story ready! Illustrations may take a moment...");
           } else {
             generatedIllustrations = illustrationsData.illustrations || [];
@@ -152,7 +159,10 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
             }
           }
         } catch (illustrationError) {
-          console.error("Illustration generation failed:", illustrationError);
+          handleError(illustrationError, {
+            strategy: 'log',
+            context: 'EnhancedStoryBuilder.generateStory.illustrations'
+          });
           toast.warning("Story ready! Illustrations couldn't be generated.");
         }
         
@@ -171,7 +181,10 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
         });
 
         if (narrationError) {
-          console.error("Narration error:", narrationError);
+          handleError(narrationError, {
+            strategy: 'log',
+            context: 'EnhancedStoryBuilder.generateStory.narration'
+          });
           toast.warning("Story and illustrations ready! Narration couldn't be generated.");
         } else {
           setAudioContent(narrationData.audioContent);
@@ -179,7 +192,10 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
           toast.success("Narration recorded! 🎙️");
         }
       } catch (narrationError) {
-        console.error("Narration generation failed:", narrationError);
+        handleError(narrationError, {
+          strategy: 'log',
+          context: 'EnhancedStoryBuilder.generateStory.narration'
+        });
         toast.warning("Story ready without audio!");
       }
 
@@ -189,13 +205,18 @@ export function EnhancedStoryBuilder({ childId, childName, childAge, onComplete 
       try {
         await incrementUsage();
       } catch (error) {
-        console.error("Failed to update usage:", error);
+        handleError(error, {
+          strategy: 'log',
+          context: 'EnhancedStoryBuilder.incrementUsage'
+        });
       }
 
       setStage("preview");
-    } catch (error: any) {
-      console.error("Story generation error:", error);
-      toast.error(error.message || "Failed to generate story. Please try again!");
+    } catch (error) {
+      handleError(error, {
+        userMessage: error instanceof Error ? error.message : "Failed to generate story. Please try again!",
+        context: 'EnhancedStoryBuilder.generateStory'
+      });
       setStage("wizard");
     }
   };

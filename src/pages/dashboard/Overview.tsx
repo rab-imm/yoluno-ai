@@ -2,14 +2,11 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Loader2 } from "lucide-react";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
-import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
+import { CreateChildDialog, EnhancedChildCard } from "@/components/dashboard/children";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
 import { DashboardHero } from "@/components/dashboard/DashboardHero";
 import { ProductExplainerPanel } from "@/components/dashboard/ProductExplainerPanel";
-import { EnhancedChildCard } from "@/components/dashboard/EnhancedChildCard";
-import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
-import { EngagementPrompts } from "@/components/dashboard/EngagementPrompts";
-import { ChildFeedbackPanel } from "@/components/dashboard/ChildFeedbackPanel";
+import { ActivityFeed, EngagementPrompts, ChildFeedbackPanel } from "@/components/dashboard/analytics";
 
 
 export default function Overview() {

@@ -1,6 +1,6 @@
 import { useParams, Navigate } from "react-router-dom";
 import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
-import { ParentInsights } from "@/components/dashboard/ParentInsights";
+import { ParentInsights } from "@/components/dashboard/analytics";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 

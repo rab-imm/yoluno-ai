@@ -4,14 +4,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Settings, Moon, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { ChatInterface } from "@/components/chat/ChatInterface";
 import { BuddyAvatar } from "@/components/chat/BuddyAvatar";
 import { BadgeDisplay } from "@/components/gamification/BadgeDisplay";
 import { StreakDisplay } from "@/components/gamification/StreakDisplay";
 import { EnhancedStoryBuilder } from "@/components/stories/EnhancedStoryBuilder";
 import { StoriesLibrary } from "@/components/stories/StoriesLibrary";
-import { AvatarCustomizer } from "@/components/dashboard/AvatarCustomizer";
-import { AccessoriesManager } from "@/components/dashboard/AccessoriesManager";
+import { AvatarCustomizer, AccessoriesManager } from "@/components/dashboard/avatars";
 import { BedtimeMode } from "@/components/stories/BedtimeMode";
 import { useStories } from "@/hooks/dashboard/useStories";
 import { useQueryClient } from "@tanstack/react-query";
@@ -104,7 +104,10 @@ function ChildChatContent() {
       .single();
 
     if (error || !data) {
-      toast.error("Child profile not found");
+      handleError(error || new Error("Profile not found"), {
+        userMessage: "Child profile not found",
+        context: 'ChildChat.loadChild'
+      });
       navigate("/dashboard");
       return;
     }
@@ -139,7 +142,10 @@ function ChildChatContent() {
       .eq("id", id);
 
     if (error) {
-      toast.error("Failed to update personality");
+      handleError(error, {
+        userMessage: "Failed to update personality",
+        context: 'ChildChat.updatePersonality'
+      });
       return;
     }
 

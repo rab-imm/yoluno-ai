@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Send, Mic, Trash2, Volume2, VolumeX } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { ChatMessage } from "./ChatMessage";
 import { BuddyAvatar } from "./BuddyAvatar";
 import { useTextToSpeech } from "@/hooks/useTextToSpeech";
@@ -75,8 +76,12 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
         setIsListening(false);
       };
 
-      recognitionRef.current.onerror = () => {
-        toast.error("Voice recognition failed");
+      recognitionRef.current.onerror = (event: Event) => {
+        handleError(new Error("Voice recognition failed"), {
+          userMessage: "Voice recognition failed",
+          context: 'ChatInterface.voiceRecognition',
+          strategy: 'toast'
+        });
         setIsListening(false);
       };
 
@@ -88,7 +93,10 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
 
   const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
-      toast.error("Voice input not supported in this browser");
+      handleError(new Error("Voice input not supported"), {
+        userMessage: "Voice input not supported in this browser",
+        context: 'ChatInterface.toggleVoiceInput'
+      });
       return;
     }
 
@@ -168,7 +176,10 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
       .eq("child_id", childId);
 
     if (error) {
-      toast.error("Failed to clear chat history");
+      handleError(error, {
+        userMessage: "Failed to clear chat history",
+        context: 'ChatInterface.clearChatHistory'
+      });
       return;
     }
 
@@ -247,9 +258,11 @@ export function ChatInterface({ childId, childName, childAvatar = "🤖", person
 
       // Check for new badges
       await supabase.rpc("check_and_award_badges", { p_child_id: childId });
-    } catch (error: any) {
-      toast.error("Sorry, I couldn't respond right now. Please try again!");
-      console.error("Chat error:", error);
+    } catch (error) {
+      handleError(error, {
+        userMessage: "Sorry, I couldn't respond right now. Please try again!",
+        context: 'ChatInterface.handleSend'
+      });
     } finally {
       setLoading(false);
     }

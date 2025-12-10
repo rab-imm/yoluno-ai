@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { AlertCircle, Plus } from "lucide-react";
 import { ContentPackSelector } from "./ContentPackSelector";
 import { Input } from "@/components/ui/input";
@@ -59,7 +60,10 @@ export function TopicManager({ childId }: TopicManagerProps) {
         .eq("topic", topic);
 
       if (error) {
-        toast.error("Failed to remove topic");
+        handleError(error, {
+          userMessage: "Failed to remove topic",
+          context: 'TopicManager.toggleTopic'
+        });
         return;
       }
 
@@ -72,7 +76,10 @@ export function TopicManager({ childId }: TopicManagerProps) {
       });
 
       if (error) {
-        toast.error("Failed to add topic");
+        handleError(error, {
+          userMessage: "Failed to add topic",
+          context: 'TopicManager.toggleTopic'
+        });
         return;
       }
 
@@ -96,7 +103,10 @@ export function TopicManager({ childId }: TopicManagerProps) {
     });
 
     if (error) {
-      toast.error("Failed to add custom topic");
+      handleError(error, {
+        userMessage: "Failed to add custom topic",
+        context: 'TopicManager.addCustomTopic'
+      });
       setLoading(false);
       return;
     }

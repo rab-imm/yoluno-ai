@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { handleError } from "@/lib/errors";
 import { MissionCompletionDialog } from "./MissionCompletionDialog";
 
 interface DailyMissionCardProps {
@@ -82,7 +83,10 @@ export function DailyMissionCard({ childId, personalityMode }: DailyMissionCardP
         });
       }
     } catch (error) {
-      console.error("Error loading mission:", error);
+      handleError(error, {
+        strategy: 'log',
+        context: 'DailyMissionCard.loadTodaysMission'
+      });
     } finally {
       setLoading(false);
     }
@@ -132,8 +136,10 @@ export function DailyMissionCard({ childId, personalityMode }: DailyMissionCardP
 
       setShowCompletion(true);
     } catch (error) {
-      console.error("Error completing mission:", error);
-      toast.error("Failed to complete mission");
+      handleError(error, {
+        userMessage: "Failed to complete mission",
+        context: 'DailyMissionCard.handleComplete'
+      });
     }
   };
 

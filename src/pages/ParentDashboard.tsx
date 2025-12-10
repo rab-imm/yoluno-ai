@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, LogOut, Users, BookOpen, Sparkles, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
-import { ChildProfileCard } from "@/components/dashboard/ChildProfileCard";
-import { CreateChildDialog } from "@/components/dashboard/CreateChildDialog";
+import { ChildProfileCard } from "@/components/dashboard/children";
+import { CreateChildDialog } from "@/components/dashboard/children";
 import { WelcomeDialog } from "@/components/dashboard/WelcomeDialog";
 import { JourneyOnboardingCard } from "@/components/journey/JourneyOnboardingCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,13 +14,13 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 
 // Lazy load heavy dashboard components
-const TopicManager = lazy(() => import("@/components/dashboard/TopicManager").then(m => ({ default: m.TopicManager })));
-const ParentInsights = lazy(() => import("@/components/dashboard/ParentInsights").then(m => ({ default: m.ParentInsights })));
-const ContentModerationLog = lazy(() => import("@/components/dashboard/ContentModerationLog").then(m => ({ default: m.ContentModerationLog })));
-const TopicLibrary = lazy(() => import("@/components/dashboard/TopicLibrary").then(m => ({ default: m.TopicLibrary })));
-const ContentLibrary = lazy(() => import("@/components/dashboard/ContentLibrary").then(m => ({ default: m.ContentLibrary })));
-const StoryLibrary = lazy(() => import("@/components/dashboard/StoryLibrary").then(m => ({ default: m.StoryLibrary })));
-const GoalJourneyManager = lazy(() => import("@/components/dashboard/GoalJourneyManager").then(m => ({ default: m.GoalJourneyManager })));
+const TopicManager = lazy(() => import("@/components/dashboard/topics/TopicManager").then(m => ({ default: m.TopicManager })));
+const ParentInsights = lazy(() => import("@/components/dashboard/analytics/ParentInsights").then(m => ({ default: m.ParentInsights })));
+const ContentModerationLog = lazy(() => import("@/components/dashboard/safety/ContentModerationLog").then(m => ({ default: m.ContentModerationLog })));
+const TopicLibrary = lazy(() => import("@/components/dashboard/topics/TopicLibrary").then(m => ({ default: m.TopicLibrary })));
+const ContentLibrary = lazy(() => import("@/components/dashboard/topics/ContentLibrary").then(m => ({ default: m.ContentLibrary })));
+const StoryLibrary = lazy(() => import("@/components/dashboard/stories/StoryLibrary").then(m => ({ default: m.StoryLibrary })));
+const GoalJourneyManager = lazy(() => import("@/components/dashboard/journeys/GoalJourneyManager").then(m => ({ default: m.GoalJourneyManager })));
 const FamilyHistoryManager = lazy(() => import("@/components/dashboard/FamilyHistoryManager").then(m => ({ default: m.FamilyHistoryManager })));
 const EnhancedStoryBuilder = lazy(() => import("@/components/stories/EnhancedStoryBuilder").then(m => ({ default: m.EnhancedStoryBuilder })));
 
