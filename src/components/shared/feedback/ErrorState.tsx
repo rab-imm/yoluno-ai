@@ -1,110 +1,53 @@
 /**
- * ErrorState
+ * Error State
  *
  * Consistent error display component.
  */
 
+import { cn } from '@/lib/utils';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 
-export interface ErrorStateProps {
-  /** Error title */
+interface ErrorStateProps {
   title?: string;
-  /** Error message to display */
   message?: string;
-  /** The error object (will extract message if string not provided) */
-  error?: Error | unknown;
-  /** Retry callback */
   onRetry?: () => void;
-  /** Retry button label */
   retryLabel?: string;
-  /** Size variant */
-  size?: 'sm' | 'md' | 'lg';
-  /** Whether to center in container */
-  centered?: boolean;
-  /** Whether to take full height */
-  fullHeight?: boolean;
-  /** Additional className */
   className?: string;
+  fullPage?: boolean;
 }
-
-const iconSizeClasses = {
-  sm: 'h-6 w-6',
-  md: 'h-10 w-10',
-  lg: 'h-14 w-14',
-};
-
-const titleSizeClasses = {
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
-};
 
 export function ErrorState({
   title = 'Something went wrong',
-  message,
-  error,
+  message = 'An unexpected error occurred. Please try again.',
   onRetry,
   retryLabel = 'Try again',
-  size = 'md',
-  centered = true,
-  fullHeight = false,
   className,
+  fullPage = false,
 }: ErrorStateProps) {
-  // Extract message from error if not provided
-  const displayMessage =
-    message ||
-    (error instanceof Error ? error.message : undefined) ||
-    'An unexpected error occurred. Please try again.';
-
-  return (
-    <div
-      className={cn(
-        'flex flex-col items-center gap-4 p-4',
-        centered && 'justify-center',
-        fullHeight && 'min-h-[200px]',
-        className
-      )}
-    >
+  const content = (
+    <div className={cn('flex flex-col items-center justify-center gap-4 text-center', className)}>
       <div className="rounded-full bg-destructive/10 p-3">
-        <AlertCircle
-          className={cn('text-destructive', iconSizeClasses[size])}
-        />
+        <AlertCircle className="h-8 w-8 text-destructive" />
       </div>
-
-      <div className="text-center space-y-1">
-        <h3 className={cn('font-semibold', titleSizeClasses[size])}>{title}</h3>
-        <p className="text-sm text-muted-foreground max-w-md">{displayMessage}</p>
+      <div className="space-y-1">
+        <h3 className="font-semibold text-foreground">{title}</h3>
+        <p className="text-sm text-muted-foreground">{message}</p>
       </div>
-
       {onRetry && (
-        <Button variant="outline" size="sm" onClick={onRetry}>
-          <RefreshCw className="mr-2 h-4 w-4" />
+        <Button variant="outline" onClick={onRetry} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
           {retryLabel}
         </Button>
       )}
     </div>
   );
-}
 
-/**
- * Inline error message
- */
-export function InlineError({
-  message,
-  className,
-}: {
-  message: string;
-  className?: string;
-}) {
-  return (
-    <div className={cn('flex items-center gap-2 text-sm text-destructive', className)}>
-      <AlertCircle className="h-4 w-4 flex-shrink-0" />
-      <span>{message}</span>
-    </div>
-  );
-}
+  if (fullPage) {
+    return (
+      <div className="flex min-h-screen items-center justify-center p-4">{content}</div>
+    );
+  }
 
-ErrorState.displayName = 'ErrorState';
-InlineError.displayName = 'InlineError';
+  return content;
+}

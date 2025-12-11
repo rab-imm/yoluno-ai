@@ -1,222 +1,163 @@
 /**
  * Family Query Hooks
  *
- * React Query hooks for family members and relationships.
+ * React Query hooks for family member operations.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { queryKeys } from './keys';
-import {
-  getFamilyMembers,
-  getFamilyMember,
-  createFamilyMember,
-  updateFamilyMember,
-  deleteFamilyMember,
-  getFamilyRelationships,
-  getMemberRelationships,
-  createRelationship,
-  deleteRelationship,
-  getFamilyMembersWithRelationships,
-  getFamilyEvents,
-} from '@/services/family';
-import type { FamilyMemberInsert, FamilyMemberUpdate, FamilyRelationshipInsert } from '@/types/database';
+import { familyService, type FamilyMemberWithRelations } from '@/services/family';
+import type {
+  FamilyMemberInsert,
+  FamilyMemberUpdate,
+  FamilyRelationshipInsert,
+} from '@/types/database';
+import { handleError } from '@/lib/errors';
 
-// ============================================================================
-// Family Members Hooks
-// ============================================================================
-
-/**
- * Get all family members
- */
-export function useFamilyMembers() {
+export function useFamilyMembers(userId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.family.members,
-    queryFn: getFamilyMembers,
+    queryKey: queryKeys.family.members(userId ?? ''),
+    queryFn: () => familyService.getMembers(userId!),
+    enabled: !!userId,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-/**
- * Get a single family member
- */
 export function useFamilyMember(id: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.family.member(id!),
-    queryFn: () => getFamilyMember(id!),
+    queryKey: queryKeys.family.member(id ?? ''),
+    queryFn: () => familyService.getMemberById(id!),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-/**
- * Create a family member
- */
+export function useFamilyRelationships(userId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.family.relationships(userId ?? ''),
+    queryFn: () => familyService.getRelationships(userId!),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useFamilyTree(userId: string | undefined) {
+  return useQuery({
+    queryKey: queryKeys.family.tree(userId ?? ''),
+    queryFn: () => familyService.getTree(userId!),
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 export function useCreateFamilyMember() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Omit<FamilyMemberInsert, 'parent_id'>) =>
-      createFamilyMember(data),
-    onSuccess: (newMember) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.family.members });
+    mutationFn: (member: FamilyMemberInsert) => familyService.createMember(member),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.family.withRelationships,
+        queryKey: queryKeys.family.members(data.user_id),
       });
-      toast.success(`Added ${newMember.name} to family tree`);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.family.tree(data.user_id),
+      });
+      return data;
     },
-    onError: () => {
-      // Error handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useCreateFamilyMember',
+        userMessage: 'Failed to add family member',
+      });
     },
   });
 }
 
-/**
- * Update a family member
- */
 export function useUpdateFamilyMember() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: FamilyMemberUpdate }) =>
-      updateFamilyMember(id, updates),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.family.member(updated.id), updated);
-      queryClient.invalidateQueries({ queryKey: queryKeys.family.members });
+      familyService.updateMember(id, updates),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.family.withRelationships,
+        queryKey: queryKeys.family.members(data.user_id),
       });
-      toast.success('Family member updated');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.family.member(data.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.family.tree(data.user_id),
+      });
+      return data;
     },
-    onError: () => {
-      // Error handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useUpdateFamilyMember',
+        userMessage: 'Failed to update family member',
+      });
     },
   });
 }
 
-/**
- * Delete a family member
- */
 export function useDeleteFamilyMember() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteFamilyMember,
-    onSuccess: (_, deletedId) => {
-      queryClient.removeQueries({
-        queryKey: queryKeys.family.member(deletedId),
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.family.members });
+    mutationFn: (id: string) => familyService.deleteMember(id),
+    onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.family.relationships,
+        queryKey: queryKeys.family.all,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.family.withRelationships,
-      });
-      toast.success('Family member removed');
     },
-    onError: () => {
-      // Error handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useDeleteFamilyMember',
+        userMessage: 'Failed to remove family member',
+      });
     },
   });
 }
 
-// ============================================================================
-// Relationships Hooks
-// ============================================================================
-
-/**
- * Get all family relationships
- */
-export function useFamilyRelationships() {
-  return useQuery({
-    queryKey: queryKeys.family.relationships,
-    queryFn: getFamilyRelationships,
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-/**
- * Get relationships for a specific member
- */
-export function useMemberRelationships(memberId: string | undefined) {
-  return useQuery({
-    queryKey: queryKeys.family.memberRelationships(memberId!),
-    queryFn: () => getMemberRelationships(memberId!),
-    enabled: !!memberId,
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-/**
- * Create a relationship
- */
 export function useCreateRelationship() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Omit<FamilyRelationshipInsert, 'parent_id'>) =>
-      createRelationship(data),
-    onSuccess: () => {
+    mutationFn: (relationship: FamilyRelationshipInsert) =>
+      familyService.createRelationship(relationship),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.family.relationships,
+        queryKey: queryKeys.family.relationships(data.user_id),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.family.withRelationships,
+        queryKey: queryKeys.family.tree(data.user_id),
       });
-      toast.success('Relationship created');
+      return data;
     },
-    onError: () => {
-      // Error handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useCreateRelationship',
+        userMessage: 'Failed to create relationship',
+      });
     },
   });
 }
 
-/**
- * Delete a relationship
- */
 export function useDeleteRelationship() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteRelationship,
+    mutationFn: (id: string) => familyService.deleteRelationship(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.family.relationships,
+        queryKey: queryKeys.family.all,
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.family.withRelationships,
+    },
+    onError: (error) => {
+      handleError(error, {
+        context: 'useDeleteRelationship',
+        userMessage: 'Failed to remove relationship',
       });
-      toast.success('Relationship removed');
     },
-    onError: () => {
-      // Error handled by service layer
-    },
-  });
-}
-
-// ============================================================================
-// Combined Data Hooks
-// ============================================================================
-
-/**
- * Get family members with their relationships
- */
-export function useFamilyMembersWithRelationships() {
-  return useQuery({
-    queryKey: queryKeys.family.withRelationships,
-    queryFn: getFamilyMembersWithRelationships,
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-/**
- * Get family events
- */
-export function useFamilyEvents() {
-  return useQuery({
-    queryKey: queryKeys.family.events,
-    queryFn: getFamilyEvents,
-    staleTime: 5 * 60 * 1000,
   });
 }

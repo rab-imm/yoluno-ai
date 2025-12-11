@@ -1,55 +1,74 @@
 /**
  * Avatars Service
  *
- * Data access layer for avatar library and management.
+ * Data access layer for avatar library operations.
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { createErrorHandler } from '@/lib/errors';
 import type { AvatarLibraryRow } from '@/types/database';
+import type { AvatarLibraryItem, AvatarCategory } from '@/types/domain';
+import { handleError } from '@/lib/errors';
+import { avatarCache } from './cache/indexedDBCache';
 
-const handleError = createErrorHandler('avatarsService');
+export async function getAllAvatars(): Promise<AvatarLibraryItem[]> {
+  const cacheKey = 'all-avatars';
+  const cached = await avatarCache.get(cacheKey);
 
-/**
- * Get all avatars from the library
- */
-export async function getAllAvatars(): Promise<AvatarLibraryRow[]> {
+  if (cached) {
+    return JSON.parse(cached) as AvatarLibraryItem[];
+  }
+
   const { data, error } = await supabase
     .from('avatar_library')
     .select('*')
-    .order('category')
-    .order('character_name');
+    .eq('is_active', true)
+    .order('category', { ascending: true })
+    .order('name', { ascending: true });
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'avatars.getAllAvatars',
+      strategy: 'throw',
+    });
   }
 
-  return data || [];
+  const avatars = (data ?? []).map(mapRowToAvatar);
+  await avatarCache.set(cacheKey, JSON.stringify(avatars));
+
+  return avatars;
 }
 
-/**
- * Get avatars by category
- */
 export async function getAvatarsByCategory(
-  category: string
-): Promise<AvatarLibraryRow[]> {
+  category: AvatarCategory
+): Promise<AvatarLibraryItem[]> {
+  const cacheKey = `avatars-${category}`;
+  const cached = await avatarCache.get(cacheKey);
+
+  if (cached) {
+    return JSON.parse(cached) as AvatarLibraryItem[];
+  }
+
   const { data, error } = await supabase
     .from('avatar_library')
     .select('*')
     .eq('category', category)
-    .order('character_name');
+    .eq('is_active', true)
+    .order('name', { ascending: true });
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'avatars.getAvatarsByCategory',
+      strategy: 'throw',
+    });
   }
 
-  return data || [];
+  const avatars = (data ?? []).map(mapRowToAvatar);
+  await avatarCache.set(cacheKey, JSON.stringify(avatars));
+
+  return avatars;
 }
 
-/**
- * Get a single avatar by ID
- */
-export async function getAvatar(id: string): Promise<AvatarLibraryRow | null> {
+export async function getAvatarById(id: string): Promise<AvatarLibraryItem | null> {
   const { data, error } = await supabase
     .from('avatar_library')
     .select('*')
@@ -60,109 +79,79 @@ export async function getAvatar(id: string): Promise<AvatarLibraryRow | null> {
     if (error.code === 'PGRST116') {
       return null;
     }
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'avatars.getAvatarById',
+      strategy: 'throw',
+    });
   }
 
-  return data;
+  return mapRowToAvatar(data);
 }
 
-/**
- * Get avatar by character slug
- */
-export async function getAvatarBySlug(slug: string): Promise<AvatarLibraryRow | null> {
-  const { data, error } = await supabase
-    .from('avatar_library')
-    .select('*')
-    .eq('character_slug', slug)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') {
-      return null;
-    }
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data;
+export async function getAvatarUrl(id: string): Promise<string | null> {
+  const avatar = await getAvatarById(id);
+  return avatar?.imageUrl ?? null;
 }
 
-/**
- * Get available avatar categories
- */
-export async function getAvatarCategories(): Promise<string[]> {
+export async function getCategories(): Promise<AvatarCategory[]> {
   const { data, error } = await supabase
     .from('avatar_library')
     .select('category')
-    .order('category');
+    .eq('is_active', true);
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'avatars.getCategories',
+      strategy: 'throw',
+    });
   }
 
-  // Get unique categories
-  const categories = [...new Set(data?.map((item) => item.category) || [])];
-  return categories;
+  const categories = [...new Set((data ?? []).map((d) => d.category))];
+  return categories as AvatarCategory[];
 }
 
-/**
- * Search avatars by name or description
- */
-export async function searchAvatars(query: string): Promise<AvatarLibraryRow[]> {
+export async function searchAvatars(query: string): Promise<AvatarLibraryItem[]> {
   const { data, error } = await supabase
     .from('avatar_library')
     .select('*')
-    .or(`character_name.ilike.%${query}%,description.ilike.%${query}%`)
-    .order('character_name');
+    .eq('is_active', true)
+    .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+    .order('name', { ascending: true })
+    .limit(20);
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'avatars.searchAvatars',
+      strategy: 'throw',
+    });
   }
 
-  return data || [];
+  return (data ?? []).map(mapRowToAvatar);
 }
 
-/**
- * Get avatar expression URL
- */
-export function getAvatarExpressionUrl(
-  avatar: AvatarLibraryRow,
-  expression: 'neutral' | 'happy' | 'thinking' | 'excited'
-): string {
-  const expressionMap = {
-    neutral: avatar.avatar_neutral,
-    happy: avatar.avatar_happy,
-    thinking: avatar.avatar_thinking,
-    excited: avatar.avatar_excited,
-  };
-
-  return expressionMap[expression] || avatar.avatar_neutral;
+export async function clearAvatarCache(): Promise<void> {
+  await avatarCache.clear();
 }
 
-/**
- * Get all expression URLs for an avatar
- */
-export function getAllExpressionUrls(avatar: AvatarLibraryRow): {
-  neutral: string;
-  happy: string;
-  thinking: string;
-  excited: string;
-} {
+function mapRowToAvatar(row: AvatarLibraryRow): AvatarLibraryItem {
   return {
-    neutral: avatar.avatar_neutral,
-    happy: avatar.avatar_happy,
-    thinking: avatar.avatar_thinking,
-    excited: avatar.avatar_excited,
+    id: row.id,
+    name: row.name,
+    category: row.category as AvatarCategory,
+    imageUrl: row.image_url,
+    thumbnailUrl: row.thumbnail_url ?? row.image_url,
+    isAnimated: row.is_animated ?? false,
+    isPremium: row.is_premium ?? false,
+    tags: row.tags ?? [],
   };
 }
 
-// Export as a service object
 export const avatarsService = {
   getAll: getAllAvatars,
   getByCategory: getAvatarsByCategory,
-  getById: getAvatar,
-  getBySlug: getAvatarBySlug,
-  getCategories: getAvatarCategories,
+  getById: getAvatarById,
+  getUrl: getAvatarUrl,
+  getCategories,
   search: searchAvatars,
-  getExpressionUrl: getAvatarExpressionUrl,
-  getAllExpressionUrls,
+  clearCache: clearAvatarCache,
 };

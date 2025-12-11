@@ -1,73 +1,83 @@
-# Welcome to your Lovable project
+# Yoluno AI
 
-## Project info
+AI-powered educational platform for children with personalized learning experiences, interactive chat, and story generation.
 
-**URL**: https://lovable.dev/projects/0f7edc00-a802-413b-8907-42302fa3c2c3
+## Prerequisites
 
-## How can I edit this code?
+- Node.js 18+
+- npm or yarn
+- Supabase account (for backend)
 
-There are several ways of editing your application.
+## Getting Started
 
-**Use Lovable**
+### 1. Install Dependencies
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/0f7edc00-a802-413b-8907-42302fa3c2c3) and start prompting.
+```bash
+npm install
+```
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. Environment Setup
 
-**Use your preferred IDE**
+Create a `.env` file in the root directory:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+Get these values from your Supabase project dashboard under Settings > API.
 
-Follow these steps:
+### 3. Start Development Server
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+The app will be available at `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Available Scripts
 
-**Use GitHub Codespaces**
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run type-check` | Run TypeScript type checking |
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── types/           # Centralized type definitions
+├── lib/             # Utilities and error handling
+├── services/        # Data access layer (Supabase)
+├── hooks/queries/   # React Query hooks
+├── contexts/        # React contexts (Auth, Child, Chat)
+├── integrations/    # External integrations (Supabase)
+├── components/
+│   ├── ui/          # Base UI components (shadcn/ui)
+│   ├── shared/      # Reusable components
+│   ├── chat/        # Chat interface
+│   └── dashboard/   # Dashboard components
+└── pages/           # Route pages
+```
 
-This project is built with:
+## Tech Stack
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- **Framework**: React 18 + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS + shadcn/ui
+- **State Management**: TanStack React Query
+- **Backend**: Supabase (PostgreSQL, Auth, Storage)
+- **Validation**: Zod
+- **Icons**: Lucide React
 
-## How can I deploy this project?
+## Features
 
-Simply open [Lovable](https://lovable.dev/projects/0f7edc00-a802-413b-8907-42302fa3c2c3) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Parent dashboard for managing child profiles
+- Kids mode with AI chat interface
+- Story generation wizard
+- Safety guardrails and content filtering
+- Family tree management
+- Learning journeys tracking

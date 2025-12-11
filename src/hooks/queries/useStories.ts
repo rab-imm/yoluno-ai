@@ -1,229 +1,143 @@
 /**
  * Stories Query Hooks
  *
- * React Query hooks for story data.
+ * React Query hooks for story operations.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { queryKeys } from './keys';
-import {
-  getStoriesByChild,
-  getStoriesWithChildData,
-  getStory,
-  getFavoriteStories,
-  getBedtimeStories,
-  getRecentStories,
-  createStory,
-  updateStory,
-  toggleFavorite,
-  deleteStory,
-  getStoryThemes,
-} from '@/services/stories';
-import type { ChildStoryInsert, ChildStoryUpdate } from '@/types/database';
+import { storiesService, type StoryWithDetails } from '@/services/stories';
+import type { StoryInsert, StoryUpdate } from '@/types/database';
+import { handleError } from '@/lib/errors';
 
-/**
- * Get all stories for a child
- */
 export function useStoriesByChild(childId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.stories.byChild(childId!),
-    queryFn: () => getStoriesByChild(childId!),
+    queryKey: queryKeys.stories.listByChild(childId ?? ''),
+    queryFn: () => storiesService.getByChild(childId!),
     enabled: !!childId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 }
 
-/**
- * Get stories with child profile data
- */
-export function useStoriesWithChildData(childId: string | undefined) {
-  return useQuery({
-    queryKey: queryKeys.stories.byChild(childId!),
-    queryFn: () => getStoriesWithChildData(childId!),
-    enabled: !!childId,
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-/**
- * Get a single story by ID
- */
 export function useStory(id: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.stories.byId(id!),
-    queryFn: () => getStory(id!),
+    queryKey: queryKeys.stories.detail(id ?? ''),
+    queryFn: () => storiesService.getById(id!),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-/**
- * Get favorite stories for a child
- */
 export function useFavoriteStories(childId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.stories.favorites(childId!),
-    queryFn: () => getFavoriteStories(childId!),
+    queryKey: queryKeys.stories.favorites(childId ?? ''),
+    queryFn: () => storiesService.getFavorites(childId!),
     enabled: !!childId,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 2 * 60 * 1000,
   });
 }
 
-/**
- * Get bedtime stories for a child
- */
-export function useBedtimeStories(childId: string | undefined) {
+export function useRecentStories(userId: string | undefined, limit = 10) {
   return useQuery({
-    queryKey: queryKeys.stories.bedtime(childId!),
-    queryFn: () => getBedtimeStories(childId!),
-    enabled: !!childId,
-    staleTime: 5 * 60 * 1000,
+    queryKey: queryKeys.stories.recent(userId ?? ''),
+    queryFn: () => storiesService.getRecent(userId!, limit),
+    enabled: !!userId,
+    staleTime: 1 * 60 * 1000, // 1 minute
   });
 }
 
-/**
- * Get recent stories across all children
- */
-export function useRecentStories(limit: number = 10) {
-  return useQuery({
-    queryKey: queryKeys.stories.recent(limit),
-    queryFn: () => getRecentStories(limit),
-    staleTime: 2 * 60 * 1000, // 2 minutes for recent data
-  });
-}
-
-/**
- * Get story themes
- */
-export function useStoryThemes() {
-  return useQuery({
-    queryKey: queryKeys.stories.themes,
-    queryFn: getStoryThemes,
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours - themes rarely change
-  });
-}
-
-/**
- * Create a new story
- */
 export function useCreateStory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: ChildStoryInsert) => createStory(data),
-    onSuccess: (newStory) => {
-      // Invalidate related queries
+    mutationFn: (story: StoryInsert) => storiesService.create(story),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.stories.byChild(newStory.child_id),
+        queryKey: queryKeys.stories.listByChild(data.child_profile_id),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.stories.recent(),
+        queryKey: queryKeys.stories.recent(''),
+        exact: false,
       });
-      toast.success('Story created!');
+      return data;
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useCreateStory',
+        userMessage: 'Failed to create story',
+      });
     },
   });
 }
 
-/**
- * Update a story
- */
 export function useUpdateStory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: ChildStoryUpdate }) =>
-      updateStory(id, updates),
-    onSuccess: (updatedStory) => {
-      // Update cache directly
-      queryClient.setQueryData(
-        queryKeys.stories.byId(updatedStory.id),
-        updatedStory
-      );
-      // Invalidate lists
+    mutationFn: ({ id, updates }: { id: string; updates: StoryUpdate }) =>
+      storiesService.update(id, updates),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.stories.byChild(updatedStory.child_id),
+        queryKey: queryKeys.stories.listByChild(data.child_profile_id),
       });
-      toast.success('Story updated');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.stories.detail(data.id),
+      });
+      return data;
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useUpdateStory',
+        userMessage: 'Failed to update story',
+      });
     },
   });
 }
 
-/**
- * Toggle story favorite status
- */
-export function useToggleFavorite() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: toggleFavorite,
-    onSuccess: (updatedStory) => {
-      // Update cache
-      queryClient.setQueryData(
-        queryKeys.stories.byId(updatedStory.id),
-        updatedStory
-      );
-      // Invalidate lists
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.stories.byChild(updatedStory.child_id),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.stories.favorites(updatedStory.child_id),
-      });
-
-      toast.success(
-        updatedStory.is_favorite ? 'Added to favorites' : 'Removed from favorites'
-      );
-    },
-    onError: () => {
-      // Error is already handled by service layer
-    },
-  });
-}
-
-/**
- * Delete a story
- */
 export function useDeleteStory() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteStory,
-    onSuccess: (_, storyId) => {
-      // Get the story from cache to know the child_id for invalidation
-      const cachedStory = queryClient.getQueryData<{ child_id: string }>(
-        queryKeys.stories.byId(storyId)
-      );
-
-      // Remove from cache
-      queryClient.removeQueries({
-        queryKey: queryKeys.stories.byId(storyId),
-      });
-
-      // Invalidate lists
-      if (cachedStory?.child_id) {
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.stories.byChild(cachedStory.child_id),
-        });
-        queryClient.invalidateQueries({
-          queryKey: queryKeys.stories.favorites(cachedStory.child_id),
-        });
-      }
-
+    mutationFn: (id: string) => storiesService.delete(id),
+    onSuccess: (_, id) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.stories.recent(),
+        queryKey: queryKeys.stories.lists(),
       });
-
-      toast.success('Story deleted');
+      queryClient.removeQueries({
+        queryKey: queryKeys.stories.detail(id),
+      });
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useDeleteStory',
+        userMessage: 'Failed to delete story',
+      });
+    },
+  });
+}
+
+export function useToggleFavorite() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, isFavorite }: { id: string; isFavorite: boolean }) =>
+      storiesService.toggleFavorite(id, isFavorite),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.stories.listByChild(data.child_profile_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.stories.favorites(data.child_profile_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.stories.detail(data.id),
+      });
+    },
+    onError: (error) => {
+      handleError(error, {
+        context: 'useToggleFavorite',
+        userMessage: 'Failed to update favorite status',
+      });
     },
   });
 }

@@ -1,11 +1,8 @@
 /**
- * Shared Dialog Components
+ * Dialogs Index
+ *
+ * Barrel export for dialog components.
  */
 
-export { FormDialog, type FormDialogProps } from './FormDialog';
-export {
-  ConfirmDialog,
-  ControlledConfirmDialog,
-  type ConfirmDialogProps,
-  type ControlledConfirmDialogProps,
-} from './ConfirmDialog';
+export { FormDialog } from './FormDialog';
+export { ConfirmDialog } from './ConfirmDialog';

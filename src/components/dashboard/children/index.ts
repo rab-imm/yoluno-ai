@@ -1,9 +1,9 @@
 /**
- * Child Profile Components
+ * Children Components Index
+ *
+ * Barrel export for child-related dashboard components.
  */
 
 export { ChildProfileCard } from './ChildProfileCard';
 export { CreateChildDialog } from './CreateChildDialog';
-export { EditChildProfileDialog } from './EditChildProfileDialog';
-export { EnhancedChildCard } from './EnhancedChildCard';
-export { PINInputGrid } from './PINInputGrid';
+export { ChildProfileList } from './ChildProfileList';

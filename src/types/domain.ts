@@ -1,340 +1,225 @@
 /**
  * Domain Types
  *
- * Business domain types that extend or simplify database types.
- * Use these for application logic, UI components, and forms.
+ * Business domain types that extend database types
+ * with computed properties and relationships.
  */
 
-import type {
-  ChildProfileRow,
-  ChildStoryRow,
-  AvatarLibraryRow,
-  FamilyMemberRow,
-  FamilyRelationshipRow,
-  GoalJourneyRow,
-  JourneyStepRow,
-  JourneyTemplateRow,
-  GuardrailSettingsRow,
-  ChatMessageRow,
-  ChildBadgeRow,
-  ParentAlertRow,
-  Json,
-} from './database';
-
-// ============================================================================
-// Child Profile Types
-// ============================================================================
-
-/** Full child profile from database */
-export type ChildProfile = ChildProfileRow;
-
-/** Personality modes available for children */
+// Personality Modes
 export type PersonalityMode =
   | 'curious_explorer'
-  | 'gentle_guide'
-  | 'fun_buddy'
+  | 'patient_teacher'
+  | 'playful_friend'
   | 'storyteller';
 
-/** Avatar expression states */
+export const PERSONALITY_MODES: Record<PersonalityMode, { label: string; description: string }> = {
+  curious_explorer: {
+    label: 'Curious Explorer',
+    description: 'Asks "Why?" and "What if?" questions to spark curiosity',
+  },
+  patient_teacher: {
+    label: 'Patient Teacher',
+    description: 'Breaks answers into numbered steps for easy learning',
+  },
+  playful_friend: {
+    label: 'Playful Friend',
+    description: 'Uses jokes, emojis, and fun examples',
+  },
+  storyteller: {
+    label: 'Storyteller',
+    description: 'Weaves knowledge into engaging narratives',
+  },
+};
+
+// Avatar Expressions
 export type AvatarExpression = 'neutral' | 'happy' | 'thinking' | 'excited';
 
-/** Avatar size variants used across components */
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 
-/** Child profile with resolved avatar data */
-export interface ChildProfileWithAvatar extends ChildProfile {
-  avatarLibrary?: AvatarLibraryItem | null;
-}
+export const AVATAR_SIZES: Record<AvatarSize, string> = {
+  sm: 'w-8 h-8',
+  md: 'w-12 h-12',
+  lg: 'w-16 h-16',
+  xl: 'w-20 h-20',
+  '2xl': 'w-24 h-24',
+  '3xl': 'w-32 h-32',
+  '4xl': 'w-40 h-40',
+  '5xl': 'w-48 h-48',
+};
 
-// ============================================================================
-// Avatar Types
-// ============================================================================
-
-/** Avatar library item from database */
-export type AvatarLibraryItem = AvatarLibraryRow;
-
-/** Avatar with all expression URLs */
-export interface AvatarExpressions {
-  neutral: string;
-  happy: string;
-  thinking: string;
-  excited: string;
-}
-
-/** Avatar category for filtering */
-export type AvatarCategory =
-  | 'animals'
-  | 'fantasy'
-  | 'robots'
-  | 'nature'
-  | 'space'
-  | 'ocean';
-
-// ============================================================================
 // Story Types
-// ============================================================================
-
-/** Full story from database */
-export type Story = ChildStoryRow;
-
-/** Story character definition */
 export interface StoryCharacter {
   name: string;
-  role: string;
+  role: 'main' | 'supporting';
   description?: string;
 }
 
-/** Story scene with illustration */
 export interface StoryScene {
   sceneNumber: number;
-  content: string;
-  illustrationUrl?: string;
-  illustrationPrompt?: string;
+  description: string;
+  imageUrl?: string;
+  imageError?: boolean;
 }
 
-/** Story illustration data */
-export interface StoryIllustration {
-  url: string;
-  prompt: string;
-  style: string;
+export type StoryMood = 'adventurous' | 'calm' | 'funny' | 'magical' | 'educational';
+
+export type IllustrationStyle = 'cartoon' | 'watercolor' | 'storybook' | 'minimalist';
+
+export type NarrationVoice = 'alloy' | 'nova' | 'shimmer';
+
+export interface StoryWizardData {
+  theme: string;
+  characters: StoryCharacter[];
+  mood: StoryMood;
+  values: string[];
+  storyLength: 'short' | 'medium' | 'long';
+  illustrationStyle: IllustrationStyle;
+  narrationVoice: NarrationVoice;
 }
 
-/** Story length options */
-export type StoryLength = 'short' | 'medium' | 'long';
-
-/** Story mood options */
-export type StoryMood =
-  | 'adventurous'
-  | 'calm'
-  | 'funny'
-  | 'mysterious'
-  | 'heartwarming';
-
-/** Story with parsed JSON fields */
-export interface StoryWithParsedData extends Omit<Story, 'characters' | 'scenes' | 'illustrations'> {
-  characters: StoryCharacter[] | null;
-  scenes: StoryScene[] | null;
-  illustrations: StoryIllustration[] | null;
-}
-
-// ============================================================================
-// Family Types
-// ============================================================================
-
-/** Family member from database */
-export type FamilyMember = FamilyMemberRow;
-
-/** Family relationship from database */
-export type FamilyRelationship = FamilyRelationshipRow;
-
-/** Relationship type options */
-export type RelationshipType =
-  | 'parent'
-  | 'child'
-  | 'sibling'
-  | 'spouse'
-  | 'grandparent'
-  | 'grandchild'
-  | 'aunt_uncle'
-  | 'niece_nephew'
-  | 'cousin';
-
-/** Family member with relationships resolved */
-export interface FamilyMemberWithRelationships extends FamilyMember {
-  relationships: FamilyRelationship[];
-  relatedMembers: FamilyMember[];
-}
-
-/** Family tree node for visualization */
-export interface FamilyTreeNode {
-  id: string;
-  data: FamilyMember;
-  position: { x: number; y: number };
-  type?: string;
-}
-
-/** Family tree edge for visualization */
-export interface FamilyTreeEdge {
-  id: string;
-  source: string;
-  target: string;
-  label?: string;
-  type?: string;
-}
-
-// ============================================================================
 // Journey Types
-// ============================================================================
+export type JourneyStatus = 'active' | 'completed' | 'paused' | 'abandoned';
 
-/** Goal journey from database */
-export type GoalJourney = GoalJourneyRow;
+export type JourneyCategory = 'habit' | 'learning' | 'social' | 'health' | 'creativity';
 
-/** Journey step from database */
-export type JourneyStep = JourneyStepRow;
-
-/** Journey template from database */
-export type JourneyTemplate = JourneyTemplateRow;
-
-/** Journey status options */
-export type JourneyStatus = 'not_started' | 'in_progress' | 'completed' | 'paused';
-
-/** Journey category options */
-export type JourneyCategory =
-  | 'learning'
-  | 'habits'
-  | 'social'
-  | 'creativity'
-  | 'health'
-  | 'mindfulness';
-
-/** Reward type options */
-export type RewardType = 'badge' | 'certificate' | 'custom' | 'none';
-
-/** Journey with steps resolved */
-export interface JourneyWithSteps extends GoalJourney {
+export interface JourneyWithSteps {
+  id: string;
+  title: string;
+  description: string | null;
+  status: JourneyStatus;
+  category: JourneyCategory;
+  currentStep: number;
+  totalSteps: number;
+  startedAt: string;
+  completedAt: string | null;
   steps: JourneyStep[];
 }
 
-/** Journey step template for creating journeys */
-export interface JourneyStepTemplate {
+export interface JourneyStep {
+  id: string;
+  journeyId: string;
   stepNumber: number;
   title: string;
-  description?: string;
+  description: string | null;
+  isCompleted: boolean;
+  completedAt: string | null;
 }
 
-/** Parsed journey template with typed steps */
-export interface JourneyTemplateWithSteps extends Omit<JourneyTemplate, 'steps_template'> {
-  steps_template: JourneyStepTemplate[];
+// Memory Types
+export type MemoryType = 'preference' | 'fact' | 'interest' | 'learning_progress' | 'achievement';
+
+export interface ChildMemory {
+  id: string;
+  type: MemoryType;
+  key: string;
+  value: string;
+  importanceScore: number;
+  lastAccessedAt: string;
 }
 
-// ============================================================================
-// Guardrail & Safety Types
-// ============================================================================
-
-/** Guardrail settings from database */
-export type GuardrailSettings = GuardrailSettingsRow;
-
-/** Strictness level options */
-export type StrictnessLevel = 'low' | 'medium' | 'high' | 'custom';
-
-/** AI tone options */
-export type AiTone =
-  | 'friendly'
-  | 'educational'
-  | 'encouraging'
-  | 'neutral';
-
-/** Default guardrail settings */
-export const DEFAULT_GUARDRAIL_SETTINGS: Partial<GuardrailSettings> = {
-  strictness_level: 'medium',
-  block_on_yellow: false,
-  notify_on_yellow: true,
-  notify_on_green: false,
-  messages_per_minute: 10,
-  messages_per_hour: 100,
-  max_response_length: 500,
-  preferred_ai_tone: 'friendly',
-  auto_expand_topics: true,
-  learn_from_approvals: true,
-  require_explicit_approval: false,
-  custom_blocked_keywords: [],
-  custom_allowed_phrases: [],
-};
-
-// ============================================================================
 // Chat Types
-// ============================================================================
+export type MessageRole = 'user' | 'assistant' | 'system';
 
-/** Chat message from database */
-export type ChatMessage = ChatMessageRow;
-
-/** Chat message role */
-export type ChatRole = 'user' | 'assistant' | 'system';
-
-/** Chat message for display */
-export interface DisplayChatMessage {
+export interface ChatMessage {
   id: string;
-  role: ChatRole;
+  role: MessageRole;
   content: string;
-  createdAt: Date;
-  isLoading?: boolean;
-}
-
-// ============================================================================
-// Badge & Gamification Types
-// ============================================================================
-
-/** Child badge from database */
-export type ChildBadge = ChildBadgeRow;
-
-/** Badge type categories */
-export type BadgeType =
-  | 'streak'
-  | 'milestone'
-  | 'achievement'
-  | 'journey'
-  | 'story'
-  | 'special';
-
-/** Badge display info */
-export interface BadgeInfo {
-  name: string;
-  type: BadgeType;
-  description: string;
-  iconUrl?: string;
-  earnedAt?: string;
-}
-
-// ============================================================================
-// Alert Types
-// ============================================================================
-
-/** Parent alert from database */
-export type ParentAlert = ParentAlertRow;
-
-/** Alert severity levels */
-export type AlertSeverity = 'info' | 'warning' | 'critical';
-
-/** Alert type categories */
-export type AlertType =
-  | 'content_flag'
-  | 'usage_limit'
-  | 'streak_milestone'
-  | 'journey_complete'
-  | 'system';
-
-// ============================================================================
-// Activity & Analytics Types
-// ============================================================================
-
-/** Activity item for dashboard feed */
-export interface ActivityItem {
-  id: string;
-  type: 'story' | 'badge' | 'journey' | 'chat' | 'milestone';
-  title: string;
-  description?: string;
-  childId?: string;
-  childName?: string;
-  timestamp: string;
+  createdAt: string;
   metadata?: Record<string, unknown>;
 }
 
-/** Child activity summary */
-export interface ActivitySummary {
-  childId: string;
-  childName: string;
-  totalMessages: number;
-  storiesCreated: number;
-  badgesEarned: number;
-  journeysCompleted: number;
-  currentStreak: number;
-  lastActiveAt?: string;
+// Family Types
+export type RelationshipType =
+  | 'parent'
+  | 'grandparent'
+  | 'sibling'
+  | 'aunt_uncle'
+  | 'cousin'
+  | 'spouse'
+  | 'child'
+  | 'other';
+
+export interface FamilyMember {
+  id: string;
+  name: string;
+  relationshipToChild: RelationshipType;
+  birthYear?: number;
+  deathYear?: number;
+  birthPlace?: string;
+  occupation?: string;
+  bio?: string;
+  photoUrl?: string;
+  isLiving: boolean;
 }
 
-/** Topic analytics data */
-export interface TopicEngagement {
-  topic: string;
-  messageCount: number;
-  engagementScore: number;
-  lastUsedAt?: string;
+export interface FamilyRelationship {
+  id: string;
+  fromMemberId: string;
+  toMemberId: string;
+  relationshipType: RelationshipType;
 }
+
+// Safety Types
+export type SafetyLevel = 'green' | 'yellow' | 'red';
+
+export type StrictnessLevel = 'low' | 'medium' | 'high';
+
+export interface GuardrailSettings {
+  strictnessLevel: StrictnessLevel;
+  blockOnYellow: boolean;
+  notifyOnYellow: boolean;
+  notifyOnGreen: boolean;
+  messagesPerMinute: number;
+  messagesPerHour: number;
+  maxResponseLength: number;
+  preferredAiTone: string;
+  customBlockedKeywords: string[];
+  customAllowedPhrases: string[];
+  autoExpandTopics: boolean;
+  learnFromApprovals: boolean;
+}
+
+export const DEFAULT_GUARDRAIL_SETTINGS: Partial<GuardrailSettings> = {
+  strictnessLevel: 'medium',
+  blockOnYellow: false,
+  notifyOnYellow: true,
+  notifyOnGreen: false,
+  messagesPerMinute: 10,
+  messagesPerHour: 100,
+  maxResponseLength: 500,
+  preferredAiTone: 'friendly',
+  customBlockedKeywords: [],
+  customAllowedPhrases: [],
+  autoExpandTopics: false,
+  learnFromApprovals: true,
+};
+
+// Badge Types
+export type BadgeCategory = 'streak' | 'learning' | 'story' | 'journey' | 'special';
+
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  category: BadgeCategory;
+  iconUrl: string;
+  earnedAt?: string;
+}
+
+// Subscription Types
+export type SubscriptionTier = 'free' | 'basic' | 'plus' | 'pro';
+
+export interface SubscriptionLimits {
+  storiesPerMonth: number;
+  familyPhotos: number;
+  audioMinutes: number;
+  childProfiles: number;
+  customContent: number;
+}
+
+export const SUBSCRIPTION_LIMITS: Record<SubscriptionTier, SubscriptionLimits> = {
+  free: { storiesPerMonth: 5, familyPhotos: 10, audioMinutes: 5, childProfiles: 1, customContent: 5 },
+  basic: { storiesPerMonth: 20, familyPhotos: 100, audioMinutes: 30, childProfiles: 3, customContent: 25 },
+  plus: { storiesPerMonth: 50, familyPhotos: 500, audioMinutes: 120, childProfiles: 5, customContent: 100 },
+  pro: { storiesPerMonth: Infinity, familyPhotos: Infinity, audioMinutes: 300, childProfiles: 10, customContent: Infinity },
+};

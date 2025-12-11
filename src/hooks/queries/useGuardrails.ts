@@ -1,140 +1,99 @@
 /**
  * Guardrails Query Hooks
  *
- * React Query hooks for guardrail settings.
+ * React Query hooks for safety guardrail settings.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { queryKeys } from './keys';
-import {
-  getGuardrailSettings,
-  getOrCreateGuardrailSettings,
-  updateGuardrailSettings,
-  addBlockedKeyword,
-  removeBlockedKeyword,
-  addAllowedPhrase,
-  removeAllowedPhrase,
-  resetToDefaults,
-} from '@/services/guardrails';
+import { guardrailsService } from '@/services/guardrails';
 import type { GuardrailSettingsUpdate } from '@/types/database';
+import { handleError } from '@/lib/errors';
 
-/**
- * Get guardrail settings
- */
-export function useGuardrailSettings() {
+export function useGuardrailSettings(childId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.guardrails.settings,
-    queryFn: getOrCreateGuardrailSettings,
+    queryKey: queryKeys.guardrails.settings(childId ?? ''),
+    queryFn: () => guardrailsService.get(childId!),
+    enabled: !!childId,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-/**
- * Update guardrail settings
- */
 export function useUpdateGuardrailSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (updates: GuardrailSettingsUpdate) =>
-      updateGuardrailSettings(updates),
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.guardrails.settings, updated);
-      toast.success('Settings saved');
+    mutationFn: ({ childId, updates }: { childId: string; updates: GuardrailSettingsUpdate }) =>
+      guardrailsService.update(childId, updates),
+    onSuccess: (_, { childId }) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.guardrails.settings(childId),
+      });
     },
-    onError: () => {
-      // Error handled by service layer
-    },
-  });
-}
-
-/**
- * Add a blocked keyword
- */
-export function useAddBlockedKeyword() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: addBlockedKeyword,
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.guardrails.settings, updated);
-      toast.success('Keyword added to blocklist');
-    },
-    onError: () => {
-      // Error handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useUpdateGuardrailSettings',
+        userMessage: 'Failed to update safety settings',
+      });
     },
   });
 }
 
-/**
- * Remove a blocked keyword
- */
-export function useRemoveBlockedKeyword() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: removeBlockedKeyword,
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.guardrails.settings, updated);
-      toast.success('Keyword removed from blocklist');
-    },
-    onError: () => {
-      // Error handled by service layer
-    },
-  });
-}
-
-/**
- * Add an allowed phrase
- */
-export function useAddAllowedPhrase() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: addAllowedPhrase,
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.guardrails.settings, updated);
-      toast.success('Phrase added to allowlist');
-    },
-    onError: () => {
-      // Error handled by service layer
-    },
-  });
-}
-
-/**
- * Remove an allowed phrase
- */
-export function useRemoveAllowedPhrase() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: removeAllowedPhrase,
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.guardrails.settings, updated);
-      toast.success('Phrase removed from allowlist');
-    },
-    onError: () => {
-      // Error handled by service layer
-    },
-  });
-}
-
-/**
- * Reset settings to defaults
- */
 export function useResetGuardrailSettings() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: resetToDefaults,
-    onSuccess: (updated) => {
-      queryClient.setQueryData(queryKeys.guardrails.settings, updated);
-      toast.success('Settings reset to defaults');
+    mutationFn: (childId: string) => guardrailsService.reset(childId),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.guardrails.settings(data.child_profile_id),
+      });
     },
-    onError: () => {
-      // Error handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useResetGuardrailSettings',
+        userMessage: 'Failed to reset safety settings',
+      });
+    },
+  });
+}
+
+export function useAddBlockedTopic() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ childId, topic }: { childId: string; topic: string }) =>
+      guardrailsService.addBlockedTopic(childId, topic),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.guardrails.settings(data.child_profile_id),
+      });
+    },
+    onError: (error) => {
+      handleError(error, {
+        context: 'useAddBlockedTopic',
+        userMessage: 'Failed to block topic',
+      });
+    },
+  });
+}
+
+export function useRemoveBlockedTopic() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ childId, topic }: { childId: string; topic: string }) =>
+      guardrailsService.removeBlockedTopic(childId, topic),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.guardrails.settings(data.child_profile_id),
+      });
+    },
+    onError: (error) => {
+      handleError(error, {
+        context: 'useRemoveBlockedTopic',
+        userMessage: 'Failed to unblock topic',
+      });
     },
   });
 }

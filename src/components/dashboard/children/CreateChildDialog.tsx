@@ -1,125 +1,103 @@
-import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { handleError } from "@/lib/errors";
-import { AvatarSelector } from "./AvatarSelector";
+/**
+ * Create Child Dialog
+ *
+ * Dialog for creating a new child profile.
+ */
+
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { FormDialog } from '@/components/shared/dialogs/FormDialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { createChildSchema, type CreateChildData } from '@/types/forms';
+import { useCreateChildProfile } from '@/hooks/queries';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 interface CreateChildDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess: () => void;
 }
 
-export function CreateChildDialog({ open, onOpenChange, onSuccess }: CreateChildDialogProps) {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [avatarLibraryId, setAvatarLibraryId] = useState("");
-  const [avatarData, setAvatarData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+export function CreateChildDialog({ open, onOpenChange }: CreateChildDialogProps) {
+  const { user } = useAuth();
+  const createChild = useCreateChildProfile();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<CreateChildData>({
+    resolver: zodResolver(createChildSchema),
+    defaultValues: {
+      name: '',
+      age: 7,
+    },
+  });
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      handleError(new Error("Not authenticated"), {
-        userMessage: "You must be logged in",
-        context: 'CreateChildDialog.handleSubmit'
+  const onSubmit = async (data: CreateChildData) => {
+    if (!user) return;
+
+    setIsSubmitting(true);
+    try {
+      await createChild.mutateAsync({
+        user_id: user.id,
+        name: data.name,
+        age: data.age,
+        personality_mode: data.personalityMode,
+        interests: data.interests,
       });
-      setLoading(false);
-      return;
+      toast.success('Child profile created!');
+      reset();
+      onOpenChange(false);
+    } catch {
+      // Error handled by mutation
+    } finally {
+      setIsSubmitting(false);
     }
-
-    // Map avatar categories to emoji fallbacks
-    const getEmojiForCategory = (category?: string) => {
-      switch (category) {
-        case 'animal': return '🐾';
-        case 'fantasy': return '✨';
-        case 'everyday': return '👦';
-        default: return '👦';
-      }
-    };
-
-    const { error } = await supabase.from("child_profiles").insert({
-      parent_id: user.id,
-      name,
-      age: parseInt(age),
-      avatar: avatarData ? getEmojiForCategory(avatarData.category) : '👦',
-      avatar_library_id: avatarLibraryId || null,
-      use_library_avatar: !!avatarLibraryId,
-      personality_mode: "curious",
-    });
-
-    if (error) {
-      handleError(error, {
-        userMessage: "Failed to create profile",
-        context: 'CreateChildDialog.handleSubmit'
-      });
-      setLoading(false);
-      return;
-    }
-
-    toast.success(`Created profile for ${name}! 🎉`);
-    setName("");
-    setAge("");
-    setAvatarLibraryId("");
-    setAvatarData(null);
-    onSuccess();
-    onOpenChange(false);
-    setLoading(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create Child Profile</DialogTitle>
-          <DialogDescription>
-            Add a new profile for your child
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <AvatarSelector 
-            selectedAvatarId={avatarLibraryId} 
-            onSelect={(id, data) => {
-              setAvatarLibraryId(id);
-              setAvatarData(data);
-            }} 
+    <FormDialog
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Add Child Profile"
+      description="Create a profile for your child to personalize their experience."
+      submitLabel="Create Profile"
+      onSubmit={handleSubmit(onSubmit)}
+      isLoading={isSubmitting}
+      onCancel={() => reset()}
+    >
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            placeholder="Enter child's name"
+            {...register('name')}
           />
-          
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="Enter child's name"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="age">Age</Label>
-            <Input
-              id="age"
-              type="number"
-              min="3"
-              max="18"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              required
-              placeholder="Enter child's age"
-            />
-          </div>
-          <Button type="submit" className="w-full" disabled={loading} variant="playful">
-            {loading ? "Creating..." : "Create Profile"}
-          </Button>
-        </form>
-      </DialogContent>
-    </Dialog>
+          {errors.name && (
+            <p className="text-sm text-destructive">{errors.name.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="age">Age</Label>
+          <Input
+            id="age"
+            type="number"
+            min={3}
+            max={18}
+            {...register('age', { valueAsNumber: true })}
+          />
+          {errors.age && (
+            <p className="text-sm text-destructive">{errors.age.message}</p>
+          )}
+        </div>
+      </div>
+    </FormDialog>
   );
 }

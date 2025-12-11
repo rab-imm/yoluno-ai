@@ -1,328 +1,48 @@
 /**
  * Journeys Service
  *
- * Data access layer for goal journeys and journey steps.
+ * Data access layer for learning journey operations.
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { createErrorHandler } from '@/lib/errors';
 import type {
-  GoalJourneyRow,
+  JourneyRow,
+  JourneyInsert,
+  JourneyUpdate,
   JourneyStepRow,
-  JourneyTemplateRow,
-  TablesInsert,
+  JourneyStepUpdate,
 } from '@/types/database';
+import type { JourneyWithSteps, JourneyStep } from '@/types/domain';
+import { handleError } from '@/lib/errors';
 
-const handleError = createErrorHandler('journeysService');
-
-type GoalJourneyInsert = TablesInsert<'goal_journeys'>;
-type JourneyStepInsert = TablesInsert<'journey_steps'>;
-
-// ============================================================================
-// Goal Journeys
-// ============================================================================
-
-/**
- * Get all journeys for a child
- */
-export async function getJourneysByChild(childId: string): Promise<GoalJourneyRow[]> {
+export async function getActiveJourneys(childId: string): Promise<JourneyWithSteps[]> {
   const { data, error } = await supabase
-    .from('goal_journeys')
-    .select('*')
-    .eq('child_id', childId)
+    .from('journeys')
+    .select(`
+      *,
+      journey_steps(*)
+    `)
+    .eq('child_profile_id', childId)
+    .in('status', ['active', 'in_progress'])
     .order('created_at', { ascending: false });
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get active journeys for a child
- */
-export async function getActiveJourneys(childId: string): Promise<GoalJourneyRow[]> {
-  const { data, error } = await supabase
-    .from('goal_journeys')
-    .select('*')
-    .eq('child_id', childId)
-    .eq('status', 'in_progress')
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get a journey with its steps
- */
-export async function getJourneyWithSteps(journeyId: string): Promise<{
-  journey: GoalJourneyRow;
-  steps: JourneyStepRow[];
-} | null> {
-  const [journeyResult, stepsResult] = await Promise.all([
-    supabase
-      .from('goal_journeys')
-      .select('*')
-      .eq('id', journeyId)
-      .single(),
-    supabase
-      .from('journey_steps')
-      .select('*')
-      .eq('journey_id', journeyId)
-      .order('step_number'),
-  ]);
-
-  if (journeyResult.error) {
-    if (journeyResult.error.code === 'PGRST116') {
-      return null;
-    }
-    throw handleError(journeyResult.error, { strategy: 'throw' });
-  }
-
-  if (stepsResult.error) {
-    throw handleError(stepsResult.error, { strategy: 'throw' });
-  }
-
-  return {
-    journey: journeyResult.data,
-    steps: stepsResult.data || [],
-  };
-}
-
-/**
- * Create a journey with steps
- */
-export async function createJourney(
-  journey: Omit<GoalJourneyInsert, 'parent_id'>,
-  steps: Omit<JourneyStepInsert, 'journey_id'>[]
-): Promise<{ journey: GoalJourneyRow; steps: JourneyStepRow[] }> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    throw handleError(new Error('Not authenticated'), { strategy: 'throw' });
-  }
-
-  // Create journey
-  const { data: journeyData, error: journeyError } = await supabase
-    .from('goal_journeys')
-    .insert({
-      ...journey,
-      parent_id: user.id,
-    })
-    .select()
-    .single();
-
-  if (journeyError) {
-    throw handleError(journeyError, {
-      strategy: 'throw',
-      userMessage: 'Failed to create journey',
-    });
-  }
-
-  // Create steps
-  const stepsWithJourneyId = steps.map((step) => ({
-    ...step,
-    journey_id: journeyData.id,
-  }));
-
-  const { data: stepsData, error: stepsError } = await supabase
-    .from('journey_steps')
-    .insert(stepsWithJourneyId)
-    .select();
-
-  if (stepsError) {
-    // Rollback journey creation
-    await supabase.from('goal_journeys').delete().eq('id', journeyData.id);
-    throw handleError(stepsError, {
-      strategy: 'throw',
-      userMessage: 'Failed to create journey steps',
-    });
-  }
-
-  return {
-    journey: journeyData,
-    steps: stepsData || [],
-  };
-}
-
-/**
- * Update journey progress
- */
-export async function updateJourneyProgress(
-  journeyId: string,
-  currentStep: number
-): Promise<GoalJourneyRow> {
-  const { data, error } = await supabase
-    .from('goal_journeys')
-    .update({
-      current_step: currentStep,
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', journeyId)
-    .select()
-    .single();
-
-  if (error) {
     throw handleError(error, {
+      context: 'journeys.getActiveJourneys',
       strategy: 'throw',
-      userMessage: 'Failed to update progress',
     });
   }
 
-  return data;
+  return (data ?? []).map(mapJourneyWithSteps);
 }
 
-/**
- * Complete a journey
- */
-export async function completeJourney(journeyId: string): Promise<GoalJourneyRow> {
+export async function getJourneyById(id: string): Promise<JourneyWithSteps | null> {
   const { data, error } = await supabase
-    .from('goal_journeys')
-    .update({
-      status: 'completed',
-      completed_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    })
-    .eq('id', journeyId)
-    .select()
-    .single();
-
-  if (error) {
-    throw handleError(error, {
-      strategy: 'throw',
-      userMessage: 'Failed to complete journey',
-    });
-  }
-
-  return data;
-}
-
-/**
- * Delete a journey
- */
-export async function deleteJourney(journeyId: string): Promise<void> {
-  // Steps are deleted via cascade
-  const { error } = await supabase
-    .from('goal_journeys')
-    .delete()
-    .eq('id', journeyId);
-
-  if (error) {
-    throw handleError(error, {
-      strategy: 'throw',
-      userMessage: 'Failed to delete journey',
-    });
-  }
-}
-
-// ============================================================================
-// Journey Steps
-// ============================================================================
-
-/**
- * Complete a journey step
- */
-export async function completeStep(
-  stepId: string,
-  reflection?: string
-): Promise<JourneyStepRow> {
-  const { data, error } = await supabase
-    .from('journey_steps')
-    .update({
-      is_completed: true,
-      completed_at: new Date().toISOString(),
-      reflection,
-    })
-    .eq('id', stepId)
-    .select()
-    .single();
-
-  if (error) {
-    throw handleError(error, {
-      strategy: 'throw',
-      userMessage: 'Failed to complete step',
-    });
-  }
-
-  return data;
-}
-
-/**
- * Add reflection to a step
- */
-export async function addStepReflection(
-  stepId: string,
-  reflection: string
-): Promise<JourneyStepRow> {
-  const { data, error } = await supabase
-    .from('journey_steps')
-    .update({ reflection })
-    .eq('id', stepId)
-    .select()
-    .single();
-
-  if (error) {
-    throw handleError(error, {
-      strategy: 'throw',
-      userMessage: 'Failed to save reflection',
-    });
-  }
-
-  return data;
-}
-
-// ============================================================================
-// Journey Templates
-// ============================================================================
-
-/**
- * Get all journey templates
- */
-export async function getJourneyTemplates(): Promise<JourneyTemplateRow[]> {
-  const { data, error } = await supabase
-    .from('journey_templates')
-    .select('*')
-    .eq('is_public', true)
-    .order('download_count', { ascending: false });
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get templates by category
- */
-export async function getTemplatesByCategory(
-  category: string
-): Promise<JourneyTemplateRow[]> {
-  const { data, error } = await supabase
-    .from('journey_templates')
-    .select('*')
-    .eq('category', category)
-    .eq('is_public', true)
-    .order('rating', { ascending: false });
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get a single template
- */
-export async function getTemplate(id: string): Promise<JourneyTemplateRow | null> {
-  const { data, error } = await supabase
-    .from('journey_templates')
-    .select('*')
+    .from('journeys')
+    .select(`
+      *,
+      journey_steps(*)
+    `)
     .eq('id', id)
     .single();
 
@@ -330,44 +50,186 @@ export async function getTemplate(id: string): Promise<JourneyTemplateRow | null
     if (error.code === 'PGRST116') {
       return null;
     }
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'journeys.getJourneyById',
+      strategy: 'throw',
+    });
+  }
+
+  return mapJourneyWithSteps(data);
+}
+
+export async function createJourney(journey: JourneyInsert): Promise<JourneyRow> {
+  const { data, error } = await supabase
+    .from('journeys')
+    .insert(journey)
+    .select()
+    .single();
+
+  if (error) {
+    throw handleError(error, {
+      context: 'journeys.createJourney',
+      strategy: 'throw',
+    });
   }
 
   return data;
 }
 
-/**
- * Increment template download count
- */
-export async function incrementTemplateDownloads(templateId: string): Promise<void> {
-  const { error } = await supabase.rpc('increment_download_count', {
-    template_id: templateId,
-  });
+export async function updateJourney(
+  id: string,
+  updates: JourneyUpdate
+): Promise<JourneyRow> {
+  const { data, error } = await supabase
+    .from('journeys')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
 
   if (error) {
-    // Don't throw, just log - this is not critical
-    handleError(error, { strategy: 'log' });
+    throw handleError(error, {
+      context: 'journeys.updateJourney',
+      strategy: 'throw',
+    });
   }
+
+  return data;
 }
 
-// Export as a service object
+export async function completeStep(stepId: string): Promise<JourneyStepRow> {
+  const updates: JourneyStepUpdate = {
+    status: 'completed',
+    completed_at: new Date().toISOString(),
+  };
+
+  const { data, error } = await supabase
+    .from('journey_steps')
+    .update(updates)
+    .eq('id', stepId)
+    .select()
+    .single();
+
+  if (error) {
+    throw handleError(error, {
+      context: 'journeys.completeStep',
+      strategy: 'throw',
+    });
+  }
+
+  return data;
+}
+
+export async function updateStepProgress(
+  stepId: string,
+  progress: number
+): Promise<JourneyStepRow> {
+  const { data, error } = await supabase
+    .from('journey_steps')
+    .update({ progress })
+    .eq('id', stepId)
+    .select()
+    .single();
+
+  if (error) {
+    throw handleError(error, {
+      context: 'journeys.updateStepProgress',
+      strategy: 'throw',
+    });
+  }
+
+  return data;
+}
+
+export async function getCompletedJourneys(childId: string): Promise<JourneyWithSteps[]> {
+  const { data, error } = await supabase
+    .from('journeys')
+    .select(`
+      *,
+      journey_steps(*)
+    `)
+    .eq('child_profile_id', childId)
+    .eq('status', 'completed')
+    .order('completed_at', { ascending: false });
+
+  if (error) {
+    throw handleError(error, {
+      context: 'journeys.getCompletedJourneys',
+      strategy: 'throw',
+    });
+  }
+
+  return (data ?? []).map(mapJourneyWithSteps);
+}
+
+export async function getJourneyProgress(journeyId: string): Promise<{
+  totalSteps: number;
+  completedSteps: number;
+  progressPercent: number;
+}> {
+  const { data, error } = await supabase
+    .from('journey_steps')
+    .select('status')
+    .eq('journey_id', journeyId);
+
+  if (error) {
+    throw handleError(error, {
+      context: 'journeys.getJourneyProgress',
+      strategy: 'throw',
+    });
+  }
+
+  const steps = data ?? [];
+  const totalSteps = steps.length;
+  const completedSteps = steps.filter((s) => s.status === 'completed').length;
+  const progressPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0;
+
+  return { totalSteps, completedSteps, progressPercent };
+}
+
+function mapJourneyWithSteps(
+  data: JourneyRow & { journey_steps?: JourneyStepRow[] }
+): JourneyWithSteps {
+  const steps: JourneyStep[] = (data.journey_steps ?? [])
+    .sort((a, b) => a.order_index - b.order_index)
+    .map((step) => ({
+      id: step.id,
+      title: step.title,
+      description: step.description ?? '',
+      type: step.type as JourneyStep['type'],
+      status: step.status as JourneyStep['status'],
+      order: step.order_index,
+      progress: step.progress ?? 0,
+      completedAt: step.completed_at ? new Date(step.completed_at) : undefined,
+    }));
+
+  return {
+    id: data.id,
+    title: data.title,
+    description: data.description ?? '',
+    status: data.status as JourneyWithSteps['status'],
+    templateId: data.template_id ?? undefined,
+    childProfileId: data.child_profile_id,
+    steps,
+    progress: calculateProgress(steps),
+    createdAt: new Date(data.created_at),
+    completedAt: data.completed_at ? new Date(data.completed_at) : undefined,
+  };
+}
+
+function calculateProgress(steps: JourneyStep[]): number {
+  if (steps.length === 0) return 0;
+  const completed = steps.filter((s) => s.status === 'completed').length;
+  return Math.round((completed / steps.length) * 100);
+}
+
 export const journeysService = {
-  // Journeys
-  getByChild: getJourneysByChild,
   getActive: getActiveJourneys,
-  getWithSteps: getJourneyWithSteps,
+  getById: getJourneyById,
   create: createJourney,
-  updateProgress: updateJourneyProgress,
-  complete: completeJourney,
-  delete: deleteJourney,
-
-  // Steps
+  update: updateJourney,
   completeStep,
-  addReflection: addStepReflection,
-
-  // Templates
-  getTemplates: getJourneyTemplates,
-  getTemplatesByCategory,
-  getTemplate,
-  incrementDownloads: incrementTemplateDownloads,
+  updateStepProgress,
+  getCompleted: getCompletedJourneys,
+  getProgress: getJourneyProgress,
 };

@@ -1,62 +1,46 @@
 /**
  * Stories Service
  *
- * Data access layer for child story operations.
+ * Data access layer for story operations.
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import { createErrorHandler } from '@/lib/errors';
-import type {
-  ChildStoryRow,
-  ChildStoryInsert,
-  ChildStoryUpdate,
-} from '@/types/database';
+import type { StoryRow, StoryInsert, StoryUpdate } from '@/types/database';
+import { handleError } from '@/lib/errors';
 
-const handleError = createErrorHandler('storiesService');
+export interface StoryWithDetails extends StoryRow {
+  childName?: string;
+  scenes?: StoryScene[];
+}
 
-/**
- * Get all stories for a child
- */
-export async function getStoriesByChild(childId: string): Promise<ChildStoryRow[]> {
+export interface StoryScene {
+  id: string;
+  content: string;
+  imageUrl?: string;
+  audioUrl?: string;
+  order: number;
+}
+
+export async function getStoriesByChild(childId: string): Promise<StoryWithDetails[]> {
   const { data, error } = await supabase
-    .from('child_stories')
+    .from('stories')
     .select('*')
-    .eq('child_id', childId)
+    .eq('child_profile_id', childId)
     .order('created_at', { ascending: false });
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'stories.getStoriesByChild',
+      strategy: 'throw',
+    });
   }
 
-  return data || [];
+  return data ?? [];
 }
 
-/**
- * Get stories with child profile data
- */
-export async function getStoriesWithChildData(childId: string): Promise<(ChildStoryRow & { child_profiles?: { name: string } })[]> {
+export async function getStoryById(id: string): Promise<StoryWithDetails | null> {
   const { data, error } = await supabase
-    .from('child_stories')
-    .select(`
-      *,
-      child_profiles (name)
-    `)
-    .eq('child_id', childId)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get a single story by ID
- */
-export async function getStory(id: string): Promise<ChildStoryRow | null> {
-  const { data, error } = await supabase
-    .from('child_stories')
+    .from('stories')
     .select('*')
     .eq('id', id)
     .single();
@@ -65,103 +49,38 @@ export async function getStory(id: string): Promise<ChildStoryRow | null> {
     if (error.code === 'PGRST116') {
       return null;
     }
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data;
-}
-
-/**
- * Get favorite stories for a child
- */
-export async function getFavoriteStories(childId: string): Promise<ChildStoryRow[]> {
-  const { data, error } = await supabase
-    .from('child_stories')
-    .select('*')
-    .eq('child_id', childId)
-    .eq('is_favorite', true)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get bedtime-ready stories for a child
- */
-export async function getBedtimeStories(childId: string): Promise<ChildStoryRow[]> {
-  const { data, error } = await supabase
-    .from('child_stories')
-    .select('*')
-    .eq('child_id', childId)
-    .eq('bedtime_ready', true)
-    .order('created_at', { ascending: false });
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Get recent stories across all children (for parent dashboard)
- */
-export async function getRecentStories(limit: number = 10): Promise<(ChildStoryRow & { child_profiles?: { name: string } })[]> {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    throw handleError(new Error('Not authenticated'), { strategy: 'throw' });
-  }
-
-  const { data, error } = await supabase
-    .from('child_stories')
-    .select(`
-      *,
-      child_profiles!inner (name, parent_id)
-    `)
-    .eq('child_profiles.parent_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(limit);
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return data || [];
-}
-
-/**
- * Create a new story
- */
-export async function createStory(story: ChildStoryInsert): Promise<ChildStoryRow> {
-  const { data, error } = await supabase
-    .from('child_stories')
-    .insert(story)
-    .select()
-    .single();
-
-  if (error) {
     throw handleError(error, {
+      context: 'stories.getStoryById',
       strategy: 'throw',
-      userMessage: 'Failed to create story',
     });
   }
 
   return data;
 }
 
-/**
- * Update a story
- */
+export async function createStory(story: StoryInsert): Promise<StoryRow> {
+  const { data, error } = await supabase
+    .from('stories')
+    .insert(story)
+    .select()
+    .single();
+
+  if (error) {
+    throw handleError(error, {
+      context: 'stories.createStory',
+      strategy: 'throw',
+    });
+  }
+
+  return data;
+}
+
 export async function updateStory(
   id: string,
-  updates: ChildStoryUpdate
-): Promise<ChildStoryRow> {
+  updates: StoryUpdate
+): Promise<StoryRow> {
   const { data, error } = await supabase
-    .from('child_stories')
+    .from('stories')
     .update(updates)
     .eq('id', id)
     .select()
@@ -169,108 +88,84 @@ export async function updateStory(
 
   if (error) {
     throw handleError(error, {
+      context: 'stories.updateStory',
       strategy: 'throw',
-      userMessage: 'Failed to update story',
     });
   }
 
   return data;
 }
 
-/**
- * Toggle story favorite status
- */
-export async function toggleFavorite(id: string): Promise<ChildStoryRow> {
-  // First get current status
-  const { data: current, error: fetchError } = await supabase
-    .from('child_stories')
-    .select('is_favorite')
-    .eq('id', id)
-    .single();
-
-  if (fetchError) {
-    throw handleError(fetchError, { strategy: 'throw' });
-  }
-
-  // Toggle it
-  const { data, error } = await supabase
-    .from('child_stories')
-    .update({ is_favorite: !current.is_favorite })
-    .eq('id', id)
-    .select()
-    .single();
-
-  if (error) {
-    throw handleError(error, {
-      strategy: 'throw',
-      userMessage: 'Failed to update favorite status',
-    });
-  }
-
-  return data;
-}
-
-/**
- * Delete a story
- */
 export async function deleteStory(id: string): Promise<void> {
   const { error } = await supabase
-    .from('child_stories')
+    .from('stories')
     .delete()
     .eq('id', id);
 
   if (error) {
     throw handleError(error, {
+      context: 'stories.deleteStory',
       strategy: 'throw',
-      userMessage: 'Failed to delete story',
     });
   }
 }
 
-/**
- * Get story count for a child
- */
-export async function getStoryCount(childId: string): Promise<number> {
-  const { count, error } = await supabase
-    .from('child_stories')
-    .select('*', { count: 'exact', head: true })
-    .eq('child_id', childId);
-
-  if (error) {
-    throw handleError(error, { strategy: 'throw' });
-  }
-
-  return count || 0;
+export async function toggleFavorite(id: string, isFavorite: boolean): Promise<StoryRow> {
+  return updateStory(id, { is_favorite: isFavorite });
 }
 
-/**
- * Get story themes
- */
-export async function getStoryThemes(): Promise<{ id: string; name: string; emoji: string; description: string }[]> {
+export async function getFavoriteStories(childId: string): Promise<StoryWithDetails[]> {
   const { data, error } = await supabase
-    .from('story_themes')
+    .from('stories')
     .select('*')
-    .order('name');
+    .eq('child_profile_id', childId)
+    .eq('is_favorite', true)
+    .order('created_at', { ascending: false });
 
   if (error) {
-    throw handleError(error, { strategy: 'throw' });
+    throw handleError(error, {
+      context: 'stories.getFavoriteStories',
+      strategy: 'throw',
+    });
   }
 
-  return data || [];
+  return data ?? [];
 }
 
-// Export as a service object
+export async function getRecentStories(
+  userId: string,
+  limit = 10
+): Promise<StoryWithDetails[]> {
+  const { data, error } = await supabase
+    .from('stories')
+    .select(`
+      *,
+      child_profiles!inner(user_id, name)
+    `)
+    .eq('child_profiles.user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) {
+    throw handleError(error, {
+      context: 'stories.getRecentStories',
+      strategy: 'throw',
+    });
+  }
+
+  return (data ?? []).map((story) => ({
+    ...story,
+    childName: (story.child_profiles as { name: string })?.name,
+  }));
+}
+
 export const storiesService = {
   getByChild: getStoriesByChild,
-  getWithChildData: getStoriesWithChildData,
-  getById: getStory,
-  getFavorites: getFavoriteStories,
-  getBedtime: getBedtimeStories,
-  getRecent: getRecentStories,
+  getById: getStoryById,
   create: createStory,
   update: updateStory,
-  toggleFavorite,
   delete: deleteStory,
-  getCount: getStoryCount,
-  getThemes: getStoryThemes,
+  toggleFavorite,
+  getFavorites: getFavoriteStories,
+  getRecent: getRecentStories,
 };

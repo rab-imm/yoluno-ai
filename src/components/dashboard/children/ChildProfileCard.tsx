@@ -1,64 +1,72 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { MessageSquare, Trash2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
+/**
+ * Child Profile Card
+ *
+ * Card displaying a child profile with actions.
+ */
+
+import { Link } from 'react-router-dom';
+import type { ChildProfileRow } from '@/types/database';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { formatRelativeTime, getInitials } from '@/lib/utils';
+import { MessageCircle, BookOpen, Settings } from 'lucide-react';
 
 interface ChildProfileCardProps {
-  child: any;
-  onRefresh: () => void;
+  child: ChildProfileRow;
+  avatarUrl?: string;
+  onEdit?: () => void;
 }
 
-export function ChildProfileCard({ child, onRefresh }: ChildProfileCardProps) {
-  const navigate = useNavigate();
-
-  const handleDelete = async () => {
-    if (!confirm(`Are you sure you want to delete ${child.name}'s profile?`)) {
-      return;
-    }
-
-    const { error } = await supabase
-      .from("child_profiles")
-      .delete()
-      .eq("id", child.id);
-
-    if (error) {
-      toast.error("Failed to delete profile");
-      return;
-    }
-
-    toast.success("Profile deleted");
-    onRefresh();
-  };
-
+export function ChildProfileCard({ child, avatarUrl, onEdit }: ChildProfileCardProps) {
   return (
-    <Card className="hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden transition-shadow hover:shadow-lg">
       <CardContent className="pt-6">
-        <div className="text-center mb-4">
-          <div className="w-20 h-20 mx-auto mb-3 rounded-full bg-gradient-to-br from-child-primary to-child-secondary flex items-center justify-center text-4xl">
-            {child.avatar || "👦"}
+        <div className="flex flex-col items-center text-center">
+          <Avatar className="h-20 w-20">
+            <AvatarImage src={avatarUrl} alt={child.name} />
+            <AvatarFallback className="bg-child-primary/20 text-2xl text-child-primary">
+              {getInitials(child.name)}
+            </AvatarFallback>
+          </Avatar>
+
+          <h3 className="mt-4 text-xl font-semibold">{child.name}</h3>
+
+          <div className="mt-2 flex items-center gap-2">
+            <Badge variant="secondary">{child.age} years old</Badge>
+            {child.personality_mode && (
+              <Badge variant="outline">{child.personality_mode}</Badge>
+            )}
           </div>
-          <h3 className="font-semibold text-lg">{child.name}</h3>
-          <p className="text-sm text-muted-foreground">Age {child.age}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            className="flex-1"
-            onClick={() => navigate(`/child/${child.id}`)}
-          >
-            <MessageSquare className="h-4 w-4 mr-2" />
-            Chat
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleDelete}
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+
+          {child.last_active_at && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Active {formatRelativeTime(child.last_active_at)}
+            </p>
+          )}
         </div>
       </CardContent>
+
+      <CardFooter className="flex justify-center gap-2 border-t bg-muted/50 px-6 py-4">
+        <Link to={`/kids/${child.id}`}>
+          <Button size="sm" className="gap-2">
+            <MessageCircle className="h-4 w-4" />
+            Chat
+          </Button>
+        </Link>
+        <Link to={`/story-wizard/${child.id}`}>
+          <Button size="sm" variant="outline" className="gap-2">
+            <BookOpen className="h-4 w-4" />
+            Story
+          </Button>
+        </Link>
+        {onEdit && (
+          <Button size="sm" variant="ghost" onClick={onEdit}>
+            <Settings className="h-4 w-4" />
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }

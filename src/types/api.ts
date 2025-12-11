@@ -4,158 +4,149 @@
  * Types for API responses, async states, and data fetching patterns.
  */
 
-// ============================================================================
-// Async State Types
-// ============================================================================
-
-/** Generic async state for data fetching */
+/**
+ * Discriminated union for async operation states.
+ * Use this for managing loading, error, and success states.
+ */
 export type AsyncState<T> =
   | { status: 'idle' }
   | { status: 'loading' }
   | { status: 'success'; data: T }
   | { status: 'error'; error: Error };
 
-/** Helper to check if state is loading */
+/**
+ * Type guard for checking if async state is loading
+ */
 export function isLoading<T>(state: AsyncState<T>): state is { status: 'loading' } {
   return state.status === 'loading';
 }
 
-/** Helper to check if state has data */
+/**
+ * Type guard for checking if async state has data
+ */
 export function hasData<T>(state: AsyncState<T>): state is { status: 'success'; data: T } {
   return state.status === 'success';
 }
 
-/** Helper to check if state has error */
+/**
+ * Type guard for checking if async state has error
+ */
 export function hasError<T>(state: AsyncState<T>): state is { status: 'error'; error: Error } {
   return state.status === 'error';
 }
 
-// ============================================================================
-// API Response Types
-// ============================================================================
-
-/** Standard API response wrapper */
+/**
+ * Standard API response wrapper
+ */
 export interface ApiResponse<T> {
   data: T | null;
   error: ApiError | null;
+  status: number;
 }
 
-/** API error structure */
+/**
+ * API error structure
+ */
 export interface ApiError {
   code: string;
   message: string;
   details?: Record<string, unknown>;
 }
 
-/** Paginated response */
+/**
+ * Paginated response structure
+ */
 export interface PaginatedResponse<T> {
   data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  hasMore: boolean;
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
 }
 
-/** Pagination parameters */
-export interface PaginationParams {
+/**
+ * Query options for list endpoints
+ */
+export interface QueryOptions {
   page?: number;
   pageSize?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  filters?: Record<string, unknown>;
 }
 
-// ============================================================================
-// Supabase Query Types
-// ============================================================================
-
-/** Supabase query result (matches Supabase SDK pattern) */
-export interface SupabaseQueryResult<T> {
+/**
+ * Mutation result type
+ */
+export interface MutationResult<T> {
   data: T | null;
-  error: SupabaseError | null;
-  count?: number | null;
-  status: number;
-  statusText: string;
-}
-
-/** Supabase error structure */
-export interface SupabaseError {
-  message: string;
-  details?: string;
-  hint?: string;
-  code?: string;
-}
-
-// ============================================================================
-// React Query Types
-// ============================================================================
-
-/** Query key factory type */
-export type QueryKeyFactory<T extends string> = {
-  [K in T]: readonly unknown[];
-};
-
-/** Standard query options */
-export interface QueryOptions {
-  enabled?: boolean;
-  staleTime?: number;
-  gcTime?: number;
-  refetchOnWindowFocus?: boolean;
-  retry?: number | boolean;
-}
-
-/** Mutation result type */
-export interface MutationResult<TData, TError = Error> {
-  data?: TData;
-  error?: TError;
-  isLoading: boolean;
+  error: ApiError | null;
   isSuccess: boolean;
-  isError: boolean;
 }
 
-// ============================================================================
-// Filter & Search Types
-// ============================================================================
-
-/** Generic filter parameters */
-export interface FilterParams {
-  search?: string;
-  category?: string;
-  status?: string;
-  startDate?: string;
-  endDate?: string;
-}
-
-/** Sort parameters */
-export interface SortParams {
-  field: string;
-  direction: 'asc' | 'desc';
-}
-
-/** Combined list parameters */
-export interface ListParams extends PaginationParams, FilterParams {
-  sort?: SortParams;
-}
-
-// ============================================================================
-// Form Submission Types
-// ============================================================================
-
-/** Form submission state */
-export interface FormState {
-  isSubmitting: boolean;
-  isSuccess: boolean;
-  error: string | null;
-}
-
-/** Form validation error */
-export interface ValidationError {
-  field: string;
+/**
+ * Edge function response types
+ */
+export interface ChatResponse {
   message: string;
+  safetyLevel: 'green' | 'yellow' | 'red';
+  suggestions?: string[];
+  memoryUpdates?: {
+    type: string;
+    key: string;
+    value: string;
+  }[];
 }
 
-/** Form submission result */
-export interface FormResult<T> {
-  success: boolean;
-  data?: T;
-  errors?: ValidationError[];
+export interface StoryGenerationResponse {
+  title: string;
+  content: string;
+  scenes: {
+    sceneNumber: number;
+    description: string;
+  }[];
+  wordCount: number;
+}
+
+export interface IllustrationResponse {
+  illustrations: {
+    sceneNumber: number;
+    imageUrl?: string;
+    error?: string;
+  }[];
+}
+
+export interface NarrationResponse {
+  audioContent: string;
+  duration: number;
+  format: string;
+}
+
+export interface ValidationResponse {
+  level: 'green' | 'yellow' | 'red';
+  reason?: string;
+  suggestions?: string[];
+}
+
+/**
+ * Rate limit info
+ */
+export interface RateLimitInfo {
+  remaining: number;
+  limit: number;
+  resetAt: Date;
+}
+
+/**
+ * Usage quota info
+ */
+export interface UsageQuota {
+  used: number;
+  limit: number;
+  period: 'daily' | 'weekly' | 'monthly';
+  resetAt: Date;
 }

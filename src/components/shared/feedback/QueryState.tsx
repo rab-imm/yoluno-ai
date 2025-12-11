@@ -1,142 +1,91 @@
 /**
- * QueryState
+ * Query State
  *
- * Wrapper component for handling React Query states (loading, error, empty, success).
- * Reduces boilerplate when rendering query results.
+ * Wrapper component for React Query states.
  */
 
-import { ReactNode } from 'react';
-import { UseQueryResult } from '@tanstack/react-query';
-import { LoadingState, LoadingStateProps } from './LoadingState';
-import { ErrorState, ErrorStateProps } from './ErrorState';
-import { EmptyState, EmptyStateProps } from './EmptyState';
+import { type ReactNode } from 'react';
+import { LoadingState } from './LoadingState';
+import { ErrorState } from './ErrorState';
+import { EmptyState } from './EmptyState';
+import { type LucideIcon } from 'lucide-react';
 
-export interface QueryStateProps<T> {
-  /** The React Query result object */
-  query: UseQueryResult<T>;
-  /** Render function for successful data */
+interface QueryStateProps<T> {
+  isLoading: boolean;
+  isError: boolean;
+  error?: Error | null;
+  data: T | undefined;
   children: (data: T) => ReactNode;
-  /** Function to determine if data is "empty" */
+  loadingMessage?: string;
+  errorTitle?: string;
+  errorMessage?: string;
+  onRetry?: () => void;
+  emptyIcon?: LucideIcon;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  emptyAction?: {
+    label: string;
+    onClick: () => void;
+  };
   isEmpty?: (data: T) => boolean;
-  /** Custom loading component or props */
-  loading?: ReactNode | LoadingStateProps;
-  /** Custom error component or props */
-  error?: ReactNode | Omit<ErrorStateProps, 'error' | 'onRetry'>;
-  /** Custom empty state component or props */
-  empty?: ReactNode | Omit<EmptyStateProps, 'onAction'>;
-  /** Action for empty state */
-  emptyAction?: () => void;
-}
-
-/**
- * Default isEmpty checker for arrays
- */
-function defaultIsEmpty<T>(data: T): boolean {
-  if (Array.isArray(data)) {
-    return data.length === 0;
-  }
-  if (data === null || data === undefined) {
-    return true;
-  }
-  return false;
 }
 
 export function QueryState<T>({
-  query,
-  children,
-  isEmpty = defaultIsEmpty,
-  loading,
+  isLoading,
+  isError,
   error,
-  empty,
+  data,
+  children,
+  loadingMessage,
+  errorTitle,
+  errorMessage,
+  onRetry,
+  emptyIcon,
+  emptyTitle = 'No items found',
+  emptyDescription,
   emptyAction,
+  isEmpty,
 }: QueryStateProps<T>) {
-  // Loading state
-  if (query.isLoading) {
-    if (loading && typeof loading !== 'object') {
-      return <>{loading}</>;
-    }
-    return (
-      <LoadingState
-        {...(typeof loading === 'object' ? loading : {})}
-        fullHeight
-      />
-    );
+  if (isLoading) {
+    return <LoadingState message={loadingMessage} />;
   }
 
-  // Error state
-  if (query.isError) {
-    if (error && typeof error !== 'object') {
-      return <>{error}</>;
-    }
+  if (isError) {
     return (
       <ErrorState
-        error={query.error}
-        onRetry={() => query.refetch()}
-        {...(typeof error === 'object' ? error : {})}
-        fullHeight
+        title={errorTitle}
+        message={errorMessage ?? error?.message}
+        onRetry={onRetry}
       />
     );
   }
 
-  // Empty state
-  if (query.data && isEmpty(query.data)) {
-    if (empty && typeof empty !== 'object') {
-      return <>{empty}</>;
-    }
+  if (!data) {
     return (
       <EmptyState
-        title="No data"
-        description="There's nothing here yet."
-        onAction={emptyAction}
-        {...(typeof empty === 'object' ? empty : {})}
-        fullHeight
+        icon={emptyIcon}
+        title={emptyTitle}
+        description={emptyDescription}
+        action={emptyAction}
       />
     );
   }
 
-  // Success state with data
-  if (query.data) {
-    return <>{children(query.data)}</>;
-  }
+  // Check if data is empty using custom isEmpty function or array length
+  const isDataEmpty = isEmpty
+    ? isEmpty(data)
+    : Array.isArray(data) && data.length === 0;
 
-  // Idle state (shouldn't usually reach here)
-  return null;
-}
-
-/**
- * Simple wrapper for showing loading/error inline
- */
-export function InlineQueryState<T>({
-  query,
-  children,
-  loadingMessage = 'Loading...',
-}: {
-  query: UseQueryResult<T>;
-  children: (data: T) => ReactNode;
-  loadingMessage?: string;
-}) {
-  if (query.isLoading) {
+  if (isDataEmpty) {
     return (
-      <span className="text-muted-foreground text-sm animate-pulse">
-        {loadingMessage}
-      </span>
+      <EmptyState
+        icon={emptyIcon}
+        title={emptyTitle}
+        description={emptyDescription}
+        action={emptyAction}
+      />
     );
   }
 
-  if (query.isError) {
-    return (
-      <span className="text-destructive text-sm">
-        Error loading data
-      </span>
-    );
-  }
-
-  if (query.data) {
-    return <>{children(query.data)}</>;
-  }
-
-  return null;
+  return <>{children(data)}</>;
 }
-
-QueryState.displayName = 'QueryState';
-InlineQueryState.displayName = 'InlineQueryState';

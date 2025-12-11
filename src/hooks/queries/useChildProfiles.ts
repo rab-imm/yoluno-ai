@@ -1,189 +1,133 @@
 /**
  * Child Profiles Query Hooks
  *
- * React Query hooks for child profile data.
+ * React Query hooks for child profile operations.
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { queryKeys } from './keys';
 import {
   childProfilesService,
-  getChildProfiles,
-  getChildProfile,
-  getChildProfileWithAvatar,
-  createChildProfile,
-  updateChildProfile,
-  deleteChildProfile,
-  updateChildAvatar,
-  setChildPin,
+  type ChildProfileWithAvatar,
 } from '@/services/childProfiles';
-import type { ChildProfileRow, ChildProfileInsert, ChildProfileUpdate } from '@/types/database';
+import type { ChildProfileInsert, ChildProfileUpdate } from '@/types/database';
+import { handleError } from '@/lib/errors';
 
-/**
- * Get all child profiles for the current user
- */
-export function useChildProfiles() {
+export function useChildProfiles(userId: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.childProfiles.all,
-    queryFn: getChildProfiles,
+    queryKey: queryKeys.childProfiles.list(userId ?? ''),
+    queryFn: () => childProfilesService.getAll(userId!),
+    enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 
-/**
- * Get a single child profile by ID
- */
 export function useChildProfile(id: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.childProfiles.byId(id!),
-    queryFn: () => getChildProfile(id!),
+    queryKey: queryKeys.childProfiles.detail(id ?? ''),
+    queryFn: () => childProfilesService.getById(id!),
     enabled: !!id,
     staleTime: 5 * 60 * 1000,
   });
 }
 
-/**
- * Get a child profile with avatar library data
- */
-export function useChildProfileWithAvatar(id: string | undefined) {
-  return useQuery({
-    queryKey: queryKeys.childProfiles.withAvatar(id!),
-    queryFn: () => getChildProfileWithAvatar(id!),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-  });
-}
-
-/**
- * Create a new child profile
- */
 export function useCreateChildProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: Omit<ChildProfileInsert, 'parent_id'>) =>
-      createChildProfile(data),
-    onSuccess: (newProfile) => {
-      // Invalidate and refetch
-      queryClient.invalidateQueries({ queryKey: queryKeys.childProfiles.all });
-      toast.success(`Created profile for ${newProfile.name}!`);
+    mutationFn: (profile: ChildProfileInsert) => childProfilesService.create(profile),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.childProfiles.lists(),
+      });
+      return data;
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useCreateChildProfile',
+        userMessage: 'Failed to create child profile',
+      });
     },
   });
 }
 
-/**
- * Update a child profile
- */
 export function useUpdateChildProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, updates }: { id: string; updates: ChildProfileUpdate }) =>
-      updateChildProfile(id, updates),
-    onSuccess: (updatedProfile) => {
-      // Update cache directly
-      queryClient.setQueryData(
-        queryKeys.childProfiles.byId(updatedProfile.id),
-        updatedProfile
-      );
-      // Invalidate list
-      queryClient.invalidateQueries({ queryKey: queryKeys.childProfiles.all });
-      toast.success('Profile updated');
+      childProfilesService.update(id, updates),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.childProfiles.lists(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.childProfiles.detail(data.id),
+      });
+      return data;
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useUpdateChildProfile',
+        userMessage: 'Failed to update child profile',
+      });
     },
   });
 }
 
-/**
- * Delete a child profile
- */
 export function useDeleteChildProfile() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteChildProfile,
-    onSuccess: (_, deletedId) => {
-      // Remove from cache
-      queryClient.removeQueries({
-        queryKey: queryKeys.childProfiles.byId(deletedId),
+    mutationFn: (id: string) => childProfilesService.delete(id),
+    onSuccess: (_, id) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.childProfiles.lists(),
       });
-      // Invalidate list
-      queryClient.invalidateQueries({ queryKey: queryKeys.childProfiles.all });
-      toast.success('Profile deleted');
+      queryClient.removeQueries({
+        queryKey: queryKeys.childProfiles.detail(id),
+      });
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useDeleteChildProfile',
+        userMessage: 'Failed to delete child profile',
+      });
     },
   });
 }
 
-/**
- * Update a child's avatar
- */
 export function useUpdateChildAvatar() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      childId,
-      options,
-    }: {
-      childId: string;
-      options: {
-        avatarLibraryId?: string | null;
-        customAvatarUrl?: string | null;
-        useLibraryAvatar?: boolean;
-      };
-    }) => updateChildAvatar(childId, options),
-    onSuccess: (updatedProfile) => {
-      queryClient.setQueryData(
-        queryKeys.childProfiles.byId(updatedProfile.id),
-        updatedProfile
-      );
+    mutationFn: ({ id, avatarId }: { id: string; avatarId: string }) =>
+      childProfilesService.updateAvatar(id, avatarId),
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.childProfiles.withAvatar(updatedProfile.id),
+        queryKey: queryKeys.childProfiles.lists(),
       });
-      queryClient.invalidateQueries({ queryKey: queryKeys.childProfiles.all });
-      toast.success('Avatar updated');
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.childProfiles.detail(data.id),
+      });
     },
-    onError: () => {
-      // Error is already handled by service layer
+    onError: (error) => {
+      handleError(error, {
+        context: 'useUpdateChildAvatar',
+        userMessage: 'Failed to update avatar',
+      });
     },
   });
 }
 
-/**
- * Set or update a child's PIN
- */
-export function useSetChildPin() {
+export function usePrefetchChildProfile() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({
-      childId,
-      pin,
-      enabled = true,
-    }: {
-      childId: string;
-      pin: string;
-      enabled?: boolean;
-    }) => setChildPin(childId, pin, enabled),
-    onSuccess: (_, { childId }) => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.childProfiles.byId(childId),
-      });
-      queryClient.invalidateQueries({ queryKey: queryKeys.childProfiles.all });
-      toast.success('PIN updated');
-    },
-    onError: () => {
-      // Error is already handled by service layer
-    },
-  });
+  return (id: string) => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.childProfiles.detail(id),
+      queryFn: () => childProfilesService.getById(id),
+      staleTime: 5 * 60 * 1000,
+    });
+  };
 }

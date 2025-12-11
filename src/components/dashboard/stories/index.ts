@@ -1,5 +1,8 @@
 /**
- * Story Components
+ * Stories Components Index
+ *
+ * Barrel export for story-related dashboard components.
  */
 
-export { StoryLibrary } from './StoryLibrary';
+export { StoryCard } from './StoryCard';
+export { StoryList } from './StoryList';

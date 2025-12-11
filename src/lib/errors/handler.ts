@@ -1,202 +1,165 @@
 /**
  * Error Handler
  *
- * Centralized error handling utility for consistent error processing.
+ * Centralized error handling with configurable strategies.
  */
 
 import { toast } from 'sonner';
-import type {
-  AppError,
-  ErrorCode,
-  ErrorStrategy,
-  ErrorHandlerOptions,
-  SupabaseErrorLike,
+import {
+  type AppError,
+  type ErrorCode,
+  ERROR_MESSAGES,
+  httpStatusToErrorCode,
+  isNetworkError,
+  isTimeoutError,
 } from './types';
-import { isSupabaseError, isAppError } from './types';
 
-/** Default user-friendly messages by error code */
-const DEFAULT_USER_MESSAGES: Record<ErrorCode, string> = {
-  UNKNOWN: 'Something went wrong. Please try again.',
-  NETWORK: 'Network error. Please check your connection.',
-  TIMEOUT: 'Request timed out. Please try again.',
-  AUTH_REQUIRED: 'Please sign in to continue.',
-  AUTH_EXPIRED: 'Your session has expired. Please sign in again.',
-  FORBIDDEN: 'You don\'t have permission to do this.',
-  NOT_FOUND: 'The requested resource was not found.',
-  VALIDATION: 'Please check your input and try again.',
-  CONFLICT: 'This action conflicts with existing data.',
-  RATE_LIMIT: 'Too many requests. Please wait a moment.',
-  SERVER_ERROR: 'Server error. Please try again later.',
-  DATABASE_ERROR: 'Database error. Please try again.',
-  STORAGE_ERROR: 'Storage error. Please try again.',
-};
+/**
+ * Error handling strategy
+ */
+export type ErrorStrategy = 'toast' | 'log' | 'throw' | 'silent';
 
-/** Map Supabase error codes to app error codes */
-function mapSupabaseErrorCode(code?: string): ErrorCode {
-  if (!code) return 'DATABASE_ERROR';
-
-  const codeMap: Record<string, ErrorCode> = {
-    'PGRST116': 'NOT_FOUND',      // No rows returned
-    '23505': 'CONFLICT',          // Unique violation
-    '23503': 'VALIDATION',        // Foreign key violation
-    '42501': 'FORBIDDEN',         // Insufficient privilege
-    '42P01': 'NOT_FOUND',         // Undefined table
-    'JWT expired': 'AUTH_EXPIRED',
-    '401': 'AUTH_REQUIRED',
-    '403': 'FORBIDDEN',
-    '404': 'NOT_FOUND',
-    '409': 'CONFLICT',
-    '422': 'VALIDATION',
-    '429': 'RATE_LIMIT',
-    '500': 'SERVER_ERROR',
-  };
-
-  return codeMap[code] || 'DATABASE_ERROR';
+/**
+ * Options for error handling
+ */
+export interface ErrorHandlerOptions {
+  /** How to handle the error */
+  strategy?: ErrorStrategy;
+  /** Custom user-facing message */
+  userMessage?: string;
+  /** Context for debugging */
+  context?: string;
+  /** Additional metadata */
+  metadata?: Record<string, unknown>;
+  /** Show retry option in toast */
+  showRetry?: boolean;
+  /** Retry callback */
+  onRetry?: () => void;
 }
 
-/** Normalize any error into an AppError */
-export function normalizeError(
-  error: unknown,
-  userMessage?: string
-): AppError {
+/**
+ * Convert unknown error to AppError
+ */
+export function normalizeError(error: unknown, context?: string): AppError {
+  const timestamp = new Date();
+
   // Already an AppError
   if (isAppError(error)) {
-    return userMessage ? { ...error, userMessage } : error;
+    return { ...error, timestamp };
   }
 
-  // Supabase error
+  // Network errors
+  if (isNetworkError(error)) {
+    return {
+      code: 'NETWORK',
+      message: 'Network request failed',
+      userMessage: ERROR_MESSAGES.NETWORK,
+      originalError: error,
+      context: context ? { location: context } : undefined,
+      timestamp,
+    };
+  }
+
+  // Timeout errors
+  if (isTimeoutError(error)) {
+    return {
+      code: 'TIMEOUT',
+      message: 'Request timed out',
+      userMessage: ERROR_MESSAGES.TIMEOUT,
+      originalError: error,
+      context: context ? { location: context } : undefined,
+      timestamp,
+    };
+  }
+
+  // Supabase errors
   if (isSupabaseError(error)) {
     const code = mapSupabaseErrorCode(error.code);
     return {
       code,
       message: error.message,
-      userMessage: userMessage || error.hint || DEFAULT_USER_MESSAGES[code],
-      context: error.details ? { details: error.details } : undefined,
+      userMessage: ERROR_MESSAGES[code],
       originalError: error,
+      context: context ? { location: context } : undefined,
+      timestamp,
+    };
+  }
+
+  // HTTP errors with status
+  if (hasHttpStatus(error)) {
+    const code = httpStatusToErrorCode(error.status);
+    return {
+      code,
+      message: error.message || `HTTP ${error.status}`,
+      userMessage: ERROR_MESSAGES[code],
+      originalError: error,
+      context: context ? { location: context } : undefined,
+      timestamp,
     };
   }
 
   // Standard Error
   if (error instanceof Error) {
-    // Check for network errors
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      return {
-        code: 'NETWORK',
-        message: error.message,
-        userMessage: userMessage || DEFAULT_USER_MESSAGES.NETWORK,
-        originalError: error,
-        stack: error.stack,
-      };
-    }
-
-    // Check for timeout
-    if (error.name === 'AbortError' || error.message.includes('timeout')) {
-      return {
-        code: 'TIMEOUT',
-        message: error.message,
-        userMessage: userMessage || DEFAULT_USER_MESSAGES.TIMEOUT,
-        originalError: error,
-        stack: error.stack,
-      };
-    }
-
     return {
       code: 'UNKNOWN',
       message: error.message,
-      userMessage: userMessage || DEFAULT_USER_MESSAGES.UNKNOWN,
+      userMessage: ERROR_MESSAGES.UNKNOWN,
       originalError: error,
-      stack: error.stack,
+      context: context ? { location: context } : undefined,
+      timestamp,
     };
   }
 
-  // String error
-  if (typeof error === 'string') {
-    return {
-      code: 'UNKNOWN',
-      message: error,
-      userMessage: userMessage || error,
-    };
-  }
-
-  // Unknown error shape
+  // Unknown error type
   return {
     code: 'UNKNOWN',
     message: String(error),
-    userMessage: userMessage || DEFAULT_USER_MESSAGES.UNKNOWN,
+    userMessage: ERROR_MESSAGES.UNKNOWN,
     originalError: error,
+    context: context ? { location: context } : undefined,
+    timestamp,
   };
 }
 
 /**
- * Handle an error with the specified strategy
- *
- * @param error - The error to handle
- * @param options - Handling options
- * @returns The normalized AppError
- *
- * @example
- * ```ts
- * // Show toast notification (default)
- * handleError(error);
- *
- * // Custom message
- * handleError(error, { userMessage: 'Failed to save profile' });
- *
- * // Log only
- * handleError(error, { strategy: 'log', context: 'useChildProfiles' });
- *
- * // Throw for React Query to handle
- * handleError(error, { strategy: 'throw' });
- * ```
+ * Main error handling function
  */
-export function handleError(
-  error: unknown,
-  options: ErrorHandlerOptions = {}
-): AppError {
+export function handleError(error: unknown, options: ErrorHandlerOptions = {}): AppError {
   const {
     strategy = 'toast',
     userMessage,
     context,
     metadata,
-    includeStack = false,
+    showRetry = false,
+    onRetry,
   } = options;
 
-  const appError = normalizeError(error, userMessage);
+  const appError = normalizeError(error, context);
 
-  // Attach metadata if provided
+  // Override user message if provided
+  if (userMessage) {
+    appError.userMessage = userMessage;
+  }
+
+  // Add metadata
   if (metadata) {
     appError.context = { ...appError.context, ...metadata };
   }
 
-  // Log the error (for all strategies except silent)
-  if (strategy !== 'silent') {
-    const logPrefix = context ? `[${context}]` : '[Error]';
-    console.error(logPrefix, appError.message, {
-      code: appError.code,
-      context: appError.context,
-      ...(includeStack && appError.stack ? { stack: appError.stack } : {}),
-    });
-  }
-
-  // Apply strategy
+  // Execute strategy
   switch (strategy) {
     case 'toast':
-      toast.error(appError.userMessage);
+      showErrorToast(appError, showRetry, onRetry);
+      logError(appError);
       break;
-
-    case 'throw':
-      throw appError;
-
     case 'log':
-      // Already logged above
+      logError(appError);
       break;
-
+    case 'throw':
+      logError(appError);
+      throw appError;
     case 'silent':
       // Do nothing
-      break;
-
-    case 'return':
-      // Just return the error
       break;
   }
 
@@ -204,21 +167,7 @@ export function handleError(
 }
 
 /**
- * Create a typed error handler for a specific context
- *
- * @param context - The context name for logging
- * @returns A pre-configured error handler
- *
- * @example
- * ```ts
- * const handleServiceError = createErrorHandler('childProfilesService');
- *
- * try {
- *   await someOperation();
- * } catch (error) {
- *   handleServiceError(error, { userMessage: 'Failed to load profiles' });
- * }
- * ```
+ * Create a context-bound error handler
  */
 export function createErrorHandler(context: string) {
   return (error: unknown, options: Omit<ErrorHandlerOptions, 'context'> = {}) =>
@@ -226,58 +175,89 @@ export function createErrorHandler(context: string) {
 }
 
 /**
- * Wrap an async function with error handling
- *
- * @param fn - The async function to wrap
- * @param options - Error handling options
- * @returns The wrapped function
- *
- * @example
- * ```ts
- * const safeDelete = withErrorHandling(
- *   deleteProfile,
- *   { userMessage: 'Failed to delete profile' }
- * );
- *
- * await safeDelete(profileId);
- * ```
+ * Show error toast notification
  */
-export function withErrorHandling<TArgs extends unknown[], TResult>(
-  fn: (...args: TArgs) => Promise<TResult>,
-  options: ErrorHandlerOptions = {}
-): (...args: TArgs) => Promise<TResult | null> {
-  return async (...args: TArgs) => {
-    try {
-      return await fn(...args);
-    } catch (error) {
-      handleError(error, options);
-      return null;
-    }
-  };
+function showErrorToast(error: AppError, showRetry: boolean, onRetry?: () => void): void {
+  if (showRetry && onRetry) {
+    toast.error(error.userMessage, {
+      action: {
+        label: 'Retry',
+        onClick: onRetry,
+      },
+    });
+  } else {
+    toast.error(error.userMessage);
+  }
 }
 
 /**
- * Try an operation and return a result object
- *
- * @param fn - The async function to execute
- * @returns Object with data or error
- *
- * @example
- * ```ts
- * const { data, error } = await tryAsync(() => fetchProfiles());
- * if (error) {
- *   // Handle error
- * }
- * ```
+ * Log error for debugging
  */
-export async function tryAsync<T>(
-  fn: () => Promise<T>
-): Promise<{ data: T; error: null } | { data: null; error: AppError }> {
-  try {
-    const data = await fn();
-    return { data, error: null };
-  } catch (error) {
-    const appError = normalizeError(error);
-    return { data: null, error: appError };
+function logError(error: AppError): void {
+  const logData = {
+    code: error.code,
+    message: error.message,
+    context: error.context,
+    timestamp: error.timestamp.toISOString(),
+  };
+
+  if (process.env.NODE_ENV === 'development') {
+    console.error('[AppError]', logData, error.originalError);
+  } else {
+    // In production, could send to error tracking service
+    console.error('[AppError]', logData);
   }
+}
+
+/**
+ * Type guards
+ */
+function isAppError(error: unknown): error is AppError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    'message' in error &&
+    'userMessage' in error
+  );
+}
+
+interface SupabaseError {
+  code: string;
+  message: string;
+  details?: string;
+}
+
+function isSupabaseError(error: unknown): error is SupabaseError {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'code' in error &&
+    'message' in error &&
+    typeof (error as SupabaseError).code === 'string'
+  );
+}
+
+function hasHttpStatus(error: unknown): error is { status: number; message?: string } {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'status' in error &&
+    typeof (error as { status: number }).status === 'number'
+  );
+}
+
+/**
+ * Map Supabase error codes to app error codes
+ */
+function mapSupabaseErrorCode(code: string): ErrorCode {
+  const codeMap: Record<string, ErrorCode> = {
+    '23505': 'VALIDATION', // Unique violation
+    '23503': 'VALIDATION', // Foreign key violation
+    '42501': 'FORBIDDEN', // Insufficient privilege
+    'PGRST116': 'NOT_FOUND', // Row not found
+    'PGRST301': 'AUTH_REQUIRED', // JWT required
+    '429': 'RATE_LIMIT',
+  };
+  return codeMap[code] || 'UNKNOWN';
 }

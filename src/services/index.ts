@@ -1,29 +1,32 @@
 /**
  * Services Index
  *
- * Central export point for all service modules.
- * Import from '@/services' for convenient access.
- *
- * @example
- * ```ts
- * import { childProfilesService, storiesService } from '@/services';
- *
- * const profiles = await childProfilesService.getAll();
- * const stories = await storiesService.getByChild(childId);
- * ```
+ * Barrel export for all data access services.
  */
 
+// Child profiles
+export * from './childProfiles';
 export { childProfilesService } from './childProfiles';
+
+// Stories
+export * from './stories';
 export { storiesService } from './stories';
+
+// Family
+export * from './family';
 export { familyService } from './family';
+
+// Journeys
+export * from './journeys';
 export { journeysService } from './journeys';
+
+// Guardrails
+export * from './guardrails';
 export { guardrailsService } from './guardrails';
+
+// Avatars
+export * from './avatars';
 export { avatarsService } from './avatars';
 
-// Also export individual functions for tree-shaking
-export * from './childProfiles';
-export * from './stories';
-export * from './family';
-export * from './journeys';
-export * from './guardrails';
-export * from './avatars';
+// Cache
+export { IndexedDBCache, avatarCache, storyCache } from './cache/indexedDBCache';

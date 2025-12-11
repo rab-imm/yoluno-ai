@@ -1,161 +1,87 @@
-import { NavLink, useParams } from "react-router-dom";
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-  useSidebar,
-} from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  TrendingUp,
-  Library,
-  Target,
-  BookOpen,
-  Users,
-  FileText,
-  Shield,
-  Sparkles,
-  LogOut,
-  Mic,
-} from "lucide-react";
-import { ChildSwitcher } from "./ChildSwitcher";
-import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import { useChildProfiles } from "@/hooks/dashboard/useChildProfiles";
+/**
+ * Dashboard Sidebar
+ *
+ * Navigation sidebar for the dashboard.
+ */
 
-const sections = [
-  {
-    label: "Overview",
-    items: [
-      { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard, noChildId: true },
-    ],
-  },
-  {
-    label: "Learning",
-    items: [
-      { title: "Insights", url: "/dashboard/insights", icon: TrendingUp },
-      { title: "Topics", url: "/dashboard/topics", icon: Library },
-      { title: "Content Library", url: "/dashboard/library", icon: FileText },
-    ],
-  },
-  {
-    label: "Growth",
-    items: [
-      { title: "Goal Journeys", url: "/dashboard/journeys", icon: Target },
-    ],
-  },
-  {
-    label: "Stories",
-    items: [
-      { title: "Story Library", url: "/dashboard/stories", icon: BookOpen },
-    ],
-  },
-  {
-    label: "Family",
-    items: [
-      { title: "Family History", url: "/dashboard/family", icon: Users, noChildId: true },
-    ],
-  },
-  {
-    label: "Rewards",
-    items: [
-      { title: "Voice Vault", url: "/dashboard/voice-vault", icon: Mic, noChildId: true },
-    ],
-  },
-  {
-    label: "Safety",
-    items: [
-      { title: "Content Review", url: "/dashboard/content", icon: FileText },
-      { title: "Safety Monitor", url: "/dashboard/safety", icon: Shield },
-    ],
-  },
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import {
+  Home,
+  Users,
+  BookOpen,
+  Settings,
+  LogOut,
+  Sparkles,
+  Shield,
+  Map,
+  type LucideIcon,
+} from 'lucide-react';
+
+interface NavItem {
+  path: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+const navItems: NavItem[] = [
+  { path: '/dashboard', label: 'Home', icon: Home },
+  { path: '/dashboard/children', label: 'Children', icon: Users },
+  { path: '/dashboard/stories', label: 'Stories', icon: BookOpen },
+  { path: '/dashboard/journeys', label: 'Journeys', icon: Map },
+  { path: '/dashboard/safety', label: 'Safety', icon: Shield },
+  { path: '/dashboard/settings', label: 'Settings', icon: Settings },
 ];
 
 export function DashboardSidebar() {
-  const { state } = useSidebar();
-  const { childId } = useParams();
-  const { children } = useChildProfiles();
-  const navigate = useNavigate();
-  const isCollapsed = state === "collapsed";
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
-
-  const getNavClassName = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "";
-
-  // Use first child as fallback if no childId in URL
-  const activeChildId = childId || children[0]?.id;
+  const { signOut } = useAuth();
+  const location = useLocation();
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-sidebar-border p-4">
-        <ChildSwitcher />
-      </SidebarHeader>
+    <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-card">
+      <div className="flex h-full flex-col">
+        {/* Logo */}
+        <div className="flex items-center gap-2 border-b px-6 py-4">
+          <Sparkles className="h-8 w-8 text-primary" />
+          <span className="text-xl font-bold">Yoluno</span>
+        </div>
 
-      <SidebarContent>
-        {sections.map((section) => (
-          <SidebarGroup key={section.label}>
-            <SidebarGroupLabel>{section.label}</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {section.items.map((item) => {
-                  // For items that need childId, use activeChildId or disable
-                  const url = item.noChildId 
-                    ? item.url 
-                    : activeChildId 
-                    ? `${item.url}/${activeChildId}`
-                    : item.url; // Fallback to base URL if no children
-                  
-                  const isDisabled = !item.noChildId && !activeChildId;
-                  
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton asChild disabled={isDisabled}>
-                        <NavLink to={url} end className={getNavClassName}>
-                          <item.icon className="h-4 w-4" />
-                          {!isCollapsed && <span>{item.title}</span>}
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
-      </SidebarContent>
+        {/* Navigation */}
+        <nav className="flex-1 space-y-1 px-3 py-4">
+          {navItems.map((item) => {
+            const isActive =
+              item.path === '/dashboard'
+                ? location.pathname === '/dashboard'
+                : location.pathname.startsWith(item.path);
 
-      <SidebarFooter className="border-t border-sidebar-border p-2">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate("/kids")}
-          className="w-full justify-start"
-        >
-          <Sparkles className="h-4 w-4 mr-2" />
-          {!isCollapsed && "Kids Mode"}
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleSignOut}
-          className="w-full justify-start"
-        >
-          <LogOut className="h-4 w-4 mr-2" />
-          {!isCollapsed && "Sign Out"}
-        </Button>
-      </SidebarFooter>
-    </Sidebar>
+            return (
+              <Link key={item.path} to={item.path}>
+                <Button
+                  variant={isActive ? 'secondary' : 'ghost'}
+                  className={cn('w-full justify-start gap-3', isActive && 'bg-secondary')}
+                >
+                  <item.icon className="h-5 w-5" />
+                  {item.label}
+                </Button>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Sign out */}
+        <div className="border-t p-3">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3 text-muted-foreground"
+            onClick={signOut}
+          >
+            <LogOut className="h-5 w-5" />
+            Sign Out
+          </Button>
+        </div>
+      </div>
+    </aside>
   );
 }

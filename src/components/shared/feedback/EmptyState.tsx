@@ -1,131 +1,47 @@
 /**
- * EmptyState
+ * Empty State
  *
  * Consistent empty state display component.
  */
 
-import { ReactNode } from 'react';
-import { Inbox, Plus } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { type LucideIcon, Inbox } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-export interface EmptyStateProps {
-  /** Icon to display (defaults to Inbox) */
-  icon?: ReactNode;
-  /** Empty state title */
+interface EmptyStateProps {
+  icon?: LucideIcon;
   title: string;
-  /** Description message */
   description?: string;
-  /** Action button label */
-  actionLabel?: string;
-  /** Action button callback */
-  onAction?: () => void;
-  /** Size variant */
-  size?: 'sm' | 'md' | 'lg';
-  /** Whether to center in container */
-  centered?: boolean;
-  /** Whether to take full height */
-  fullHeight?: boolean;
-  /** Additional className */
-  className?: string;
-  /** Children (for custom action buttons or content) */
+  action?: {
+    label: string;
+    onClick: () => void;
+  };
   children?: ReactNode;
+  className?: string;
 }
 
-const iconContainerSizes = {
-  sm: 'p-2',
-  md: 'p-3',
-  lg: 'p-4',
-};
-
-const iconSizes = {
-  sm: 'h-6 w-6',
-  md: 'h-8 w-8',
-  lg: 'h-12 w-12',
-};
-
-const titleSizes = {
-  sm: 'text-sm',
-  md: 'text-base',
-  lg: 'text-lg',
-};
-
 export function EmptyState({
-  icon,
+  icon: Icon = Inbox,
   title,
   description,
-  actionLabel,
-  onAction,
-  size = 'md',
-  centered = true,
-  fullHeight = false,
-  className,
+  action,
   children,
+  className,
 }: EmptyStateProps) {
-  const defaultIcon = (
-    <Inbox className={cn('text-muted-foreground', iconSizes[size])} />
-  );
-
   return (
-    <div
-      className={cn(
-        'flex flex-col items-center gap-4 p-6',
-        centered && 'justify-center',
-        fullHeight && 'min-h-[200px]',
-        className
-      )}
-    >
-      <div
-        className={cn(
-          'rounded-full bg-muted',
-          iconContainerSizes[size]
-        )}
-      >
-        {icon || defaultIcon}
+    <div className={cn('flex flex-col items-center justify-center gap-4 py-12 text-center', className)}>
+      <div className="rounded-full bg-muted p-4">
+        <Icon className="h-8 w-8 text-muted-foreground" />
       </div>
-
-      <div className="text-center space-y-1">
-        <h3 className={cn('font-semibold', titleSizes[size])}>{title}</h3>
-        {description && (
-          <p className="text-sm text-muted-foreground max-w-md">
-            {description}
-          </p>
-        )}
+      <div className="space-y-1">
+        <h3 className="font-semibold text-foreground">{title}</h3>
+        {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
-
-      {(onAction && actionLabel) && (
-        <Button onClick={onAction} size="sm">
-          <Plus className="mr-2 h-4 w-4" />
-          {actionLabel}
-        </Button>
+      {action && (
+        <Button onClick={action.onClick}>{action.label}</Button>
       )}
-
       {children}
     </div>
   );
 }
-
-/**
- * Simple empty state for lists
- */
-export function EmptyList({
-  message = 'No items found',
-  className,
-}: {
-  message?: string;
-  className?: string;
-}) {
-  return (
-    <div
-      className={cn(
-        'flex items-center justify-center py-8 text-sm text-muted-foreground',
-        className
-      )}
-    >
-      {message}
-    </div>
-  );
-}
-
-EmptyState.displayName = 'EmptyState';
-EmptyList.displayName = 'EmptyList';

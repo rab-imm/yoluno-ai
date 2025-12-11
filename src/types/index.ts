@@ -1,18 +1,17 @@
 /**
  * Types Index
  *
- * Central export point for all application types.
- * Import from '@/types' for convenient access.
+ * Barrel export for all type definitions.
  */
 
-// Database types - direct Supabase table mappings
+// Database types
 export * from './database';
 
-// Domain types - business logic types
+// Domain types
 export * from './domain';
 
-// API types - async states, responses, queries
+// API types
 export * from './api';
 
-// Form types - Zod schemas and form data types
+// Form schemas and types
 export * from './forms';

@@ -1,132 +1,76 @@
 /**
  * Avatars Query Hooks
  *
- * React Query hooks for avatar library data with IndexedDB caching.
+ * React Query hooks for avatar library operations.
  */
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './keys';
-import {
-  getAllAvatars,
-  getAvatarsByCategory,
-  getAvatar,
-  getAvatarCategories,
-  searchAvatars,
-} from '@/services/avatars';
-import { avatarLibraryCache } from '@/services/cache';
-import type { AvatarLibraryRow } from '@/types/database';
+import { avatarsService } from '@/services/avatars';
+import type { AvatarCategory } from '@/types/domain';
 
-/**
- * Get all avatars from library with IndexedDB caching
- */
-export function useAvatarLibrary() {
+export function useAllAvatars() {
   return useQuery({
-    queryKey: queryKeys.avatars.all,
-    queryFn: async () => {
-      // Check IndexedDB cache first
-      const cached = await avatarLibraryCache.get('all-avatars');
-      if (cached && Array.isArray(cached) && cached.length > 0) {
-        return cached as AvatarLibraryRow[];
-      }
-
-      // Fetch from API
-      const avatars = await getAllAvatars();
-
-      // Cache in IndexedDB
-      await avatarLibraryCache.set('all-avatars', avatars);
-
-      return avatars;
-    },
-    staleTime: 24 * 60 * 60 * 1000, // 24 hours
-    gcTime: 7 * 24 * 60 * 60 * 1000, // 7 days
+    queryKey: queryKeys.avatars.listAll(),
+    queryFn: () => avatarsService.getAll(),
+    staleTime: 30 * 60 * 1000, // 30 minutes (avatars rarely change)
   });
 }
 
-/**
- * Get avatars by category
- */
-export function useAvatarsByCategory(category: string | undefined) {
+export function useAvatarsByCategory(category: AvatarCategory | undefined) {
   return useQuery({
-    queryKey: queryKeys.avatars.byCategory(category!),
-    queryFn: async () => {
-      // Check IndexedDB cache
-      const cacheKey = `category-${category}`;
-      const cached = await avatarLibraryCache.get(cacheKey);
-      if (cached && Array.isArray(cached) && cached.length > 0) {
-        return cached as AvatarLibraryRow[];
-      }
-
-      // Fetch from API
-      const avatars = await getAvatarsByCategory(category!);
-
-      // Cache
-      await avatarLibraryCache.set(cacheKey, avatars);
-
-      return avatars;
-    },
+    queryKey: queryKeys.avatars.listByCategory(category ?? ''),
+    queryFn: () => avatarsService.getByCategory(category!),
     enabled: !!category,
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: 30 * 60 * 1000,
   });
 }
 
-/**
- * Get a single avatar by ID
- */
 export function useAvatar(id: string | undefined) {
   return useQuery({
-    queryKey: queryKeys.avatars.byId(id!),
-    queryFn: () => getAvatar(id!),
+    queryKey: queryKeys.avatars.detail(id ?? ''),
+    queryFn: () => avatarsService.getById(id!),
     enabled: !!id,
-    staleTime: 24 * 60 * 60 * 1000,
+    staleTime: 60 * 60 * 1000, // 1 hour
   });
 }
 
-/**
- * Get all avatar categories
- */
 export function useAvatarCategories() {
   return useQuery({
-    queryKey: queryKeys.avatars.categories,
-    queryFn: getAvatarCategories,
-    staleTime: 24 * 60 * 60 * 1000,
+    queryKey: queryKeys.avatars.categories(),
+    queryFn: () => avatarsService.getCategories(),
+    staleTime: 60 * 60 * 1000,
   });
 }
 
-/**
- * Search avatars
- */
-export function useSearchAvatars(query: string | undefined) {
+export function useSearchAvatars(query: string) {
   return useQuery({
-    queryKey: queryKeys.avatars.search(query!),
-    queryFn: () => searchAvatars(query!),
-    enabled: !!query && query.length >= 2,
-    staleTime: 5 * 60 * 1000, // 5 minutes for search results
+    queryKey: queryKeys.avatars.search(query),
+    queryFn: () => avatarsService.search(query),
+    enabled: query.length >= 2,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
-/**
- * Prefetch avatars for a category
- */
-export async function prefetchAvatarsByCategory(
-  queryClient: ReturnType<typeof import('@tanstack/react-query').useQueryClient>,
-  category: string
-): Promise<void> {
-  await queryClient.prefetchQuery({
-    queryKey: queryKeys.avatars.byCategory(category),
-    queryFn: () => getAvatarsByCategory(category),
-    staleTime: 24 * 60 * 60 * 1000,
-  });
+export function usePrefetchAvatarCategory() {
+  const queryClient = useQueryClient();
+
+  return (category: AvatarCategory) => {
+    queryClient.prefetchQuery({
+      queryKey: queryKeys.avatars.listByCategory(category),
+      queryFn: () => avatarsService.getByCategory(category),
+      staleTime: 30 * 60 * 1000,
+    });
+  };
 }
 
-/**
- * Invalidate avatar cache (both React Query and IndexedDB)
- */
-export async function invalidateAvatarCache(
-  queryClient: ReturnType<typeof import('@tanstack/react-query').useQueryClient>
-): Promise<void> {
-  // Clear IndexedDB cache
-  await avatarLibraryCache.clear();
+export function useClearAvatarCache() {
+  const queryClient = useQueryClient();
 
-  // Invalidate React Query cache
-  await queryClient.invalidateQueries({ queryKey: queryKeys.avatars.all });
+  return async () => {
+    await avatarsService.clearCache();
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.avatars.all,
+    });
+  };
 }

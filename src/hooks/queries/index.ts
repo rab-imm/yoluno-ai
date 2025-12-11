@@ -1,98 +1,76 @@
 /**
  * Query Hooks Index
  *
- * Central export point for all React Query hooks.
- *
- * @example
- * ```ts
- * import {
- *   useChildProfiles,
- *   useCreateChildProfile,
- *   useStoriesByChild,
- *   queryKeys
- * } from '@/hooks/queries';
- * ```
+ * Barrel export for all React Query hooks.
  */
 
-// Query key factory
-export { queryKeys, type QueryKeys } from './keys';
+// Query keys
+export { queryKeys } from './keys';
 
-// Child Profiles
+// Child profiles
 export {
   useChildProfiles,
   useChildProfile,
-  useChildProfileWithAvatar,
   useCreateChildProfile,
   useUpdateChildProfile,
   useDeleteChildProfile,
   useUpdateChildAvatar,
-  useSetChildPin,
+  usePrefetchChildProfile,
 } from './useChildProfiles';
 
 // Stories
 export {
   useStoriesByChild,
-  useStoriesWithChildData,
   useStory,
   useFavoriteStories,
-  useBedtimeStories,
   useRecentStories,
-  useStoryThemes,
   useCreateStory,
   useUpdateStory,
-  useToggleFavorite,
   useDeleteStory,
+  useToggleFavorite,
 } from './useStories';
+
+// Family
+export {
+  useFamilyMembers,
+  useFamilyMember,
+  useFamilyRelationships,
+  useFamilyTree,
+  useCreateFamilyMember,
+  useUpdateFamilyMember,
+  useDeleteFamilyMember,
+  useCreateRelationship,
+  useDeleteRelationship,
+} from './useFamily';
 
 // Journeys
 export {
-  useJourneysByChild,
   useActiveJourneys,
-  useJourneyWithSteps,
-  useJourneyTemplates,
-  useTemplatesByCategory,
-  useJourneyTemplate,
+  useCompletedJourneys,
+  useJourney,
+  useJourneyProgress,
   useCreateJourney,
-  useUpdateJourneyProgress,
-  useCompleteJourney,
-  useDeleteJourney,
+  useUpdateJourney,
   useCompleteStep,
-  useAddStepReflection,
+  useUpdateStepProgress,
 } from './useJourneys';
 
 // Guardrails
 export {
   useGuardrailSettings,
   useUpdateGuardrailSettings,
-  useAddBlockedKeyword,
-  useRemoveBlockedKeyword,
-  useAddAllowedPhrase,
-  useRemoveAllowedPhrase,
   useResetGuardrailSettings,
+  useAddBlockedTopic,
+  useRemoveBlockedTopic,
 } from './useGuardrails';
 
 // Avatars
 export {
-  useAvatarLibrary,
+  useAllAvatars,
   useAvatarsByCategory,
   useAvatar,
   useAvatarCategories,
   useSearchAvatars,
-  prefetchAvatarsByCategory,
-  invalidateAvatarCache,
+  usePrefetchAvatarCategory,
+  useClearAvatarCache,
 } from './useAvatars';
-
-// Family
-export {
-  useFamilyMembers,
-  useFamilyMember,
-  useCreateFamilyMember,
-  useUpdateFamilyMember,
-  useDeleteFamilyMember,
-  useFamilyRelationships,
-  useMemberRelationships,
-  useCreateRelationship,
-  useDeleteRelationship,
-  useFamilyMembersWithRelationships,
-  useFamilyEvents,
-} from './useFamily';

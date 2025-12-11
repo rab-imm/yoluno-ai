@@ -1,23 +1,17 @@
 /**
- * LoadingState
+ * Loading State
  *
  * Consistent loading indicator component.
  */
 
-import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 
-export interface LoadingStateProps {
-  /** Loading message */
+interface LoadingStateProps {
   message?: string;
-  /** Size variant */
   size?: 'sm' | 'md' | 'lg';
-  /** Whether to center in container */
-  centered?: boolean;
-  /** Whether to take full height */
-  fullHeight?: boolean;
-  /** Additional className */
   className?: string;
+  fullPage?: boolean;
 }
 
 const sizeClasses = {
@@ -26,7 +20,7 @@ const sizeClasses = {
   lg: 'h-12 w-12',
 };
 
-const textSizeClasses = {
+const textClasses = {
   sm: 'text-sm',
   md: 'text-base',
   lg: 'text-lg',
@@ -35,68 +29,27 @@ const textSizeClasses = {
 export function LoadingState({
   message = 'Loading...',
   size = 'md',
-  centered = true,
-  fullHeight = false,
   className,
+  fullPage = false,
 }: LoadingStateProps) {
-  return (
-    <div
-      className={cn(
-        'flex flex-col items-center gap-3',
-        centered && 'justify-center',
-        fullHeight && 'min-h-[200px]',
-        className
-      )}
-    >
-      <Loader2
-        className={cn('animate-spin text-primary', sizeClasses[size])}
-      />
+  const content = (
+    <div className={cn('flex flex-col items-center justify-center gap-3', className)}>
+      <Loader2 className={cn('animate-spin text-muted-foreground', sizeClasses[size])} />
       {message && (
-        <p
-          className={cn(
-            'text-muted-foreground animate-pulse',
-            textSizeClasses[size]
-          )}
-        >
-          {message}
-        </p>
+        <p className={cn('text-muted-foreground', textClasses[size])}>{message}</p>
       )}
     </div>
   );
+
+  if (fullPage) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">{content}</div>
+    );
+  }
+
+  return content;
 }
 
-/**
- * Inline loading spinner
- */
-export function LoadingSpinner({
-  size = 'sm',
-  className,
-}: {
-  size?: 'sm' | 'md' | 'lg';
-  className?: string;
-}) {
-  return (
-    <Loader2
-      className={cn('animate-spin text-primary', sizeClasses[size], className)}
-    />
-  );
+export function LoadingSpinner({ size = 'md', className }: Pick<LoadingStateProps, 'size' | 'className'>) {
+  return <Loader2 className={cn('animate-spin', sizeClasses[size], className)} />;
 }
-
-/**
- * Skeleton loading placeholder
- */
-export function LoadingSkeleton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn('animate-pulse rounded-md bg-muted', className)}
-      {...props}
-    />
-  );
-}
-
-LoadingState.displayName = 'LoadingState';
-LoadingSpinner.displayName = 'LoadingSpinner';
-LoadingSkeleton.displayName = 'LoadingSkeleton';

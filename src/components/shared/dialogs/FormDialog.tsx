@@ -1,57 +1,40 @@
 /**
- * FormDialog
+ * Form Dialog
  *
- * A reusable dialog component for forms with consistent styling and behavior.
- * Reduces boilerplate across the 9+ dialog components in the codebase.
+ * Reusable dialog component for forms with consistent styling.
  */
 
-import { ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
 
-export interface FormDialogProps {
-  /** Whether the dialog is open */
+interface FormDialogProps {
   open: boolean;
-  /** Callback when dialog open state changes */
   onOpenChange: (open: boolean) => void;
-  /** Dialog title */
   title: string;
-  /** Optional description below the title */
   description?: string;
-  /** Form content */
   children: ReactNode;
-  /** Form submit handler */
-  onSubmit: () => void | Promise<void>;
-  /** Whether form is submitting */
-  isSubmitting?: boolean;
-  /** Submit button label */
   submitLabel?: string;
-  /** Cancel button label */
   cancelLabel?: string;
-  /** Max width of dialog */
-  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  /** Whether to show footer buttons */
-  showFooter?: boolean;
-  /** Additional footer content (rendered before buttons) */
-  footerContent?: ReactNode;
-  /** Disable closing when clicking outside */
-  disableOutsideClick?: boolean;
+  onSubmit?: () => void;
+  onCancel?: () => void;
+  isLoading?: boolean;
+  isDisabled?: boolean;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-const widthClasses = {
+const sizeClasses = {
   sm: 'max-w-sm',
   md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
-  '2xl': 'max-w-2xl',
 };
 
 export function FormDialog({
@@ -60,71 +43,40 @@ export function FormDialog({
   title,
   description,
   children,
-  onSubmit,
-  isSubmitting = false,
   submitLabel = 'Save',
   cancelLabel = 'Cancel',
-  maxWidth = 'md',
-  showFooter = true,
-  footerContent,
-  disableOutsideClick = false,
+  onSubmit,
+  onCancel,
+  isLoading = false,
+  isDisabled = false,
+  size = 'md',
 }: FormDialogProps) {
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    await onSubmit();
-  };
-
-  const handleOpenChange = (newOpen: boolean) => {
-    // Prevent closing while submitting
-    if (isSubmitting && !newOpen) return;
-    onOpenChange(newOpen);
-  };
-
-  const handleInteractOutside = (e: Event) => {
-    if (disableOutsideClick || isSubmitting) {
-      e.preventDefault();
-    }
+  const handleCancel = () => {
+    onCancel?.();
+    onOpenChange(false);
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent
-        className={widthClasses[maxWidth]}
-        onInteractOutside={handleInteractOutside}
-      >
-        <form onSubmit={handleSubmit}>
-          <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
-            {description && (
-              <DialogDescription>{description}</DialogDescription>
-            )}
-          </DialogHeader>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className={sizeClasses[size]}>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description && <DialogDescription>{description}</DialogDescription>}
+        </DialogHeader>
 
-          <div className="py-4 space-y-4">{children}</div>
+        <div className="py-4">{children}</div>
 
-          {showFooter && (
-            <DialogFooter className="gap-2 sm:gap-0">
-              {footerContent}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
-              >
-                {cancelLabel}
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                )}
-                {submitLabel}
-              </Button>
-            </DialogFooter>
+        <DialogFooter>
+          <Button type="button" variant="outline" onClick={handleCancel} disabled={isLoading}>
+            {cancelLabel}
+          </Button>
+          {onSubmit && (
+            <Button type="submit" onClick={onSubmit} disabled={isLoading || isDisabled}>
+              {isLoading ? 'Saving...' : submitLabel}
+            </Button>
           )}
-        </form>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
-
-FormDialog.displayName = 'FormDialog';
