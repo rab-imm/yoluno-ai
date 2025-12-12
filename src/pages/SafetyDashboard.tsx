@@ -1,0 +1,143 @@
+/**
+ * Safety Dashboard Page
+ *
+ * Parent dashboard for monitoring buddy chat safety and managing buddy settings.
+ */
+
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useChildProfiles } from '@/hooks/queries';
+import { SafetyReportsPanel, BuddySettingsPanel } from '@/components/dashboard/safety';
+import { Card, CardContent } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { EmptyState } from '@/components/shared/feedback/EmptyState';
+import { Shield, Users, Loader2 } from 'lucide-react';
+
+export function SafetyDashboardPage() {
+  const { user } = useAuth();
+  const { data: childProfiles = [], isLoading } = useChildProfiles(user?.id);
+  const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
+
+  // Auto-select first child if available
+  useState(() => {
+    if (childProfiles.length > 0 && !selectedChildId) {
+      setSelectedChildId(childProfiles[0].id);
+    }
+  });
+
+  const selectedChild = childProfiles.find((child) => child.id === selectedChildId);
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          <p className="text-sm text-muted-foreground">Loading safety dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (childProfiles.length === 0) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Safety & Buddy Chat</h1>
+          <p className="mt-2 text-muted-foreground">
+            Monitor conversations and customize your children's AI buddy
+          </p>
+        </div>
+
+        <EmptyState
+          icon={Users}
+          title="No child profiles yet"
+          description="Create a child profile to start monitoring buddy chat conversations."
+          className="py-12"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold">Safety & Buddy Chat</h1>
+        <p className="mt-2 text-muted-foreground">
+          Monitor conversations and customize your children's AI buddy
+        </p>
+      </div>
+
+      {/* Child Selector */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex items-center gap-4">
+            <Shield className="h-5 w-5 text-muted-foreground" />
+            <div className="flex-1">
+              <label className="text-sm font-medium">Select Child</label>
+              <Select
+                value={selectedChildId || undefined}
+                onValueChange={setSelectedChildId}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Choose a child" />
+                </SelectTrigger>
+                <SelectContent>
+                  {childProfiles.map((child) => (
+                    <SelectItem key={child.id} value={child.id}>
+                      {child.name} (Age {child.age})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Content */}
+      {selectedChild ? (
+        <Tabs defaultValue="reports" className="space-y-6">
+          <TabsList>
+            <TabsTrigger value="reports">Safety Reports</TabsTrigger>
+            <TabsTrigger value="buddy">Buddy Settings</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="reports" className="space-y-4">
+            <Alert>
+              <Shield className="h-4 w-4" />
+              <AlertDescription>
+                Safety reports are generated when the AI detects concerning content in{' '}
+                {selectedChild.name}'s conversations. Review them regularly to ensure safe
+                interactions.
+              </AlertDescription>
+            </Alert>
+
+            <SafetyReportsPanel />
+          </TabsContent>
+
+          <TabsContent value="buddy" className="space-y-4">
+            <Alert>
+              <Shield className="h-4 w-4" />
+              <AlertDescription>
+                Customize {selectedChild.name}'s buddy to match their personality and
+                learning needs. Changes take effect immediately.
+              </AlertDescription>
+            </Alert>
+
+            <BuddySettingsPanel
+              childId={selectedChild.id}
+              childName={selectedChild.name}
+            />
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <Alert>
+          <AlertDescription>Please select a child to view their safety reports and buddy settings.</AlertDescription>
+        </Alert>
+      )}
+    </div>
+  );
+}

@@ -6,6 +6,8 @@
 
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { SafetyDashboardPage } from './SafetyDashboard';
+import { SafetyAlertNotification } from '@/components/dashboard/safety';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import {
@@ -58,14 +60,6 @@ function JourneysPage() {
   );
 }
 
-function SafetyPage() {
-  return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Safety Settings</h1>
-      <p className="text-muted-foreground">Configure content safety and guardrails.</p>
-    </div>
-  );
-}
 
 function SettingsPage() {
   return (
@@ -91,6 +85,9 @@ export function DashboardPage() {
 
   return (
     <div className="flex min-h-screen">
+      {/* Real-time safety alerts */}
+      <SafetyAlertNotification />
+
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 z-40 h-screen w-64 border-r bg-card">
         <div className="flex h-full flex-col">
@@ -143,7 +140,7 @@ export function DashboardPage() {
           <Route path="/children" element={<ChildrenPage />} />
           <Route path="/stories" element={<StoriesPage />} />
           <Route path="/journeys" element={<JourneysPage />} />
-          <Route path="/safety" element={<SafetyPage />} />
+          <Route path="/safety" element={<SafetyDashboardPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Routes>
       </main>

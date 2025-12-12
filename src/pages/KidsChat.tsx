@@ -1,7 +1,7 @@
 /**
  * Kids Chat Page
  *
- * Child-facing AI chat interface.
+ * Child-facing AI chat interface with buddy chat.
  */
 
 import { useEffect } from 'react';
@@ -11,6 +11,7 @@ import { useChat } from '@/contexts/ChatContext';
 import { useChildProfile } from '@/hooks/queries';
 import { LoadingState, ErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
+import { BuddyChat } from '@/components/chat';
 import { ArrowLeft } from 'lucide-react';
 
 export function KidsChatPage() {
@@ -64,14 +65,10 @@ export function KidsChatPage() {
         <div className="w-20" /> {/* Spacer for centering */}
       </header>
 
-      {/* Chat area - placeholder */}
-      <main className="flex flex-1 items-center justify-center p-4">
-        <div className="text-center">
-          <div className="mx-auto mb-4 h-32 w-32 rounded-full bg-child-primary/20" />
-          <h2 className="text-2xl font-bold">Welcome, {child.name}!</h2>
-          <p className="mt-2 text-muted-foreground">
-            Chat interface coming soon...
-          </p>
+      {/* Buddy Chat */}
+      <main className="flex flex-1 overflow-hidden">
+        <div className="mx-auto w-full max-w-4xl">
+          <BuddyChat childId={childId!} childName={child.name} />
         </div>
       </main>
     </div>
