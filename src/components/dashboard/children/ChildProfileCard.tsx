@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { formatRelativeTime, getInitials } from '@/lib/utils';
-import { MessageCircle, BookOpen, Settings } from 'lucide-react';
+import { Play, BookOpen, Settings } from 'lucide-react';
 
 interface ChildProfileCardProps {
   child: ChildProfileRow;
@@ -51,8 +51,8 @@ export function ChildProfileCard({ child, avatarUrl, onEdit }: ChildProfileCardP
       <CardFooter className="flex justify-center gap-2 border-t bg-muted/50 px-6 py-4">
         <Link to={`/kids/${child.id}`}>
           <Button size="sm" className="gap-2">
-            <MessageCircle className="h-4 w-4" />
-            Chat
+            <Play className="h-4 w-4" />
+            Play
           </Button>
         </Link>
         <Link to={`/story-wizard/${child.id}`}>

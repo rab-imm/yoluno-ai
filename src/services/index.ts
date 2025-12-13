@@ -30,3 +30,14 @@ export { avatarsService } from './avatars';
 
 // Cache
 export { IndexedDBCache, avatarCache, storyCache } from './cache/indexedDBCache';
+
+// Text-to-Speech
+export * from './textToSpeech';
+export { textToSpeechService } from './textToSpeech';
+
+// Story Generation
+export * from './storyGeneration';
+export { storyGenerationService } from './storyGeneration';
+
+// Buddy Chat
+export * from './buddyChat';

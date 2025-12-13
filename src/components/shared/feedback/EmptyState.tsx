@@ -13,12 +13,17 @@ interface EmptyStateProps {
   icon?: LucideIcon;
   title: string;
   description?: string;
-  action?: {
+  // Support both button config and ReactNode
+  action?: ReactNode | {
     label: string;
     onClick: () => void;
   };
   children?: ReactNode;
   className?: string;
+}
+
+function isActionConfig(action: unknown): action is { label: string; onClick: () => void } {
+  return typeof action === 'object' && action !== null && 'label' in action && 'onClick' in action;
 }
 
 export function EmptyState({
@@ -39,7 +44,11 @@ export function EmptyState({
         {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
       {action && (
-        <Button onClick={action.onClick}>{action.label}</Button>
+        isActionConfig(action) ? (
+          <Button onClick={action.onClick}>{action.label}</Button>
+        ) : (
+          action
+        )
       )}
       {children}
     </div>

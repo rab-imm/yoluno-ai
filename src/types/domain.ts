@@ -31,8 +31,42 @@ export const PERSONALITY_MODES: Record<PersonalityMode, { label: string; descrip
   },
 };
 
-// Avatar Expressions
-export type AvatarExpression = 'neutral' | 'happy' | 'thinking' | 'excited';
+// Avatar Expressions - 12 emotional states for buddy interactions
+export type AvatarExpression =
+  | 'neutral'    // Default idle state
+  | 'happy'      // General positive response
+  | 'thinking'   // Processing/loading state
+  | 'excited'    // Achievement, new discovery
+  | 'curious'    // Asking questions
+  | 'caring'     // Comforting, supportive
+  | 'teaching'   // Explaining something
+  | 'creative'   // Story mode, artistic
+  | 'surprised'  // New topic, unexpected
+  | 'proud'      // Milestone reached
+  | 'sleepy'     // Night mode, wind down
+  | 'listening'; // User is typing/speaking
+
+export interface BuddyExpressionConfig {
+  emoji: string;
+  label: string;
+  animation: string;
+  color: string;
+}
+
+export const BUDDY_EXPRESSIONS: Record<AvatarExpression, BuddyExpressionConfig> = {
+  neutral: { emoji: '😊', label: 'Friendly', animation: '', color: 'from-primary/20 to-primary/10' },
+  happy: { emoji: '😄', label: 'Happy', animation: 'animate-bounce-gentle', color: 'from-yellow-200 to-orange-100' },
+  thinking: { emoji: '🤔', label: 'Thinking', animation: 'animate-pulse', color: 'from-blue-200 to-indigo-100' },
+  excited: { emoji: '🎉', label: 'Excited', animation: 'animate-wiggle', color: 'from-pink-200 to-purple-100' },
+  curious: { emoji: '🧐', label: 'Curious', animation: 'animate-float', color: 'from-cyan-200 to-blue-100' },
+  caring: { emoji: '🤗', label: 'Caring', animation: 'animate-heartbeat', color: 'from-rose-200 to-pink-100' },
+  teaching: { emoji: '📚', label: 'Teaching', animation: '', color: 'from-emerald-200 to-teal-100' },
+  creative: { emoji: '🎨', label: 'Creative', animation: 'animate-sparkle', color: 'from-violet-200 to-fuchsia-100' },
+  surprised: { emoji: '😮', label: 'Surprised', animation: 'animate-pop', color: 'from-amber-200 to-yellow-100' },
+  proud: { emoji: '🌟', label: 'Proud', animation: 'animate-pulse-glow', color: 'from-yellow-300 to-amber-200' },
+  sleepy: { emoji: '😴', label: 'Sleepy', animation: '', color: 'from-indigo-300 to-purple-200' },
+  listening: { emoji: '👂', label: 'Listening', animation: 'animate-pulse', color: 'from-sky-200 to-blue-100' },
+};
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl';
 

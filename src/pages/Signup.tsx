@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { handleError } from '@/lib/errors';
 import { Sparkles, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -42,11 +41,11 @@ export function SignupPage() {
       await signUp(email, password);
       toast.success('Check your email to confirm your account');
       navigate('/login');
-    } catch (error) {
-      handleError(error, {
-        context: 'SignupPage',
-        userMessage: 'Failed to create account',
-      });
+    } catch (error: unknown) {
+      // Show actual error from Supabase
+      console.error('Signup error:', error);
+      const err = error as { message?: string; userMessage?: string };
+      toast.error(err.userMessage || err.message || 'Failed to create account');
     } finally {
       setIsLoading(false);
     }

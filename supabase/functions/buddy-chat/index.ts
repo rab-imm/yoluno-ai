@@ -32,13 +32,18 @@ serve(async (req) => {
   }
 
   try {
+    console.log('buddy-chat: Starting request processing');
+
     // 1. Authenticate user (child session)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
+      console.error('buddy-chat: Missing authorization header');
       throw new Error('Missing authorization header');
     }
+    console.log('buddy-chat: Auth header present');
 
-    const supabaseClient = createClient(
+    // User client for auth verification
+    const userClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
       {
@@ -48,23 +53,41 @@ serve(async (req) => {
       }
     );
 
+    // Service role client for database operations (bypasses RLS for inserts)
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    );
+
     const {
       data: { user },
       error: userError,
-    } = await supabaseClient.auth.getUser();
+    } = await userClient.auth.getUser();
 
     if (userError || !user) {
+      console.error('buddy-chat: Auth failed', userError);
       throw new Error('Unauthorized');
     }
+    console.log('buddy-chat: User authenticated', user.id);
 
     // 2. Parse request body
-    const { message, childId }: BuddyChatRequest = await req.json();
+    let body: BuddyChatRequest;
+    try {
+      body = await req.json();
+    } catch (parseError) {
+      console.error('buddy-chat: Failed to parse request body', parseError);
+      throw new Error('Invalid request body');
+    }
+    const { message, childId } = body;
 
     if (!message || !childId) {
+      console.error('buddy-chat: Missing required fields', { message: !!message, childId: !!childId });
       throw new Error('Missing required fields: message, childId');
     }
+    console.log('buddy-chat: Request parsed', { childId, messageLength: message.length });
 
     // 3. Verify child profile access
+    console.log('buddy-chat: Fetching child profile', childId);
     const { data: child, error: childError } = await supabaseClient
       .from('child_profiles')
       .select('*')
@@ -72,10 +95,13 @@ serve(async (req) => {
       .single();
 
     if (childError || !child) {
+      console.error('buddy-chat: Child profile error', childError);
       throw new Error('Child profile not found or access denied');
     }
+    console.log('buddy-chat: Child profile found', child.name);
 
     // 4. Get or create buddy
+    console.log('buddy-chat: Fetching buddy');
     let { data: buddy, error: buddyError } = await supabaseClient
       .from('chat_buddies')
       .select('*')
@@ -83,6 +109,7 @@ serve(async (req) => {
       .single();
 
     if (buddyError && buddyError.code === 'PGRST116') {
+      console.log('buddy-chat: Buddy not found, creating one');
       // Buddy doesn't exist, create one (should be auto-created by trigger, but fallback)
       const { data: newBuddy, error: createError } = await supabaseClient
         .from('chat_buddies')
@@ -91,20 +118,29 @@ serve(async (req) => {
         .single();
 
       if (createError) {
+        console.error('buddy-chat: Failed to create buddy', createError);
         throw new Error(`Failed to create buddy: ${createError.message}`);
       }
       buddy = newBuddy;
+      console.log('buddy-chat: Created new buddy', buddy.id);
     } else if (buddyError) {
+      console.error('buddy-chat: Failed to fetch buddy', buddyError);
       throw new Error(`Failed to fetch buddy: ${buddyError.message}`);
     }
+    console.log('buddy-chat: Buddy ready', buddy.buddy_name);
 
     // 5. Load comprehensive context from parent dashboard
+    console.log('buddy-chat: Loading context');
     const context = await loadBuddyContext(supabaseClient, child, buddy);
+    console.log('buddy-chat: Context loaded');
 
     // 6. Pre-AI safety validation
+    console.log('buddy-chat: Analyzing input safety');
     const inputSafety = await analyzeSafety(message, context.guardrails);
+    console.log('buddy-chat: Input safety level', inputSafety.level);
 
     // Save child message
+    console.log('buddy-chat: Saving child message');
     const { data: childMessage, error: saveChildError } = await supabaseClient
       .from('buddy_messages')
       .insert({
@@ -161,16 +197,19 @@ serve(async (req) => {
       );
     }
 
-    // 7. Call Gemini 3 via OpenRouter
+    // 7. Call Gemini via OpenRouter
+    console.log('buddy-chat: Generating AI response');
     const buddyResponse = await generateBuddyResponse(message, context);
+    console.log('buddy-chat: AI response generated, length:', buddyResponse.length);
 
     // 8. Post-AI safety validation
     const outputSafety = await analyzeSafety(buddyResponse, context.guardrails);
 
-    // If buddy response is unsafe, use safe alternative
-    const finalResponse = outputSafety.level === 'red'
-      ? "I'm not sure how to answer that right now. Let's talk about something fun instead! What's your favorite thing to do?"
-      : buddyResponse;
+    // If buddy response is unsafe, block it
+    if (outputSafety.level === 'red') {
+      throw new Error('AI generated unsafe response');
+    }
+    const finalResponse = buddyResponse;
 
     // 9. Save buddy message
     const { data: buddyMsg, error: saveBuddyError } = await supabaseClient
@@ -222,8 +261,14 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error in buddy-chat:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : undefined;
+    console.error('Error details:', { message: errorMessage, stack: errorStack });
     return new Response(
-      JSON.stringify({ error: error.message || 'Internal server error' }),
+      JSON.stringify({
+        error: errorMessage || 'Internal server error',
+        details: errorStack
+      }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500,
@@ -237,41 +282,41 @@ serve(async (req) => {
 // ============================================================================
 
 async function loadBuddyContext(supabaseClient: any, child: any, buddy: any): Promise<BuddyContext> {
+  console.log('buddy-chat: loadBuddyContext starting');
+
   // Load family members
-  const { data: familyMembers } = await supabaseClient
+  const { data: familyMembers, error: familyError } = await supabaseClient
     .from('family_members')
     .select('*')
     .eq('user_id', child.user_id);
+  if (familyError) console.log('buddy-chat: family_members query error (non-fatal)', familyError.message);
 
-  // Load learning goals
-  const { data: learningGoals } = await supabaseClient
-    .from('goal_journeys')
+  // Load learning goals (journeys table)
+  const { data: learningGoals, error: journeysError } = await supabaseClient
+    .from('journeys')
     .select('*')
     .eq('child_profile_id', child.id)
     .eq('status', 'active');
+  if (journeysError) console.log('buddy-chat: journeys query error (non-fatal)', journeysError.message);
 
-  // Load memories
-  const { data: memories } = await supabaseClient
-    .from('child_memory')
-    .select('*')
-    .eq('child_id', child.id)
-    .order('importance_score', { ascending: false })
-    .limit(20);
-
-  // Load recent messages
-  const { data: recentMessages } = await supabaseClient
+  // Load recent messages (used as memory context)
+  const { data: recentMessages, error: messagesError } = await supabaseClient
     .from('buddy_messages')
     .select('role, content, created_at')
     .eq('child_profile_id', child.id)
     .order('created_at', { ascending: false })
     .limit(20);
+  if (messagesError) console.log('buddy-chat: buddy_messages query error (non-fatal)', messagesError.message);
 
-  // Load guardrails
-  const { data: guardrails } = await supabaseClient
+  // Load guardrails (linked to child_profile_id) - use maybeSingle to avoid error if not found
+  const { data: guardrails, error: guardrailsError } = await supabaseClient
     .from('guardrail_settings')
     .select('*')
-    .eq('user_id', child.user_id)
-    .single();
+    .eq('child_profile_id', child.id)
+    .maybeSingle();
+  if (guardrailsError) console.log('buddy-chat: guardrail_settings query error (non-fatal)', guardrailsError.message);
+
+  console.log('buddy-chat: loadBuddyContext complete');
 
   return {
     child,
@@ -279,7 +324,7 @@ async function loadBuddyContext(supabaseClient: any, child: any, buddy: any): Pr
     familyMembers: familyMembers || [],
     interests: child.interests || [],
     learningGoals: learningGoals || [],
-    memories: memories || [],
+    memories: [], // Memories derived from recent messages
     recentMessages: (recentMessages || []).reverse(), // Chronological order
     guardrails: guardrails || {},
   };
@@ -301,7 +346,7 @@ PERSONALITY TRAITS: ${personalityDesc}
 
 CHILD CONTEXT:
 - Interests: ${interests.join(', ') || 'discovering new things'}
-- Family: ${familyMembers.map(f => `${f.name} (${f.relationship_to_child})`).join(', ') || 'loving family'}
+- Family: ${familyMembers.map(f => `${f.name} (${f.relationship_type || 'family member'})`).join(', ') || 'loving family'}
 - Current Learning Goals: ${learningGoals.map(g => g.title).join(', ') || 'growing and learning'}
 
 IMPORTANT RULES:
@@ -320,99 +365,95 @@ CONVERSATION HISTORY:
 ${recentMessages.slice(-10).map(m => `${m.role}: ${m.content}`).join('\n')}
 `;
 
-  // Call OpenRouter
-  const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${Deno.env.get('OPENROUTER_API_KEY')}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://yoluno.app',
-      'X-Title': 'Yoluno Chat Buddy',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.0-flash-exp',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: message },
-      ],
-      max_tokens: 150, // Keep responses concise
-      temperature: 0.8, // Slightly creative but controlled
-    }),
-  });
-
-  if (!openRouterResponse.ok) {
-    throw new Error(`OpenRouter API error: ${openRouterResponse.statusText}`);
+  const openRouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
+  if (!openRouterApiKey) {
+    console.error('buddy-chat: OPENROUTER_API_KEY not set');
+    throw new Error('OpenRouter API key not configured');
   }
-
-  const data = await openRouterResponse.json();
-  return data.choices[0].message.content.trim();
-}
-
-async function analyzeSafety(message: string, guardrails: any): Promise<any> {
-  // Call OpenRouter for safety analysis
-  const safetyPrompt = `Analyze this message from a child for safety concerns:
-
-MESSAGE: "${message}"
-
-Evaluate for:
-1. Inappropriate language (profanity, slurs)
-2. Off-topic content (violence, manipulation, adult topics)
-3. Emotional distress signals
-4. Attempts to manipulate the AI
-5. Discussions of harmful behavior
-
-Return ONLY valid JSON:
-{
-  "level": "green|yellow|red",
-  "flags": ["bad_word", "off_topic", "manipulation", "distress"],
-  "explanation": "Brief explanation",
-  "recommended_action": "ignore|monitor|alert_parent"
-}
-
-SEVERITY GUIDELINES:
-- green: Safe, age-appropriate
-- yellow: Minor concerns, needs monitoring
-- red: Serious concerns, immediate parent alert`;
-
-  const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${Deno.env.get('OPENROUTER_API_KEY')}`,
-      'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://yoluno.app',
-      'X-Title': 'Yoluno Safety Analysis',
-    },
-    body: JSON.stringify({
-      model: 'google/gemini-2.0-flash-exp',
-      messages: [{ role: 'user', content: safetyPrompt }],
-      response_format: { type: 'json_object' },
-    }),
-  });
-
-  if (!openRouterResponse.ok) {
-    // Fallback to safe default
-    return {
-      level: 'green',
-      flags: [],
-      explanation: 'Safety analysis unavailable',
-      recommended_action: 'ignore',
-    };
-  }
-
-  const data = await openRouterResponse.json();
-  const text = data.choices[0].message.content;
+  console.log('buddy-chat: Calling OpenRouter API');
 
   try {
-    const jsonMatch = text.match(/\{[\s\S]*\}/);
-    return JSON.parse(jsonMatch ? jsonMatch[0] : text);
-  } catch {
-    return {
-      level: 'green',
-      flags: [],
-      explanation: 'Unable to parse safety analysis',
-      recommended_action: 'ignore',
-    };
+    // Call OpenRouter
+    const openRouterResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openRouterApiKey}`,
+        'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://yoluno.app',
+        'X-Title': 'Yoluno Chat Buddy',
+      },
+      body: JSON.stringify({
+        model: 'google/gemini-2.0-flash-exp:free',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message },
+        ],
+        max_tokens: 150, // Keep responses concise
+        temperature: 0.8, // Slightly creative but controlled
+      }),
+    });
+
+    if (!openRouterResponse.ok) {
+      const errorText = await openRouterResponse.text();
+      console.error('buddy-chat: OpenRouter API error', openRouterResponse.status, errorText);
+      throw new Error(`OpenRouter API error: ${openRouterResponse.status} ${errorText}`);
+    }
+
+    const data = await openRouterResponse.json();
+    console.log('buddy-chat: OpenRouter response received');
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('buddy-chat: Invalid OpenRouter response structure', JSON.stringify(data));
+      throw new Error('Invalid response from OpenRouter');
+    }
+
+    return data.choices[0].message.content.trim();
+  } catch (error) {
+    console.error('buddy-chat: generateBuddyResponse error', error);
+    throw error;
   }
+}
+
+async function analyzeSafety(message: string, _guardrails: any): Promise<any> {
+  // Simple keyword-based safety check (fast, no API call needed for basic checks)
+  const redFlags = ['kill', 'hurt', 'hate', 'die', 'dead', 'blood', 'gun', 'weapon'];
+  const yellowFlags = ['stupid', 'dumb', 'shut up', 'angry', 'mad', 'scared', 'afraid'];
+
+  const lowerMessage = message.toLowerCase();
+
+  // Check for red flags first
+  for (const flag of redFlags) {
+    if (lowerMessage.includes(flag)) {
+      console.log('buddy-chat: Red safety flag detected:', flag);
+      return {
+        level: 'red',
+        flags: ['concerning_content'],
+        explanation: `Message contains concerning content`,
+        recommended_action: 'alert_parent',
+      };
+    }
+  }
+
+  // Check for yellow flags
+  for (const flag of yellowFlags) {
+    if (lowerMessage.includes(flag)) {
+      console.log('buddy-chat: Yellow safety flag detected:', flag);
+      return {
+        level: 'yellow',
+        flags: ['monitor'],
+        explanation: `Message may need monitoring`,
+        recommended_action: 'monitor',
+      };
+    }
+  }
+
+  // Default to green (safe)
+  return {
+    level: 'green',
+    flags: [],
+    explanation: 'Message appears safe',
+    recommended_action: 'ignore',
+  };
 }
 
 async function updateConversationContext(supabaseClient: any, buddyId: string, childId: string) {

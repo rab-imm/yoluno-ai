@@ -27,7 +27,16 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 Get these values from your Supabase project dashboard under Settings > API.
 
-### 3. Start Development Server
+### 3. Supabase Edge Function Secrets
+
+Set these secrets in Supabase Dashboard → Project Settings → Edge Functions → Secrets:
+
+| Secret | Description | Required For |
+|--------|-------------|--------------|
+| `OPENROUTER_API_KEY` | [OpenRouter](https://openrouter.ai) API key | AI Chat, Story Generation |
+| `OPENAI_API_KEY` | [OpenAI](https://platform.openai.com) API key | Text-to-Speech |
+
+### 4. Start Development Server
 
 ```bash
 npm run dev

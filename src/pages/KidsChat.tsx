@@ -34,7 +34,7 @@ export function KidsChatPage() {
   }, [child, childId, enterKidsMode, exitKidsMode, startSession, endSession]);
 
   const handleBack = () => {
-    navigate('/dashboard');
+    navigate(`/kids/${childId}`);
   };
 
   if (isLoading) {

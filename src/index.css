@@ -131,4 +131,174 @@
       transform: translateY(0);
     }
   }
+
+  /* Kids Mode Animations */
+  .animate-wiggle {
+    animation: wiggle 1s ease-in-out infinite;
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(-3deg); }
+    50% { transform: rotate(3deg); }
+  }
+
+  .animate-bounce-gentle {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-5px) rotate(1deg); }
+    75% { transform: translateY(-3px) rotate(-1deg); }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
+    50% { box-shadow: 0 0 20px 8px hsl(var(--primary) / 0.2); }
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1.5s ease-in-out infinite;
+  }
+
+  @keyframes sparkle {
+    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+  }
+
+  .animate-typing-dots > span {
+    animation: typing-dots 1.4s infinite ease-in-out both;
+  }
+
+  .animate-typing-dots > span:nth-child(1) { animation-delay: 0s; }
+  .animate-typing-dots > span:nth-child(2) { animation-delay: 0.2s; }
+  .animate-typing-dots > span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typing-dots {
+    0%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-8px); }
+  }
+
+  .animate-confetti {
+    animation: confetti-fall 3s ease-out forwards;
+  }
+
+  @keyframes confetti-fall {
+    0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  .animate-celebration {
+    animation: celebration 0.6s ease-out;
+  }
+
+  @keyframes celebration {
+    0% { transform: scale(0); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-progress-fill {
+    animation: progress-fill 1s ease-out forwards;
+  }
+
+  @keyframes progress-fill {
+    from { width: 0; }
+    to { width: var(--progress-width, 100%); }
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+  }
+
+  .animate-pop {
+    animation: pop 0.3s ease-out;
+  }
+
+  @keyframes pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.3s ease-out;
+  }
+
+  @keyframes slide-in-right {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.3s ease-out;
+  }
+
+  @keyframes slide-in-left {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  .animate-heartbeat {
+    animation: heartbeat 1.5s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    14% { transform: scale(1.1); }
+    28% { transform: scale(1); }
+    42% { transform: scale(1.1); }
+    70% { transform: scale(1); }
+  }
+
+  /* Kids Mode Gradients */
+  .bg-kids-gradient {
+    background: linear-gradient(135deg, hsl(262 83% 95%) 0%, hsl(326 78% 95%) 50%, hsl(199 89% 95%) 100%);
+  }
+
+  .bg-kids-gradient-vibrant {
+    background: linear-gradient(135deg, hsl(262 83% 70%) 0%, hsl(326 78% 65%) 100%);
+  }
+
+  .bg-story-gradient {
+    background: linear-gradient(135deg, hsl(280 87% 95%) 0%, hsl(45 93% 95%) 100%);
+  }
+
+  .bg-journey-gradient {
+    background: linear-gradient(135deg, hsl(199 89% 95%) 0%, hsl(173 80% 95%) 100%);
+  }
+
+  /* Kids Dark Mode (Night Theme) */
+  .dark .bg-kids-gradient {
+    background: linear-gradient(135deg, hsl(262 50% 15%) 0%, hsl(280 50% 20%) 100%);
+  }
+
+  /* Touch-friendly sizing for kids */
+  .touch-target-kids {
+    @apply min-h-[56px] min-w-[56px];
+  }
+
+  /* Safe area padding for mobile */
+  .safe-area-inset {
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+  }
 }

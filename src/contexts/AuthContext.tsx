@@ -86,16 +86,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const signUp = useCallback(async (email: string, password: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/dashboard`,
+      },
     });
 
     if (error) {
+      console.error('Signup error:', error);
       throw handleError(error, {
         context: 'AuthContext.signUp',
         strategy: 'throw',
       });
+    }
+
+    // Check if user was created but needs email confirmation
+    if (data?.user && !data.session) {
+      console.log('User created, email confirmation required');
     }
   }, []);
 

@@ -16,7 +16,10 @@ import { LandingPage } from '@/pages/Landing';
 import { LoginPage } from '@/pages/Login';
 import { SignupPage } from '@/pages/Signup';
 import { DashboardPage } from '@/pages/Dashboard';
+import { ChildSelectPage } from '@/pages/ChildSelect';
+import { KidsHomePage } from '@/pages/KidsHome';
 import { KidsChatPage } from '@/pages/KidsChat';
+import { KidsStoriesPage } from '@/pages/KidsStories';
 import { StoryWizardPage } from '@/pages/StoryWizard';
 import { NotFoundPage } from '@/pages/NotFound';
 
@@ -87,10 +90,34 @@ export default function App() {
                   }
                 />
                 <Route
+                  path="/play"
+                  element={
+                    <ProtectedRoute>
+                      <ChildSelectPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/kids/:childId"
                   element={
                     <ProtectedRoute>
+                      <KidsHomePage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/kids/:childId/chat"
+                  element={
+                    <ProtectedRoute>
                       <KidsChatPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/kids/:childId/stories"
+                  element={
+                    <ProtectedRoute>
+                      <KidsStoriesPage />
                     </ProtectedRoute>
                   }
                 />
