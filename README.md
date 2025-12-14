@@ -33,8 +33,16 @@ Set these secrets in Supabase Dashboard → Project Settings → Edge Functions 
 
 | Secret | Description | Required For |
 |--------|-------------|--------------|
-| `OPENROUTER_API_KEY` | [OpenRouter](https://openrouter.ai) API key | AI Chat, Story Generation |
+| `OPENROUTER_API_KEY` | [OpenRouter](https://openrouter.ai) API key | AI Chat & Story Generation (Gemini 2.5 Flash) |
 | `OPENAI_API_KEY` | [OpenAI](https://platform.openai.com) API key | Text-to-Speech |
+
+#### AI Models Used (via OpenRouter)
+
+| Feature | Model | Cost |
+|---------|-------|------|
+| Buddy Chat | `google/gemini-2.5-flash` | ~$0.30/1M input, $2.50/1M output |
+| Story Text | `google/gemini-2.5-flash` | ~$0.30/1M input, $2.50/1M output |
+| Story Illustrations | `google/gemini-2.5-flash-image` | ~$0.30/1M input, $2.50/1M output |
 
 ### 4. Start Development Server
 

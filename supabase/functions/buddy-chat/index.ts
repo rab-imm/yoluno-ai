@@ -34,11 +34,23 @@ serve(async (req) => {
   try {
     console.log('buddy-chat: Starting request processing');
 
+    // Debug: Check env vars first
+    const envCheck = {
+      hasUrl: !!Deno.env.get('SUPABASE_URL'),
+      hasAnon: !!Deno.env.get('SUPABASE_ANON_KEY'),
+      hasService: !!Deno.env.get('SUPABASE_SERVICE_ROLE_KEY'),
+      hasOpenRouter: !!Deno.env.get('OPENROUTER_API_KEY'),
+    };
+    console.log('buddy-chat: ENV check', envCheck);
+
     // 1. Authenticate user (child session)
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       console.error('buddy-chat: Missing authorization header');
-      throw new Error('Missing authorization header');
+      return new Response(
+        JSON.stringify({ error: 'Missing authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
     console.log('buddy-chat: Auth header present');
 
@@ -383,13 +395,13 @@ ${recentMessages.slice(-10).map(m => `${m.role}: ${m.content}`).join('\n')}
         'X-Title': 'Yoluno Chat Buddy',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.0-flash-exp:free',
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message },
         ],
-        max_tokens: 150, // Keep responses concise
-        temperature: 0.8, // Slightly creative but controlled
+        max_tokens: 150,
+        temperature: 0.8,
       }),
     });
 

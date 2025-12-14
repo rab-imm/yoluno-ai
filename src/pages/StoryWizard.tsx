@@ -6,7 +6,8 @@
 
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useChildProfile } from '@/hooks/queries';
+import { useQueryClient } from '@tanstack/react-query';
+import { useChildProfile, queryKeys } from '@/hooks/queries';
 import { generateStory, getThemeSuggestions, storyMoods, storyValues } from '@/services/storyGeneration';
 import { LoadingState, ErrorState } from '@/components/shared';
 import { Button } from '@/components/ui/button';
@@ -94,6 +95,7 @@ interface StoryWizardState {
 export function StoryWizardPage() {
   const { childId } = useParams<{ childId: string }>();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { data: child, isLoading, isError } = useChildProfile(childId);
 
   const [currentStep, setCurrentStep] = useState(0);
@@ -102,6 +104,7 @@ export function StoryWizardPage() {
     title: string;
     content: string;
     moral: string;
+    illustrationUrl?: string | null;
   } | null>(null);
 
   const [wizardState, setWizardState] = useState<StoryWizardState>({
@@ -167,13 +170,21 @@ export function StoryWizardPage() {
         title: story.title,
         content: story.content,
         moral: story.moral,
+        illustrationUrl: story.illustrationUrl,
       });
+
+      console.log('Story generated:', { story, id: story.id, warning: story.warning, childId });
 
       if (story.warning) {
         toast.warning('Story created but not saved', {
           description: 'The story was generated but could not be saved to your library.',
         });
       } else {
+        // Invalidate stories cache so the list updates
+        console.log('Invalidating stories cache for childId:', childId);
+        await queryClient.invalidateQueries({
+          queryKey: queryKeys.stories.listByChild(childId),
+        });
         toast.success('Story created!', {
           description: `"${story.title}" has been saved to your library!`,
         });
@@ -414,6 +425,15 @@ export function StoryWizardPage() {
                 <div className="rounded-xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-4">
                   <h3 className="text-lg font-bold">{generatedStory.title}</h3>
                 </div>
+                {generatedStory.illustrationUrl && (
+                  <div className="rounded-xl overflow-hidden border-2 border-primary/20">
+                    <img
+                      src={generatedStory.illustrationUrl}
+                      alt={`Illustration for ${generatedStory.title}`}
+                      className="w-full h-auto max-h-[250px] object-cover"
+                    />
+                  </div>
+                )}
                 <div className="max-h-[300px] overflow-y-auto rounded-lg bg-muted/50 p-4">
                   <p className="whitespace-pre-wrap text-sm leading-relaxed">
                     {generatedStory.content}

@@ -1,7 +1,11 @@
 /**
  * Story Generation Edge Function
  *
- * Generates personalized stories using AI based on child preferences.
+ * Generates personalized stories with illustrations using Google Gemini via OpenRouter.
+ *
+ * Models:
+ * - Story Text: google/gemini-2.5-flash (fast, reliable)
+ * - Illustrations: google/gemini-3-pro-image-preview (image generation)
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
@@ -22,13 +26,11 @@ interface StoryRequest {
   includeFamily?: boolean;
 }
 
-interface ChildProfile {
-  id: string;
-  name: string;
-  age: number;
-  interests: string[] | null;
-  personality_mode: string | null;
-}
+// AI Model Configuration
+const AI_MODELS = {
+  storyGeneration: 'google/gemini-2.5-flash',
+  imageGeneration: 'google/gemini-2.5-flash-image',
+};
 
 serve(async (req) => {
   // Always handle CORS first
@@ -135,8 +137,17 @@ serve(async (req) => {
     const ageAdjustedLength = childProfile.age <= 7 ? 'short' : storyLength;
     const targetWords = wordCounts[ageAdjustedLength];
 
-    // Build prompt
-    const systemPrompt = `You are a children's story writer creating age-appropriate, engaging stories.
+    const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
+    if (!openrouterApiKey) {
+      return new Response(
+        JSON.stringify({ error: 'OpenRouter API key not configured' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // ========== STEP 1: Generate Story Text ==========
+    const storySystemPrompt = `You are a children's story writer creating age-appropriate, engaging stories.
+
 Write stories that are:
 - Safe and appropriate for children aged ${childProfile.age}
 - Educational and values-driven
@@ -149,7 +160,7 @@ Never include:
 - Inappropriate themes
 - Complex vocabulary beyond the child's age level`;
 
-    const userPrompt = `Create a ${mood} story for ${childProfile.name}, age ${childProfile.age}.
+    const storyUserPrompt = `Create a ${mood} story for ${childProfile.name}, age ${childProfile.age}.
 
 Theme: ${theme}
 ${characters.length > 0 ? `Characters: ${characters.join(', ')}` : ''}
@@ -162,22 +173,14 @@ Please write an engaging story with a clear beginning, middle, and end. Include 
 Respond in JSON format:
 {
   "title": "Story title",
-  "content": "Full story text",
+  "content": "Full story text with paragraphs separated by newlines",
   "moral": "The lesson of the story",
-  "wordCount": number
+  "wordCount": number,
+  "illustrationPrompt": "A detailed prompt for generating a child-friendly illustration for this story (describe the main scene, characters, setting, and mood)"
 }`;
 
-    const openrouterApiKey = Deno.env.get('OPENROUTER_API_KEY');
-    if (!openrouterApiKey) {
-      return new Response(
-        JSON.stringify({ error: 'OpenRouter API key not configured' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    // Call OpenRouter API
-    console.log('generate-story: Calling OpenRouter API');
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    console.log('generate-story: Generating story text with model:', AI_MODELS.storyGeneration);
+    const storyResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openrouterApiKey}`,
@@ -186,55 +189,218 @@ Respond in JSON format:
         'X-Title': 'Yoluno Story Generator',
       },
       body: JSON.stringify({
-        model: 'google/gemini-flash-1.5',
+        model: AI_MODELS.storyGeneration,
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt },
+          { role: 'system', content: storySystemPrompt },
+          { role: 'user', content: storyUserPrompt },
         ],
         temperature: 0.8,
-        max_tokens: 2000,
+        max_tokens: 4000,
       }),
     });
-    console.log('generate-story: OpenRouter response status:', response.status);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenRouter error:', response.status, errorText);
+    if (!storyResponse.ok) {
+      const errorText = await storyResponse.text();
+      console.error('OpenRouter story error:', storyResponse.status, errorText);
       return new Response(
         JSON.stringify({
           error: 'Failed to generate story',
-          details: `OpenRouter returned ${response.status}: ${errorText.substring(0, 500)}`
+          details: `OpenRouter returned ${storyResponse.status}: ${errorText.substring(0, 500)}`
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const aiResponse = await response.json();
-    const content = aiResponse.choices?.[0]?.message?.content;
+    const storyAiResponse = await storyResponse.json();
+    const storyTextContent = storyAiResponse.choices?.[0]?.message?.content;
 
-    if (!content) {
+    if (!storyTextContent) {
       return new Response(
         JSON.stringify({ error: 'No story content generated from AI' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    // Parse JSON response
+    // Parse story JSON
     let storyData;
     try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      const jsonMatch = storyTextContent.match(/\{[\s\S]*\}/);
       storyData = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
       if (!storyData) throw new Error('No JSON found');
     } catch {
       storyData = {
         title: `${theme} Adventure`,
-        content: content,
+        content: storyTextContent,
         moral: '',
-        wordCount: content.split(/\s+/).length,
+        wordCount: storyTextContent.split(/\s+/).length,
+        illustrationPrompt: `A colorful, child-friendly illustration of a ${mood} ${theme} story for a ${childProfile.age} year old child.`,
       };
     }
 
-    // Save story to database
+    console.log('generate-story: Story text generated:', storyData.title);
+
+    // ========== STEP 2: Generate Illustration ==========
+    let illustrationUrl: string | null = null;
+
+    try {
+      const illustrationPrompt = storyData.illustrationPrompt ||
+        `A colorful, whimsical children's book illustration for a story titled "${storyData.title}" about ${theme}. Style: warm, friendly, suitable for children aged ${childProfile.age}. The scene should be cheerful and inviting.`;
+
+      console.log('generate-story: Generating illustration with model:', AI_MODELS.imageGeneration);
+
+      const imageResponse = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${openrouterApiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://yoluno.app',
+          'X-Title': 'Yoluno Story Illustrator',
+        },
+        body: JSON.stringify({
+          model: AI_MODELS.imageGeneration,
+          messages: [
+            {
+              role: 'user',
+              content: `Generate a beautiful, child-friendly illustration image for a children's story.
+
+${illustrationPrompt}
+
+Important:
+- Make it colorful and appealing to children
+- Use a warm, friendly art style like a children's book illustration
+- No text in the image
+- Safe and appropriate for young children
+- Single cohesive scene
+
+Please generate the image.`,
+            },
+          ],
+          max_tokens: 4096,
+        }),
+      });
+
+      if (imageResponse.ok) {
+        const imageAiResponse = await imageResponse.json();
+        console.log('generate-story: Image response received');
+
+        // Check for base64 image in various possible locations
+        const message = imageAiResponse.choices?.[0]?.message;
+        let base64Image: string | null = null;
+
+        console.log('generate-story: Parsing image response, message keys:', message ? Object.keys(message) : 'no message');
+
+        // Check images array first (format from gemini-2.5-flash-image)
+        // Format: images: [{ type: "image_url", image_url: { url: "data:image/png;base64,..." } }]
+        if (message?.images && Array.isArray(message.images)) {
+          for (const img of message.images) {
+            if (img.type === 'image_url' && img.image_url?.url) {
+              const url = img.image_url.url;
+              if (url.startsWith('data:image')) {
+                base64Image = url.split(',')[1];
+                console.log('generate-story: Found image in images array (image_url format)');
+                break;
+              }
+            }
+            // Also check for direct base64 in images array
+            if (typeof img === 'string' && img.length > 100) {
+              base64Image = img;
+              console.log('generate-story: Found direct base64 in images array');
+              break;
+            }
+          }
+        }
+
+        // Check content array for image parts
+        if (!base64Image && message?.content && Array.isArray(message.content)) {
+          for (const part of message.content) {
+            if (part.type === 'image' && part.image) {
+              base64Image = part.image;
+              console.log('generate-story: Found image in content array (image type)');
+              break;
+            }
+            if (part.type === 'image_url' && part.image_url?.url) {
+              const url = part.image_url.url;
+              if (url.startsWith('data:image')) {
+                base64Image = url.split(',')[1];
+                console.log('generate-story: Found image in content array (image_url type)');
+              }
+              break;
+            }
+          }
+        }
+
+        // Check direct properties
+        if (!base64Image && message?.image) {
+          base64Image = message.image;
+          console.log('generate-story: Found image in direct image property');
+        }
+
+        // Check if content itself is base64
+        if (!base64Image && message?.content && typeof message.content === 'string') {
+          // Check if it's a data URL
+          if (message.content.startsWith('data:image')) {
+            base64Image = message.content.split(',')[1];
+            console.log('generate-story: Found image as data URL in content string');
+          }
+          // Check if it looks like raw base64 (starts with common PNG/JPEG signatures)
+          else if (message.content.match(/^[A-Za-z0-9+/=]{100,}$/)) {
+            base64Image = message.content;
+            console.log('generate-story: Found raw base64 in content string');
+          }
+        }
+
+        if (base64Image) {
+          console.log('generate-story: Found base64 image, uploading to storage');
+
+          // Remove data URL prefix if present
+          const cleanBase64 = base64Image.replace(/^data:image\/\w+;base64,/, '');
+
+          // Convert base64 to Uint8Array
+          const binaryString = atob(cleanBase64);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+
+          const fileName = `stories/${childProfileId}/${Date.now()}.png`;
+
+          const { data: uploadData, error: uploadError } = await supabase.storage
+            .from('story-illustrations')
+            .upload(fileName, bytes, {
+              contentType: 'image/png',
+              upsert: false,
+            });
+
+          if (!uploadError && uploadData) {
+            const { data: urlData } = supabase.storage
+              .from('story-illustrations')
+              .getPublicUrl(fileName);
+            illustrationUrl = urlData?.publicUrl || null;
+            console.log('generate-story: Illustration uploaded:', illustrationUrl);
+          } else {
+            console.error('generate-story: Failed to upload illustration:', uploadError);
+          }
+        } else {
+          console.log('generate-story: No base64 image found in response');
+          // Log the response structure for debugging
+          console.log('generate-story: Response structure:', JSON.stringify({
+            hasMessage: !!message,
+            contentType: typeof message?.content,
+            isArray: Array.isArray(message?.content),
+            hasImage: !!message?.image,
+            hasImages: !!message?.images,
+          }));
+        }
+      } else {
+        const errorText = await imageResponse.text();
+        console.error('generate-story: Image generation failed:', imageResponse.status, errorText);
+      }
+    } catch (imageError) {
+      console.error('generate-story: Error generating illustration:', imageError);
+      // Continue without illustration - don't fail the whole request
+    }
+
+    // ========== STEP 3: Save Story to Database ==========
     console.log('generate-story: Saving story to database');
     const { data: savedStory, error: saveError } = await supabase
       .from('stories')
@@ -246,13 +412,13 @@ Respond in JSON format:
         mood: mood,
         values: values,
         word_count: storyData.wordCount,
+        illustration_url: illustrationUrl,
       })
       .select()
       .single();
 
     if (saveError) {
       console.error('Error saving story:', saveError);
-      // Still return the story even if save failed, but include warning
       return new Response(
         JSON.stringify({
           story: {
@@ -263,6 +429,7 @@ Respond in JSON format:
             wordCount: storyData.wordCount,
             theme,
             mood,
+            illustrationUrl,
           },
           warning: 'Story generated but failed to save to database',
           saveError: saveError.message,
@@ -283,6 +450,7 @@ Respond in JSON format:
           wordCount: storyData.wordCount,
           theme,
           mood,
+          illustrationUrl,
         },
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

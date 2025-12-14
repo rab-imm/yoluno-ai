@@ -25,6 +25,7 @@ export interface GeneratedStory {
   wordCount: number;
   theme: string;
   mood: string;
+  illustrationUrl?: string | null;
 }
 
 export interface StoryGenerationResponse {

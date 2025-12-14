@@ -58,8 +58,8 @@ Yoluno AI is a child-safe learning companion that provides:
 
 | Provider | Models | Usage |
 |----------|--------|-------|
-| Google Gemini (via Lovable Gateway) | gemini-2.5-flash | Chat, Stories, Validation |
-| Google Gemini (via Lovable Gateway) | gemini-2.5-flash-image-preview | Avatar & Illustration Generation |
+| Google Gemini (via OpenRouter) | gemini-2.5-flash | Buddy Chat Conversations |
+| Google Gemini (via OpenRouter) | gemini-3-pro-image-preview | Story Generation & Illustrations |
 | OpenAI | tts-1 | Text-to-Speech |
 | OpenAI | whisper-1 | Speech-to-Text |
 
@@ -124,18 +124,18 @@ Yoluno AI is a child-safe learning companion that provides:
 ├────────────────────────────────────────────────────────────────────────────┤
 │                                                                            │
 │  ┌─────────────────────────────────┐  ┌─────────────────────────────────┐ │
-│  │   LOVABLE AI GATEWAY            │  │         OPENAI API              │ │
-│  │   (Google Gemini 2.5)           │  │                                 │ │
+│  │   OPENROUTER AI GATEWAY         │  │         OPENAI API              │ │
+│  │   (Google Gemini Models)        │  │                                 │ │
 │  │                                 │  │  • TTS (tts-1)                  │ │
 │  │  • gemini-2.5-flash             │  │    - Story narration            │ │
-│  │    - Chat conversations         │  │    - Reward voice clips         │ │
-│  │    - Story generation           │  │                                 │ │
-│  │    - Content validation         │  │  • Whisper (whisper-1)          │ │
-│  │    - Photo captions             │  │    - Family story transcription │ │
-│  │                                 │  │    - Audio processing           │ │
-│  │  • gemini-2.5-flash-image       │  │                                 │ │
-│  │    - Avatar generation          │  │                                 │ │
+│  │    - Buddy chat conversations   │  │    - Reward voice clips         │ │
+│  │    - Content validation         │  │                                 │ │
+│  │                                 │  │  • Whisper (whisper-1)          │ │
+│  │  • gemini-3-pro-image-preview   │  │    - Family story transcription │ │
+│  │    - Story generation           │  │    - Audio processing           │ │
 │  │    - Story illustrations        │  │                                 │ │
+│  │    - Avatar generation          │  │                                 │ │
+│  │                                 │  │                                 │ │
 │  └─────────────────────────────────┘  └─────────────────────────────────┘ │
 └────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -243,21 +243,18 @@ src/
 
 | Function | AI Provider | Purpose |
 |----------|-------------|---------|
-| `child-chat` | Gemini 2.5 Flash | Main conversational AI with memory |
-| `generate-story` | Gemini 2.5 Flash | Create personalized stories |
-| `generate-enhanced-story` | Gemini 2.5 Flash | Advanced story with scenes |
-| `generate-story-illustrations` | Gemini 2.5 Flash Image | Story scene illustrations |
+| `buddy-chat` | Gemini 2.5 Flash (OpenRouter) | Main conversational AI with memory |
+| `generate-story` | Gemini 3 Pro Image Preview (OpenRouter) | Create personalized stories with illustrations |
 | `generate-story-narration` | OpenAI TTS | Audio narration for stories |
-| `generate-avatar` | Gemini 2.5 Flash Image | Custom avatar generation |
-| `generate-avatar-library` | Gemini 2.5 Flash Image | Batch avatar creation |
-| `validate-child-message` | Gemini 2.5 Flash | Content safety validation |
+| `generate-avatar` | Gemini 3 Pro Image Preview (OpenRouter) | Custom avatar generation |
+| `validate-child-message` | Gemini 2.5 Flash (OpenRouter) | Content safety validation |
 | `text-to-speech` | OpenAI TTS | General TTS conversion |
 | `transcribe-family-story` | OpenAI Whisper + Gemini | Audio transcription & summarization |
 | `transcribe-family-member` | OpenAI Whisper | Voice recording transcription |
-| `process-family-photo` | Gemini 2.5 Flash Vision | Photo captions |
-| `buddy-mission-encouragement` | Gemini 2.5 Flash | Motivational messages |
-| `inject-habit-into-story` | Gemini 2.5 Flash | Habit integration in stories |
-| `generate-journey-steps` | Gemini 2.5 Flash | Journey step creation |
+| `process-family-photo` | Gemini 2.5 Flash (OpenRouter) | Photo captions |
+| `buddy-mission-encouragement` | Gemini 2.5 Flash (OpenRouter) | Motivational messages |
+| `inject-habit-into-story` | Gemini 2.5 Flash (OpenRouter) | Habit integration in stories |
+| `generate-journey-steps` | Gemini 2.5 Flash (OpenRouter) | Journey step creation |
 
 #### Non-AI Functions
 
@@ -380,7 +377,7 @@ check_and_award_journey_badges(p_child_id)                 -- Journey badges
 │     └─ Pre-matched content (if available)                        │
 │     │                                                            │
 │     ▼                                                            │
-│  4. AI GENERATION (Gemini 2.5 Flash)                             │
+│  4. AI GENERATION (Gemini 2.5 Flash via OpenRouter)              │
 │     ├─ System prompt with personality mode                       │
 │     ├─ Age-appropriate language guidance                         │
 │     ├─ Topic adherence instructions                              │
@@ -755,7 +752,7 @@ VITE_SUPABASE_PROJECT_ID=[project-id]
 ```env
 SUPABASE_URL=https://[project-id].supabase.co
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
-LOVABLE_API_KEY=[lovable-api-key]
+OPENROUTER_API_KEY=sk-or-...
 OPENAI_API_KEY=sk-...
 ```
 

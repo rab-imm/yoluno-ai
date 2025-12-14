@@ -22,11 +22,15 @@ export interface StoryScene {
 }
 
 export async function getStoriesByChild(childId: string): Promise<StoryWithDetails[]> {
+  console.log('getStoriesByChild: Fetching stories for child:', childId);
+
   const { data, error } = await supabase
     .from('stories')
     .select('*')
     .eq('child_profile_id', childId)
     .order('created_at', { ascending: false });
+
+  console.log('getStoriesByChild: Result:', { data, error, count: data?.length });
 
   if (error) {
     throw handleError(error, {
