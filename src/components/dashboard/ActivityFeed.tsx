@@ -1,0 +1,73 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useGlobalActivity } from "@/hooks/dashboard/useGlobalActivity";
+import { Loader2, Activity } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
+export function ActivityFeed() {
+  const { data: activities, isLoading } = useGlobalActivity();
+
+  if (isLoading) {
+    return (
+      <Card>
+        <CardContent className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!activities || activities.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5" />
+            Recent Activity
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-center text-muted-foreground py-8">
+            No recent activity yet. Start exploring with your children! ✨
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="animate-fade-in">
+      <Card className="border-2 shadow-lg">
+        <CardHeader className="bg-gradient-to-r from-primary/5 to-accent/5">
+          <CardTitle className="flex items-center gap-2 text-xl">
+            <Activity className="h-6 w-6 text-primary" />
+            Recent Activity
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="pt-4 md:pt-6 p-4 md:p-6">
+          <ScrollArea className="h-[300px] md:h-[400px] pr-2 md:pr-4">
+            <div className="space-y-2 md:space-y-3">
+              {activities.map((activity) => (
+                <div
+                  key={activity.id}
+                  className="flex gap-3 md:gap-4 rounded-xl border-2 bg-gradient-to-br from-card to-card/50 p-3 md:p-4 hover:shadow-lg transition-all hover:scale-[1.02] hover:border-primary/30 animate-fade-in"
+                >
+                  <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-xl md:text-2xl shadow-md flex-shrink-0">
+                    {activity.icon}
+                  </div>
+                  <div className="flex-1 space-y-1 min-w-0">
+                    <p className="text-sm font-medium leading-relaxed">
+                      <span className="text-primary font-bold">{activity.childName}</span>
+                      {" "}
+                      {activity.description}
+                    </p>
+                    <p className="text-xs text-muted-foreground font-medium">{activity.relativeTime}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}

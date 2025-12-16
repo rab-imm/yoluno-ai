@@ -2,58 +2,168 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
 @layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
+
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+
+    /* Trust blue for parent interface */
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Light background variations */
+    --secondary: 210 40% 98%;
     --secondary-foreground: 222.2 47.4% 11.2%;
+
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+
+    /* Playful purple accent */
+    --accent: 283 89% 68%;
+    --accent-foreground: 0 0% 100%;
+
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
+
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 262 83% 58%;
-    --radius: 0.75rem;
+    --ring: 221 83% 53%;
 
-    /* Child-friendly theme colors */
-    --child-primary: 262 83% 58%;
-    --child-secondary: 326 78% 60%;
-    --learning-primary: 199 89% 48%;
-    --learning-secondary: 173 80% 40%;
-    --story-primary: 280 87% 65%;
-    --story-magic: 45 93% 47%;
+    --radius: 1rem;
+    
+    /* Custom tokens for child mode */
+    --child-primary: 283 89% 68%;
+    --child-secondary: 340 82% 67%;
+    --child-bg: 270 50% 98%;
+    
+    /* Story mode tokens */
+    --story-magic: 271 76% 63%;
+    --story-magic-light: 271 76% 90%;
+    --story-bedtime: 243 75% 59%;
+    --story-bedtime-dark: 243 75% 40%;
+    
+    /* Three Pillar Color Tokens */
+    /* Imagination (Stories) - Purple/Indigo */
+    --imagination-primary: 271 76% 63%;
+    --imagination-secondary: 243 75% 59%;
+    --imagination-light: 271 76% 90%;
+    
+    /* Growth (Journeys) - Fresh Green */
+    --growth-primary: 142 76% 45%;
+    --growth-secondary: 158 64% 52%;
+    --growth-light: 142 76% 90%;
+    
+    /* Curiosity (Learning) - Warm Yellow/Sky */
+    --curiosity-primary: 45 100% 51%;
+    --curiosity-secondary: 210 100% 60%;
+    --curiosity-light: 45 100% 90%;
+    
+    /* Success states */
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 100%;
+    
+    /* Warning for gentle refusals */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+    
+    /* Gradients */
+    --gradient-playful: linear-gradient(135deg, hsl(283 89% 68%), hsl(340 82% 67%));
+    --gradient-trust: linear-gradient(135deg, hsl(221 83% 53%), hsl(221 83% 63%));
+    --gradient-story: linear-gradient(135deg, hsl(271 76% 63%), hsl(243 75% 59%));
+    
+    /* Shadows */
+    --shadow-soft: 0 4px 6px -1px hsl(221 83% 53% / 0.1);
+    --shadow-playful: 0 10px 30px -10px hsl(283 89% 68% / 0.3);
+    --shadow-story: 0 20px 40px -15px hsl(271 76% 63% / 0.4);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 1rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Learning Mode Theme */
+    --learning-primary: 210 100% 60%;
+    --learning-secondary: 195 90% 55%;
+    --learning-bg: 210 40% 98%;
+    --learning-accent: 210 100% 50%;
+    
+    /* Story Time Theme */
+    --story-primary: 280 100% 70%;
+    --story-secondary: 300 100% 75%;
+    --story-bg: 280 40% 98%;
+    --story-accent: 280 100% 60%;
   }
 
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+
+    --accent: 283 89% 68%;
+    --accent-foreground: 0 0% 100%;
+
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 262 83% 58%;
+    --ring: 221 83% 53%;
+    
+    --child-primary: 283 89% 68%;
+    --child-secondary: 340 82% 67%;
+    --child-bg: 270 30% 10%;
+    
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
 
@@ -64,241 +174,94 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: 'rlig' 1, 'calt' 1;
   }
-}
-
-@layer utilities {
-  .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
+  
+  /* Playful animations for child mode */
+  @keyframes bounce-gentle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
-
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2;
+  
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
   }
-
-  .text-balance {
-    text-wrap: balance;
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
   }
-
-  .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-child-secondary;
-  }
-
-  .glass {
-    @apply bg-white/80 backdrop-blur-sm border border-white/20;
-  }
-
-  .animate-scale-in {
-    animation: scale-in 0.2s ease-out;
-  }
-
-  @keyframes scale-in {
-    from {
-      opacity: 0;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.3s ease-out;
-  }
-
+  
   @keyframes fade-in {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
-
-  .animate-slide-up {
-    animation: slide-up 0.3s ease-out;
-  }
-
-  @keyframes slide-up {
-    from {
+    0% {
       opacity: 0;
       transform: translateY(10px);
     }
-    to {
+    100% {
       opacity: 1;
       transform: translateY(0);
     }
   }
-
-  /* Kids Mode Animations */
-  .animate-wiggle {
-    animation: wiggle 1s ease-in-out infinite;
-  }
-
-  @keyframes wiggle {
-    0%, 100% { transform: rotate(-3deg); }
-    50% { transform: rotate(3deg); }
-  }
-
+  
   .animate-bounce-gentle {
     animation: bounce-gentle 2s ease-in-out infinite;
   }
-
-  @keyframes bounce-gentle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-8px); }
-  }
-
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
-
-  @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    25% { transform: translateY(-5px) rotate(1deg); }
-    75% { transform: translateY(-3px) rotate(-1deg); }
-  }
-
+  
   .animate-pulse-glow {
     animation: pulse-glow 2s ease-in-out infinite;
   }
-
-  @keyframes pulse-glow {
-    0%, 100% { box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4); }
-    50% { box-shadow: 0 0 20px 8px hsl(var(--primary) / 0.2); }
+  
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
   }
-
-  .animate-sparkle {
-    animation: sparkle 1.5s ease-in-out infinite;
+  
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out forwards;
   }
-
-  @keyframes sparkle {
-    0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
-    50% { opacity: 1; transform: scale(1) rotate(180deg); }
+  
+  .animation-delay-200 {
+    animation-delay: 200ms;
   }
-
-  .animate-typing-dots > span {
-    animation: typing-dots 1.4s infinite ease-in-out both;
+  
+  .animation-delay-400 {
+    animation-delay: 400ms;
   }
-
-  .animate-typing-dots > span:nth-child(1) { animation-delay: 0s; }
-  .animate-typing-dots > span:nth-child(2) { animation-delay: 0.2s; }
-  .animate-typing-dots > span:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes typing-dots {
-    0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-8px); }
+  
+  .animation-delay-600 {
+    animation-delay: 600ms;
   }
-
-  .animate-confetti {
-    animation: confetti-fall 3s ease-out forwards;
+  
+  .animation-delay-2000 {
+    animation-delay: 2000ms;
   }
-
-  @keyframes confetti-fall {
-    0% { transform: translateY(-100%) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  
+  .mode-transition {
+    animation: fade-in 0.3s ease-out;
   }
-
-  .animate-celebration {
-    animation: celebration 0.6s ease-out;
+  
+  /* Mobile-safe bottom padding for iOS notch/home indicator */
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
-
-  @keyframes celebration {
-    0% { transform: scale(0); opacity: 0; }
-    50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
+  
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom), 1rem);
   }
-
-  .animate-progress-fill {
-    animation: progress-fill 1s ease-out forwards;
+  
+  /* Hover scale utility */
+  .hover-scale-102 {
+    transition: transform 0.2s ease;
   }
-
-  @keyframes progress-fill {
-    from { width: 0; }
-    to { width: var(--progress-width, 100%); }
+  
+  .hover-scale-102:hover {
+    transform: scale(1.02);
   }
-
-  .animate-shake {
-    animation: shake 0.5s ease-in-out;
-  }
-
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-  }
-
-  .animate-pop {
-    animation: pop 0.3s ease-out;
-  }
-
-  @keyframes pop {
-    0% { transform: scale(0.8); opacity: 0; }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); opacity: 1; }
-  }
-
-  .animate-slide-in-right {
-    animation: slide-in-right 0.3s ease-out;
-  }
-
-  @keyframes slide-in-right {
-    from { transform: translateX(20px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-
-  .animate-slide-in-left {
-    animation: slide-in-left 0.3s ease-out;
-  }
-
-  @keyframes slide-in-left {
-    from { transform: translateX(-20px); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
-  }
-
-  .animate-heartbeat {
-    animation: heartbeat 1.5s ease-in-out infinite;
-  }
-
-  @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    14% { transform: scale(1.1); }
-    28% { transform: scale(1); }
-    42% { transform: scale(1.1); }
-    70% { transform: scale(1); }
-  }
-
-  /* Kids Mode Gradients */
-  .bg-kids-gradient {
-    background: linear-gradient(135deg, hsl(262 83% 95%) 0%, hsl(326 78% 95%) 50%, hsl(199 89% 95%) 100%);
-  }
-
-  .bg-kids-gradient-vibrant {
-    background: linear-gradient(135deg, hsl(262 83% 70%) 0%, hsl(326 78% 65%) 100%);
-  }
-
-  .bg-story-gradient {
-    background: linear-gradient(135deg, hsl(280 87% 95%) 0%, hsl(45 93% 95%) 100%);
-  }
-
-  .bg-journey-gradient {
-    background: linear-gradient(135deg, hsl(199 89% 95%) 0%, hsl(173 80% 95%) 100%);
-  }
-
-  /* Kids Dark Mode (Night Theme) */
-  .dark .bg-kids-gradient {
-    background: linear-gradient(135deg, hsl(262 50% 15%) 0%, hsl(280 50% 20%) 100%);
-  }
-
-  /* Touch-friendly sizing for kids */
-  .touch-target-kids {
-    @apply min-h-[56px] min-w-[56px];
-  }
-
-  /* Safe area padding for mobile */
-  .safe-area-inset {
-    padding-bottom: env(safe-area-inset-bottom, 16px);
+  
+  /* Touch-friendly minimum sizes */
+  @media (max-width: 768px) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
   }
 }

@@ -1,2 +1,0 @@
-# Ignore Supabase Edge Functions (Deno) - they're deployed separately
-supabase/
